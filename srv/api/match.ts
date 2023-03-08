@@ -55,47 +55,47 @@ const getMatches = handle(async ({ userId }) => {
   return { characters: chars }
 })
 
-const editMatch = handle(async (req) => {
-  const id = req.params.id
-  const body = await handleUpload(req, { ...valid, persona: 'string' })
-  const persona = JSON.parse(body.persona)
+// const editMatch = handle(async (req) => {
+//   const id = req.params.id
+//   const body = await handleUpload(req, { ...valid, persona: 'string' })
+//   const persona = JSON.parse(body.persona)
 
-  assertValid(valid.persona, persona)
+//   assertValid(valid.persona, persona)
 
-  const [file] = body.attachments
-  const avatar = file ? file.filename : undefined
+//   const [file] = body.attachments
+//   const avatar = file ? file.filename : undefined
 
-  const char = await store.characters.updateMatch(id, req.userId!, {
-    name: body.name,
-    persona,
-    avatar,
-    greeting: body.greeting,
-    scenario: body.scenario,
-    sampleChat: body.sampleChat,
-  })
+//   const char = await store.characters.updateMatch(id, req.userId!, {
+//     name: body.name,
+//     persona,
+//     avatar,
+//     greeting: body.greeting,
+//     scenario: body.scenario,
+//     sampleChat: body.sampleChat,
+//   })
 
-  return char
-})
+//   return char
+// })
 
 const getMatch = handle(async ({ userId, params }) => {
-  const char = await store.characters.getMatch(userId!, params.id)
+  const char = await store.matches.getMatch(userId!, params.id)
   if (!char) {
     throw new StatusError('Character not found', 404)
   }
   return char
 })
 
-const deleteMatch = handle(async ({ userId, params }) => {
-  const id = params.id
-  await store.characters.deleteMatch(userId!, id)
-  return { success: true }
-})
+// const deleteMatch = handle(async ({ userId, params }) => {
+//   const id = params.id
+//   await store.characters.deleteMatch(userId!, id)
+//   return { success: true }
+// })
 
 router.use(loggedIn)
-router.post('/', createMatch)
+//router.post('/', createMatch)
 router.get('/', getMatches)
-router.post('/:id', editMatch)
+//router.post('/:id', editMatch)
 router.get('/:id', getMatch)
-router.delete('/:id', deleteMatch)
+//router.delete('/:id', deleteMatch)
 
 export default router

@@ -1,8 +1,8 @@
 {
-  "name": "agnaistic",
-  "version": "0.1.0",
+  "name": "aivo.chat",
+  "version": "0.1.0-aivo",
   "private": true,
-  "description": "Agnostic AI Chat",
+  "description": "AIVO.CHAT based on AGNAI",
   "keywords": [],
   "license": "AGPL-3.0",
   "scripts": {
