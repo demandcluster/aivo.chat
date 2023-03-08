@@ -25,6 +25,7 @@ const ImportCharacterModal: Component<{ show: boolean; close: () => void }> = (p
   }
 
   const updateAvatar = (files: FileInputResult[]) => {
+   
     if (!files.length) setAvatar()
     else setAvatar(files[0].content)
   }

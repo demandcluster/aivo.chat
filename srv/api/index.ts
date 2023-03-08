@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import chat from './chat'
 import character from './character'
+import match from './match'
 import classify from './classify'
 import { authMiddleware } from './auth'
 import user from './user'
@@ -14,6 +15,7 @@ router.use(authMiddleware)
 router.use('/user', user)
 router.use('/chat', chat)
 router.use('/character', character)
+router.use('/match', match)
 router.use('/classify', classify)
 router.use('/admin', admin)
 router.use('/horde', horde)

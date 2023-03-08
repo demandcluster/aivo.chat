@@ -26,9 +26,11 @@ const Navigation: Component = () => {
           <Item href="/profile">
             <User /> Profile
           </Item>
-
+          <Item href="/likes/list">
+            <Users /> Likes
+          </Item>
           <Item href="/character/list">
-            <Bot /> Characters
+            <Bot /> Matches
           </Item>
 
           <Item href="/chats">
@@ -42,17 +44,17 @@ const Navigation: Component = () => {
           <Item href="/settings">
             <Settings /> Settings
           </Item>
-
+          <Show when={user.user?.admin}>
           <Item href="/presets">
             <Sliders /> Presets
           </Item>
-
+          </Show>
           <Show when={user.user?.admin}>
             <Item href="/admin/users">
               <Eye /> Users
             </Item>
           </Show>
-
+          <Show when={user.user?.admin}>
           <a
             class="flex h-12 items-center justify-start gap-4 rounded-xl px-2 hover:bg-[var(--bg-700)]"
             href="https://github.com/luminai-companion/agn-ai"
@@ -61,6 +63,7 @@ const Navigation: Component = () => {
             <Github />
             GitHub
           </a>
+          </Show>
         </div>
         <div class="flex h-16 w-full items-center justify-between border-t-2 border-[var(--bg-800)] px-4 ">
           <div class="flex items-center gap-4">

@@ -11,7 +11,7 @@ const HomePage: Component = () => {
       <PageHeader
         title={
           <>
-            Welcome to Agn<span class="text-[var(--hl-500)]">AI</span>stic
+            Welcome to A<span class="text-[var(--hl-500)]">I</span>V<span class="text-[var(--hl-500)]">O</span>.CHAT
           </>
         }
       />

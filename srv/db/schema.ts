@@ -23,14 +23,14 @@ export namespace AppSchema {
     kind: 'user'
     username: string
     hash: string
-
     admin: boolean
     novelApiKey: string
     novelModel: string
     koboldUrl: string
     luminaiUrl: string
     oobaUrl: string
-
+    premium: boolean
+    credits: number
     hordeKey: string
     hordeModel: string
 
@@ -95,13 +95,15 @@ export namespace AppSchema {
     _id: string
     kind: 'character'
     userId: string
-
     name: string
+    summary: string
     persona: CharacterPersona
     greeting: string
     scenario: string
     sampleChat: string
-
+    match: boolean
+    xp: number
+    premium: boolean
     avatar?: string
     adapter: ChatAdapter
 

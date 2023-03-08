@@ -84,12 +84,14 @@ export async function createUser(newUser: NewUser, admin?: boolean) {
     hash,
     admin: !!admin,
     novelApiKey: '',
-    defaultAdapter: 'horde',
-    koboldUrl: '',
+    premium: false,
+    credits: 0,
+    defaultAdapter: 'kobold',
+    koboldUrl: 'https://ai.aivo.chat',
     novelModel: NOVEL_MODELS.euterpe,
     luminaiUrl: '',
     oobaUrl: '',
-    hordeModel: 'PygmalionAI/pygmalion-6b',
+    hordeModel: 'KoboldAI/OPT-13B-Erebus',
     hordeKey: '',
   }
 

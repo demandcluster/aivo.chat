@@ -14,6 +14,9 @@ export type NewCharacter = {
   name: string
   greeting: string
   scenario: string
+  xp: number
+  match: boolean
+  premium: boolean
   sampleChat: string
   avatar?: File
   persona: AppSchema.CharacterPersona
@@ -38,6 +41,10 @@ export const characterStore = createStore<CharacterState>('character', {
       form.append('name', char.name)
       form.append('greeting', char.greeting)
       form.append('scenario', char.scenario)
+      form.append('xp',toStchar.xp)
+      form.append('premium',char.premium)
+      form.append('match',char.match)
+      form.append('summary',char.summary)
       form.append('persona', JSON.stringify(char.persona))
       form.append('sampleChat', char.sampleChat)
       if (char.avatar) {
@@ -54,16 +61,21 @@ export const characterStore = createStore<CharacterState>('character', {
       }
     },
     editCharacter: async (_, characterId: string, char: NewCharacter, onSuccess?: () => void) => {
+      
       const form = new FormData()
       form.append('name', char.name)
       form.append('greeting', char.greeting)
       form.append('scenario', char.scenario)
+      form.append('xp',char.xp)
+      form.append('premium',char.premium)
+      form.append('match',char.match)
+      form.append('summary',char.summary)
       form.append('persona', JSON.stringify(char.persona))
       form.append('sampleChat', char.sampleChat)
       if (char.avatar) {
         form.append('avatar', char.avatar)
       }
-
+      debugger
       const res = await api.upload(`/character/${characterId}`, form)
 
       if (res.error) toastStore.error(`Failed to create character: ${res.error}`)

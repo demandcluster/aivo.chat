@@ -18,7 +18,7 @@ const NavBar: Component = () => {
           <Menu class="focusable-icon-button mr-2 cursor-pointer" size={32} />
         </div>
         <A href="/">
-          Agn<span class="text-[color:var(--hl-500)]">AI</span>stic
+          A<span class="text-[color:var(--hl-500)]">I</span>V<span class="text-[color:var(--hl-500)]">O</span>CHAT
         </A>
       </span>
       <span class="hidden gap-4">

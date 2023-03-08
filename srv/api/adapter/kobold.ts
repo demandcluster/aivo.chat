@@ -7,7 +7,7 @@ const base = {
   use_story: false,
   use_memory: false,
   use_authors_note: false,
-  use_world_info: false,
+  use_world_info: true,
 
   /**
    * We deliberately use a low 'max length' to aid with streaming and the lack of support of 'stop tokens' in Kobold.
@@ -28,7 +28,7 @@ export const handleKobold: ModelAdapter = async function* ({
   const resp = await needle('post', `${user.koboldUrl}/api/v1/generate`, body, {
     json: true,
   }).catch((err) => ({ error: err }))
-
+  
   if ('error' in resp) {
     yield { error: `Kobold request failed: ${resp.error?.message || resp.error}` }
     return
@@ -40,10 +40,16 @@ export const handleKobold: ModelAdapter = async function* ({
   }
 
   const text = resp.body.results?.[0]?.text as string
+
   if (text) {
     const trimmed = trimResponse(text, char, members, endTokens)
     if (trimmed) {
+      
       yield trimmed.response
+      return
+    }else{
+      logger.error({ err: resp.body }, 'Trimming failed')
+      yield { error: 'Trimming failed'}
       return
     }
   } else {
@@ -51,4 +57,5 @@ export const handleKobold: ModelAdapter = async function* ({
     yield { error: resp.body }
     return
   }
+ 
 }

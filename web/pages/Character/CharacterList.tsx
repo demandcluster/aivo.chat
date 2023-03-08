@@ -20,7 +20,7 @@ const CharacterList: Component = () => {
 
   return (
     <>
-      <PageHeader title="Characters" subtitle="" />
+      <PageHeader title="Matches" subtitle="" />
 
       <Show when={!chars.loaded}>
         <div>Loading...</div>

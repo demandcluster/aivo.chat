@@ -3,6 +3,7 @@ import { Route, Routes } from '@solidjs/router'
 import NavBar from './shared/NavBar'
 import Toasts from './Toasts'
 import CharacterRoutes from './pages/Character'
+import MatchRoutes from './pages/Match'
 import Settings from './pages/Settings'
 import ChatDetail from './pages/Chat/ChatDetail'
 import { settingStore, userStore } from './store'
@@ -39,6 +40,7 @@ const App: Component = () => {
                 <Route path="/chat" component={ChatDetail} />
                 <Route path="/chat/:id" component={ChatDetail} />
                 <CharacterRoutes />
+                <MatchRoutes/>
                 <Route path="/" component={HomePage} />
                 <Route path="/presets" component={GenerationPresetsPage} />
                 <Route path="/profile" component={ProfilePage} />

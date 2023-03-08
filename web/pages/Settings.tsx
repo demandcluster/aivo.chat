@@ -43,7 +43,7 @@ const Settings: Component = () => {
       <a class="link" href="https://stablehorde.net" target="_blank">
         stablehorde.net
       </a>{' '}
-      to register.
+      to register.<br/>You can only use horde on a premium account.
     </span>
   )
 
@@ -59,7 +59,7 @@ const Settings: Component = () => {
             value={state.theme}
             onChange={(item) => userStore.setTheme(item.value as any)}
           />
-
+          <Show when={state.user?.premium}>
           <Dropdown
             fieldName="defaultAdapter"
             label="Default AI Service"
@@ -67,7 +67,7 @@ const Settings: Component = () => {
             helperText="The default service conversations will use unless otherwise configured"
             value={state.user?.defaultAdapter}
           />
-
+          </Show>
           <Show when={cfg.config.adapters.includes('horde')}>
             <Divider />
             <h3 class="text-xl">Stable Horde settings</h3>
@@ -78,6 +78,8 @@ const Settings: Component = () => {
               placeholder="0000000000"
               type="password"
             />
+          </Show>
+          <Show when={state.user?.admin}>
             <Dropdown
               fieldName="hordeModel"
               helperText={<span>Currently set to: {state.user?.hordeModel || 'None'}</span>}
@@ -87,7 +89,7 @@ const Settings: Component = () => {
             />
           </Show>
 
-          <Show when={cfg.config.adapters.includes('kobold')}>
+          <Show when={ cfg.config.adapters.includes('kobold') && state.user?.admin}>
             <Divider />
             <TextInput
               fieldName="koboldUrl"
@@ -143,6 +145,7 @@ const Settings: Component = () => {
               placeholder="..."
             />
           </Show>
+         
         </div>
         <div class="flex justify-end gap-2 pt-4">
           <Button type="submit">

@@ -19,7 +19,14 @@ const options = [
   { id: 'sbf', label: 'SBF' },
   { id: 'text', label: 'Plain Text' },
 ]
-
+const premiumoptions = [
+  { id: "true", label: 'Premium' },
+  { id: "false", label: 'Free' },
+]
+const matchoptions = [
+  { id: "true", label: 'Matchable' },
+  { id: "false", label: 'Hidden' },
+]
 const CreateCharacter: Component = () => {
   const { editId, duplicateId } = useParams()
   const state = characterStore((s) => ({
@@ -44,9 +51,14 @@ const CreateCharacter: Component = () => {
   }
 
   const onSubmit = (ev: Event) => {
+    console.log(ev)
     const body = getStrictForm(ev, {
       kind: PERSONA_FORMATS,
       name: 'string',
+      summary: 'string',
+      xp: 'number',
+      match: 'string',
+      premium: 'string',
       greeting: 'string',
       scenario: 'string',
       sampleChat: 'string',
@@ -63,11 +75,16 @@ const CreateCharacter: Component = () => {
       scenario: body.scenario,
       avatar: avatar(),
       greeting: body.greeting,
+      xp: body.xp,
+      match: Boolean(body.match),
+      premium: Boolean(body.premium),
+      summary: body.summary,
       sampleChat: body.sampleChat,
       persona,
     }
 
     if (editId) {
+      
       characterStore.editCharacter(editId, payload, () => nav('/character/list'))
     } else {
       characterStore.createCharacter(payload, () => nav('/character/list'))
@@ -116,7 +133,55 @@ const CreateCharacter: Component = () => {
             onUpdate={updateFile}
           />
         </div>
-
+        <TextInput 
+           fieldName="summary"
+           label="Summary"
+           helperText="A short summary of your character (for on the profile page)."
+           value={state.edit?.summary}
+           />
+            <FormLabel
+            label="Premium Status"
+            helperText={
+              <>
+                <p >
+                Setting this to premium will only allow premium users to match with this character.
+                </p>
+               
+              </>
+            }
+          />
+          <RadioGroup
+            name="premium"
+            horizontal
+            options={premiumoptions} 
+            value={toString(state.edit?.premium) || "false"}
+           
+          />
+         
+          <FormLabel
+            label="Matchable Status"
+            helperText={
+              <>
+                <p >
+                Setting this to true will allow this character to be matched with users.
+                </p>
+               
+              </>
+            }
+          />
+          <RadioGroup
+            name="match"
+            horizontal
+            options={matchoptions}
+            value={toString(state.edit?.match) || "false"}
+          />
+       <TextInput
+          fieldName="xp"
+          label="XP"
+          helperText="Start XP of character (best to leave at 0)"
+          value={state.edit?.xp}
+        />
+          
         <TextInput
           fieldName="scenario"
           label="Scenario"
