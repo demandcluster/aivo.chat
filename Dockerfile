@@ -14,12 +14,12 @@ ADD common/ ./common/
 ADD srv/ ./srv/
 ADD web/ ./web
 
-RUN pnpm run build:server && pnpm run build && mkdir -p /app/assets
+RUN pnpm run build:server && pnpm run build && mkdir -p /app/assets && pnpm run init
 
-ENV ADAPTERS=horde,novel,kobold,luminai \
+ENV ADAPTERS=horde,kobold \
   LOG_LEVEL=info \
   INITIAL_USER=administrator \
-  DB_NAME=agnai \
+  DB_NAME=aivo \
   ASSET_FOLDER=/app/dist/assets
 
 EXPOSE 3001

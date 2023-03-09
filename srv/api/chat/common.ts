@@ -14,6 +14,8 @@ export function trimResponse(
   const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>','\n\n']
   const placeholder = 'NEWLINE_PLACEHOLDER'
   const trimmedGenerated = generated.replace(/\n\n/g, placeholder).trim().replace(new RegExp(placeholder, 'g'), '\n\n')
+  const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>', '\n\n']
+
   for (const member of members) {
     baseEndTokens.push(`${member.handle}:`, `${member.handle} :`)
   }
@@ -28,8 +30,7 @@ export function trimResponse(
     },
     { index: -1, response: '' }
   )
-console.log(trimmedGenerated)
-console.log('trimmed', trimmed)
+
   if (trimmed.index === -1) {
     return { index: -1, response: trimmedGenerated.trim() }
   }
@@ -37,7 +38,7 @@ console.log('trimmed', trimmed)
 }
 
 export function joinParts(parts: string[]) {
-  return parts.map(sanitise).join(' ')
+  return parts.map(sanitise).join(' ').trim()
 }
 
 export function sanitise(generated: string) {

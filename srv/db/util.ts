@@ -37,7 +37,6 @@ export const STARTER_CHARACTER: AppSchema.Character = {
   userId: '',
   kind: 'character',
   avatar: '/assets/aiva.png',
-  adapter: 'default',
   createdAt: '',
   updatedAt: '',
   name: 'Aiva',

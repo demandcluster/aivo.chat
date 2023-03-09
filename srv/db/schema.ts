@@ -105,7 +105,6 @@ export namespace AppSchema {
     xp: number
     premium: boolean
     avatar?: string
-    adapter: ChatAdapter
 
     createdAt: string
     updatedAt: string

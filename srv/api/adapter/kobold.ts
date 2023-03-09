@@ -22,7 +22,6 @@ export const handleKobold: ModelAdapter = async function* ({
   settings,
 }) {
   const body = { ...base, ...settings, prompt }
-
   const endTokens = ['END_OF_DIALOG']
 
   const resp = await needle('post', `${user.koboldUrl}/api/v1/generate`, body, {
@@ -36,6 +35,7 @@ export const handleKobold: ModelAdapter = async function* ({
 
   if (resp.statusCode && resp.statusCode >= 400) {
     yield { error: `Kobold request failed: ${resp.statusMessage}` }
+    logger.error({ error: resp.body }, `Kobld request failed`)
     return
   }
 
@@ -43,15 +43,7 @@ export const handleKobold: ModelAdapter = async function* ({
 
   if (text) {
     const trimmed = trimResponse(text, char, members, endTokens)
-    if (trimmed) {
-      
-      yield trimmed.response
-      return
-    }else{
-      logger.error({ err: resp.body }, 'Trimming failed')
-      yield { error: 'Trimming failed'}
-      return
-    }
+    yield trimmed || text
   } else {
     logger.error({ err: resp.body }, 'Failed to generate text using Kobold adapter')
     yield { error: resp.body }
