@@ -2,6 +2,7 @@ import { AppSchema } from '../../srv/db/schema'
 import { api } from './api'
 import { createStore } from './create'
 import { toastStore } from './toasts'
+import {data} from './data'	
 
 type Matchesstate = {
   Matches: {
@@ -16,7 +17,11 @@ export type NewMatch = {
   scenario: string
   sampleChat: string
   avatar?: File
-  persona: AppSchema.MatchPersona
+  xp: number
+  premium: boolean
+  summary: string
+  match: boolean
+  persona: AppSchema.CharacterPersona
 }
 
 export const matchStore = createStore<Matchesstate>('Match', {
@@ -35,28 +40,32 @@ export const matchStore = createStore<Matchesstate>('Match', {
       }
     },
     
-    getMatch: async (_,char: any) => {
+    getMatch: async (_,char: AppSchema.Character) => {
        
         const res = await api.get('/match')
        
-        if (res.error) toastStore.error('Failed to retrieve Matches')
+        if (res.error) toastStore.error('Failed to retrieve Match')
         else {
           const chx = res.result.characters.filter((i)=>i._id===char)[0]
           return { characters: { list: chx, loaded: true } }
         }
       },
-    createMatch: async (_, char: NewMatch, onSuccess?: () => void) => {
+    createMatch: async (_, char: AppSchema.Chat, onSuccess?: () => void) => {
+     
       const form = new FormData()
       form.append('name', char.name)
       form.append('greeting', char.greeting)
       form.append('scenario', char.scenario)
       form.append('persona', JSON.stringify(char.persona))
       form.append('sampleChat', char.sampleChat)
-      if (char.avatar) {
-        form.append('avatar', char.avatar)
-      }
+      form.append('xp', 0)
+      form.append('premium', char.premium) //.toString()==="true")
+      form.append('summary', char.summary)
+      form.append('match', "false")
+      form.append('avatar', char.avatar)
+     
 
-      const res = await api.upload(`/Match`, form)
+      const res = await api.post(`/match/${char._id}`, form)
 
       if (res.error) toastStore.error(`Failed to create Match: ${res.error}`)
       if (res.result) {
@@ -65,37 +74,6 @@ export const matchStore = createStore<Matchesstate>('Match', {
         onSuccess?.()
       }
     },
-    editMatch: async (_, MatchId: string, char: NewMatch, onSuccess?: () => void) => {
-      const form = new FormData()
-      form.append('name', char.name)
-      form.append('greeting', char.greeting)
-      form.append('scenario', char.scenario)
-      form.append('persona', JSON.stringify(char.persona))
-      form.append('sampleChat', char.sampleChat)
-      if (char.avatar) {
-        form.append('avatar', char.avatar)
-      }
-
-      const res = await api.upload(`/Match/${MatchId}`, form)
-
-      if (res.error) toastStore.error(`Failed to create Match: ${res.error}`)
-      if (res.result) {
-        toastStore.success(`Successfully updated Match`)
-        Matchestore.getMatches()
-        onSuccess?.()
-      }
-    },
-    deleteMatch: async ({ Matches: { list } }, charId: string, onSuccess?: () => void) => {
-      const res = await api.method('delete', `/Match/${charId}`)
-      if (res.error) return toastStore.error(`Failed to delete Match`)
-      if (res.result) {
-        const next = list.filter((char) => char._id !== charId)
-        toastStore.success('Successfully deleted Match')
-        onSuccess?.()
-        return {
-          Matches: { loaded: true, list: next },
-        }
-      }
-    },
+   
   }
 })

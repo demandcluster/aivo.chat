@@ -39,7 +39,7 @@ export async function deleteCharacter(charId: string) {
   return { result: true, error: undefined }
 }
 
-export async function editChracter(charId: string, { avatar: file, ...char }: NewCharacter) {
+export async function editCharacter(charId: string, { avatar: file, ...char }: NewCharacter) {
   const avatar = await getImageData(file)
   if (isLoggedIn()) {
     const form = new FormData()
@@ -93,16 +93,38 @@ export async function createCharacter(char: ImportCharacter) {
     const res = await api.upload<AppSchema.Character>(`/character`, form)
     return res
   }
-
+ 
   const { avatar: file, ...props } = char
+
   const avatar = file ? await getImageData(file) : undefined
-  const newChar: AppSchema.Character = { ...props, ...baseChar(), avatar, _id: v4() }
+    
+  const newChar: AppSchema.Character = { ...props, ...baseChar(),match:"false",xp:0,adapter: 'default', avatar, _id: v4() }
 
   const chars = loadItem('characters')
   const next = chars.concat(newChar)
   local.saveChars(next)
 
   return { result: newChar, error: undefined }
+}
+export async function createMatch(char: ImportCharacter) {
+  if (isLoggedIn()) {
+    const form = new FormData()
+    form.append('name', char.name)
+    form.append('greeting', char.greeting)
+    form.append('scenario', char.scenario)
+    form.append('summary', char.summary)
+    form.append('match', char.match)
+    form.append('xp', char.xp)
+    form.append('premium', char.premium)
+    form.append('persona', JSON.stringify(char.persona))
+    form.append('sampleChat', char.sampleChat)
+    form.append('avatar', char.avatar)
+    
+
+    const res = await api.upload<AppSchema.Character>(`/character`, form)
+    return res
+   }
+  
 }
 
 async function getImageData(file?: File) {

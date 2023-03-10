@@ -1,5 +1,6 @@
 import { v4 } from 'uuid'
 import { db } from './client'
+import { ObjectId } from 'mongodb'
 import { AppSchema } from './schema'
 import { now } from './util'
 
@@ -18,7 +19,7 @@ export async function createCharacter(
     updatedAt: now(),
     ...char,
   }
-
+console.log('newChar',newChar) 
   await db('character').insertOne(newChar)
   return newChar
 }
@@ -49,9 +50,9 @@ export async function getCharacters(userId: string) {
   return list
 }
 
-export async function deleteCharacter(charId: string, userId: string) {
-  await db('character').deleteOne({ _id: charId, userId, kind: 'character' }, {})
-}
+export async function deleteCharacter(userId: string,charId: string) {
+  await db('character').deleteOne({_id: charId, userId, kind: 'character' }, {})
+} 
 
 export async function getCharacterList(charIds: string[]) {
   const list = await db('character')

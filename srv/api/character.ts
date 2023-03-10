@@ -5,7 +5,7 @@ import { loggedIn } from './auth'
 import { handle, StatusError } from './wrap'
 import { handleUpload } from './upload'
 import { PERSONA_FORMATS } from '../../common/adapters'
-
+import {logger} from '../logger'
 const router = Router()
 
 const valid = {
@@ -39,8 +39,8 @@ const createCharacter = handle(async (req) => {
    // summary: body.summary,
     summary: body.summary,
     premium: body.premium.toString()==="true",
-    xp: Number(body.xp),
-    match: body.match.toString()==="true",
+    xp: 0,
+    match: false,
     sampleChat: body.sampleChat,
     scenario: body.scenario,
     avatar,
@@ -91,6 +91,7 @@ const getCharacter = handle(async ({ userId, params }) => {
 
 const deleteCharacter = handle(async ({ userId, params }) => {
   const id = params.id
+  
   await store.characters.deleteCharacter(userId!, id)
   return { success: true }
 })

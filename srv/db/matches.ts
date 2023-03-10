@@ -10,7 +10,7 @@ export async function getMatch(userId: string, id: string) {
   return char
 }
 
-export async function getMatches(userId: string) {
+export async function getMatches(req:any) {
   const list = await db('character').find({ kind: 'character', match: true }).toArray()
   return list
 }

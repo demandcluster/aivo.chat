@@ -1,4 +1,4 @@
-import { Db, MongoClient } from 'mongodb'
+import { Db, MongoClient,ObjectId } from 'mongodb'
 import { config } from '../config'
 import { logger } from '../logger'
 import { AllDoc, Doc } from './schema'
@@ -39,6 +39,7 @@ export function db<T extends AllDoc['kind']>(kind: T) {
 export function catchErr(err?: any): null {
   return null
 }
+
 
 export function isConnected() {
   return connected
