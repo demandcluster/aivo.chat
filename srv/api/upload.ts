@@ -98,8 +98,6 @@ export function getFile(filename: string) {
 }
 
 function createAssetFolder() {
-  return
-  // skip for now
   try {
     readdirSync(config.assetFolder)
   } catch (ex) {

@@ -11,6 +11,7 @@ const TextInput: Component<{
   value?: number | string
   required?: boolean
   class?: string
+  hidden?: boolean
   pattern?: string
   onKeyUp?: (key: string) => void
   onChange?: (ev: Event & { target: Element; currentTarget: HTMLInputElement }) => void
@@ -41,6 +42,7 @@ const TextInput: Component<{
             required={props.required}
             placeholder={placeholder()}
             value={value()}
+            hidden={props.hidden}
             class={'focusable-field w-full rounded-xl px-4 py-2 ' + props.class}
             onkeyup={(ev) => props.onKeyUp?.(ev.key)}
             onchange={(ev) => props.onChange?.(ev)}
@@ -55,6 +57,7 @@ const TextInput: Component<{
           required={props.required}
           placeholder={placeholder()}
           value={value()}
+          hidden={props.hidden}
           class={'focusable-field w-full rounded-xl px-4 py-2 !text-white ' + props.class}
           disabled={props.disabled}
           onInput={(e) => {

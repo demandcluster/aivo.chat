@@ -149,7 +149,13 @@ export async function editChatGenPreset(chatId: string, preset: string) {
   return local.result(next)
 }
 
+// name: string
+// greeting: string
+// scenario: string
+// sampleChat: string
+
 export function createNewChat(char: AppSchema.Character, props: NewChat) {
+ 
   const chat: AppSchema.Chat = {
     _id: v4(),
     characterId: char._id,

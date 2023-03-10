@@ -26,17 +26,31 @@ const CreateChatModal: Component<{
   const user = userStore((s) => s.user)
   const onCreate = (ev: Event) => {
     if (!props.char) return
-
-    const body = getStrictForm(ref, {
+  let body=undefined
+  let attributes=undefined
+   if(user.admin){
+     body = getStrictForm(ref, {
       name: 'string',
       greeting: 'string',
       scenario: 'string',
       sampleChat: 'string',
       schema: ['wpp', 'boostyle', 'sbf'],
     } as const)
+    attributes = getAttributeMap(ref)
+  }else{
+      body = getStrictForm(ref, {
+      name: 'string',
+    } as const)
+   
+    body.scenario = props.char.scenario
+    body.greeting  = props.char.greeting
+    body.sampleChat = props.char.sampleChat
+    attributes = props.char.persona.attributes
+    body.schema = props.char.persona.kind
+  }
 
-    const attributes = getAttributeMap(ref)
 
+ 
     const characterId = props.char._id
 
     const payload = { ...body, overrides: { kind: body.schema, attributes } }
@@ -120,6 +134,7 @@ const CreateChatModal: Component<{
           <PersonaAttributes value={props.char?.persona.attributes} hideLabel />
         </div>
         </Show>
+      
       </form>
     </Modal>
   )
