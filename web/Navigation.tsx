@@ -121,22 +121,8 @@ const GuestNavigation: Component = () => {
           <MessageCircle /> Chats
         </Item>
 
-        <Item href="/settings">
-          <Settings /> Settings
-        </Item>
+       
 
-        <Item href="/presets">
-          <Sliders /> Presets
-        </Item>
-
-        <a
-          class="flex h-12 items-center justify-start gap-4 rounded-xl px-2 hover:bg-[var(--bg-700)]"
-          href="https://github.com/luminai-companion/agn-ai"
-          target="_blank"
-        >
-          <Github />
-          GitHub
-        </a>
       </div>
       <div class="flex h-16 w-full items-center justify-between border-t-2 border-[var(--bg-800)] px-4 ">
         <div class="flex items-center gap-4">

@@ -1,6 +1,6 @@
 import { useNavigate } from '@solidjs/router'
 import { Check, X } from 'lucide-solid'
-import { Component } from 'solid-js'
+import { Component,Show } from 'solid-js'
 import { AppSchema } from '../../../srv/db/schema'
 import Button from '../../shared/Button'
 import Dropdown from '../../shared/Dropdown'
@@ -8,7 +8,7 @@ import Modal from '../../shared/Modal'
 import PersonaAttributes, { getAttributeMap } from '../../shared/PersonaAttributes'
 import TextInput from '../../shared/TextInput'
 import { getStrictForm } from '../../shared/util'
-import { chatStore } from '../../store'
+import { chatStore,userStore } from '../../store'
 
 const options = [
   { value: 'wpp', label: 'W++' },
@@ -23,7 +23,7 @@ const CreateChatModal: Component<{
 }> = (props) => {
   let ref: any
   const nav = useNavigate()
-
+  const user = userStore((s) => s.user)
   const onCreate = (ev: Event) => {
     if (!props.char) return
 
@@ -63,10 +63,12 @@ const CreateChatModal: Component<{
       }
     >
       <form ref={ref}>
+        <Show when={user?.admin}>
         <div class="mb-2 text-sm">
           Optionally modify some of the conversation context. You can override other aspects of the
           character's persona from the conversation after it is created.
         </div>
+        </Show>
         <div class="mb-4 text-sm">
           The information provided here is only applied to the newly created conversation.
         </div>
@@ -81,6 +83,7 @@ const CreateChatModal: Component<{
           }
           placeholder="Untitled"
         />
+        <Show when={user?.admin}>
         <TextInput
           isMultiline
           fieldName="greeting"
@@ -116,6 +119,7 @@ const CreateChatModal: Component<{
         <div class="w-full text-sm">
           <PersonaAttributes value={props.char?.persona.attributes} hideLabel />
         </div>
+        </Show>
       </form>
     </Modal>
   )
