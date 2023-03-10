@@ -1,7 +1,7 @@
 import { v4 } from 'uuid'
 import { AppSchema } from '../../../srv/db/schema'
 import { ImportCharacter } from '../../pages/Character/ImportCharacter'
-import { api, isLoggedIn } from '../api'
+import { api, isLoggedIn,isAdmin } from '../api'
 import { NewCharacter } from '../character'
 import { loadItem, local } from './storage'
 
@@ -41,7 +41,9 @@ export async function deleteCharacter(charId: string) {
 
 export async function editCharacter(charId: string, { avatar: file, ...char }: NewCharacter) {
   const avatar = await getImageData(file)
+ 
   if (isLoggedIn()) {
+  
     const form = new FormData()
     form.append('name', char.name)
     form.append('greeting', char.greeting)

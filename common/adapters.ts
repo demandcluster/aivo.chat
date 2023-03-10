@@ -65,7 +65,7 @@ export type HordeWorker = {
 export const ADAPTER_LABELS: Record<AIAdapter, string> = {
   chai: 'Chai',
   horde: 'Horde',
-  kobold: 'Kobold',
+  kobold: 'AIVOai',
   novel: 'NovelAI',
   ooba: 'Text-Generation-WebUI',
   luminai: 'LuminAI',

@@ -50,6 +50,7 @@ const CreateCharacter: Component = () => {
   }
 
   const onSubmit = (ev: Event) => {
+    
     const body = getStrictForm(ev, {
       kind: PERSONA_FORMATS,
       name: 'string',
@@ -57,17 +58,17 @@ const CreateCharacter: Component = () => {
       scenario: 'string',
       summary: 'string',
       xp: 'number',
-      premium: 'any',
-      match: 'any',
+      premium: 'string',
+      match: 'string',
       sampleChat: 'string',
     } as const)
     const attributes = getAttributeMap(ev)
-
+    
     const persona = {
       kind: body.kind,
       attributes,
     }
-
+    
     const payload = {
       name: body.name,
       scenario: body.scenario,
@@ -80,8 +81,10 @@ const CreateCharacter: Component = () => {
       sampleChat: body.sampleChat,
       persona,
     }
-
+    console.log(payload)
+    
     if (editId) {
+      console.log('going to edit')
       characterStore.editCharacter(editId, payload, () => nav('/character/list'))
     } else {
       characterStore.createCharacter(payload, () => nav('/character/list'))

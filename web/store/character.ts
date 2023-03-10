@@ -48,9 +48,10 @@ export const characterStore = createStore<CharacterState>('character', {
       }
     },
     editCharacter: async (_, characterId: string, char: NewCharacter, onSuccess?: () => void) => {
-      const res = await data.chars.editChracter(characterId, char)
-
-      if (res.error) toastStore.error(`Failed to create character: ${res.error}`)
+     console.log('editting.....')
+      const res = await data.chars.editCharacter(characterId, char)
+    
+      if (res.error) toastStore.error(`Failed to edit character: ${res.error}`)
       if (res.result) {
         toastStore.success(`Successfully updated character`)
         characterStore.getCharacters()
