@@ -6,7 +6,7 @@ import MatchProfile from './MatchProfile'
 const MatchRoutes: Component = () => (
   <Route path="/likes">
     <Route path="/list" component={MatchList} />
-    <Route path="/:id/like" component={MatchList} />
+    <Route path="/:id/match" component={MatchList} />
     <Route path="/:id/profile" component={MatchProfile} />
     </Route>
 

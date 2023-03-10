@@ -10,6 +10,7 @@ import {
   Settings,
   Sliders,
   User,
+  Users
 } from 'lucide-solid'
 import { Component, JSX, Show } from 'solid-js'
 import AvatarIcon from './shared/AvatarIcon'

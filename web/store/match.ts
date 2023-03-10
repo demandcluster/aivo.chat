@@ -35,9 +35,8 @@ export const matchStore = createStore<Matchesstate>('Match', {
       }
     },
     
-    getMatch: async (id,char: any,onSuccess?: ()=> void) => {
-        console.log(char)
-        console.log(id)
+    getMatch: async (_,char: any) => {
+       
         const res = await api.get('/match')
        
         if (res.error) toastStore.error('Failed to retrieve Matches')

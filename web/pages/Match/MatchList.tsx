@@ -27,7 +27,7 @@ const MatchList: Component = () => {
       <Show when={chars.loaded}>
         <div class="flex w-full flex-col gap-2">
           <For each={chars.list}>
-            {(char) => <Match character={char} delete={() => setDelete(char)} />}
+            {(char) => <Match character={char} />}
           </For>
         </div>
         {chars.list.length === 0 ? <NoMatches /> : null}

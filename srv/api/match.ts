@@ -77,9 +77,9 @@ const getMatches = handle(async ({ userId }) => {
 //   return char
 // })
 
-const getMatch = handle(async ({ id }) => {
-  const chars = await store.matches.getMatch(id)
-  
+const getMatch = handle(async ( id ) => {
+  const char = await store.matches.getMatch(id,{})
+
   if (!char) {
     throw new StatusError('Character not found', 404)
   }

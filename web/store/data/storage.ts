@@ -33,7 +33,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
       updatedAt: new Date().toISOString(),
       kind: 'character',
       userId: 'anonymous',
-      name: 'Robot',
+      name: 'Robotski',
       persona: {
         kind: 'boostyle',
         attributes: {
@@ -64,7 +64,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
     novelModel: NOVEL_MODELS.euterpe,
     hordeKey: '',
     hordeModel: 'PygmalionAI/pygmalion-6b',
-    defaultAdapter: 'horde',
+    defaultAdapter: 'kobold',
     koboldUrl: '',
     luminaiUrl: '',
   },
