@@ -14,7 +14,7 @@ ADD common/ ./common/
 ADD srv/ ./srv/
 ADD web/ ./web
 
-RUN pnpm run build:server && pnpm run build && mkdir -p /app/assets && pnpm run init
+RUN pnpm run build:server && pnpm run build && pnpm run init
 
 ENV ADAPTERS=horde,kobold \
   LOG_LEVEL=info \
