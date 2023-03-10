@@ -2,7 +2,7 @@ import { Import, X } from 'lucide-solid'
 import { Component, createSignal } from 'solid-js'
 import Button from '../../shared/Button'
 import FileInput, { FileInputResult, getFileAsString } from '../../shared/FileInput'
-import Modal, { ModalFooter } from '../../shared/Modal'
+import Modal from '../../shared/Modal'
 import { NewCharacter, toastStore } from '../../store'
 
 export type ImportCharacter = NewCharacter & { avatar?: File }
@@ -42,7 +42,24 @@ const ImportCharacterModal: Component<{
   }
 
   return (
-    <Modal show={props.show} title="Import Character" close={props.close}>
+    <Modal
+      show={props.show}
+      title="Import Character"
+      close={props.close}
+      footer={
+        <>
+          <Button schema="secondary" onClick={props.close}>
+            <X />
+            Cancel
+          </Button>
+
+          <Button onClick={onImport}>
+            <Import />
+            Import
+          </Button>
+        </>
+      }
+    >
       <div class="flex flex-col gap-2">
         <FileInput
           label="JSON File"
@@ -59,18 +76,6 @@ const ImportCharacterModal: Component<{
           accept="image/png,image/jpeg"
           onUpdate={updateAvatar}
         />
-
-        <ModalFooter>
-          <Button schema="secondary" onClick={props.close}>
-            <X />
-            Cancel
-          </Button>
-
-          <Button onClick={onImport}>
-            <Import />
-            Import
-          </Button>
-        </ModalFooter>
       </div>
     </Modal>
   )

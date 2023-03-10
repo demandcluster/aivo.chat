@@ -24,8 +24,11 @@ export namespace AppSchema {
     username: string
     hash: string
     admin: boolean
+
     novelApiKey: string
     novelModel: string
+    novelVerified?: boolean
+
     koboldUrl: string
     luminaiUrl: string
     oobaUrl: string
@@ -33,6 +36,8 @@ export namespace AppSchema {
     credits: number
     hordeKey: string
     hordeModel: string
+    hordeName?: string
+    hordeWorkers?: string[]
 
     defaultAdapter: AIAdapter
   }
@@ -78,6 +83,7 @@ export namespace AppSchema {
 
     // Only chat owners can rate messages for now
     rating?: 'y' | 'n' | 'none'
+    adapter?: string
 
     createdAt: string
     updatedAt: string
@@ -161,6 +167,7 @@ export namespace AppSchema {
 
   export interface AppConfig {
     adapters: AIAdapter[]
+    canAuth: boolean
   }
 }
 

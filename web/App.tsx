@@ -18,6 +18,7 @@ import GenerationPresetsPage from './pages/GenerationPresets'
 
 const App: Component = () => {
   const state = userStore()
+  const cfg = settingStore()
   userStore.getProfile()
   userStore.getConfig()
   settingStore.getConfig()
@@ -45,7 +46,9 @@ const App: Component = () => {
                   <Route path="/admin/users" component={UsersPage} />
                 </Show>
               </Show>
-              <Route path="/login" component={LoginPage} />
+              <Show when={cfg.config.canAuth}>
+                <Route path="/login" component={LoginPage} />
+              </Show>
               <Route path="*" component={HomePage} />
             </Routes>
           </div>
