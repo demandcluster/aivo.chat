@@ -41,6 +41,7 @@ export async function createGuestTextStream(opts: {
   user: AppSchema.User
   sender: AppSchema.Profile
   char: AppSchema.Character
+  log: AppLog
   prompt: string
 }) {
   const adapter = getAdapater(opts.chat, opts.user)
@@ -148,12 +149,17 @@ function getAdapater(chat: AppSchema.Chat, user: AppSchema.User) {
 }
 
 async function getGenerationSettings(chat: AppSchema.Chat, adapter: AIAdapter, guest?: boolean) {
+  if (chat.genPreset) {
+    if (isDefaultPreset(chat.genPreset)) return defaultPresets[chat.genPreset]
+    if (guest) {
+      if (chat.genSettings) return chat.genSettings
+      return defaultPresets.basic
+    }
+
+    const preset = await store.users.getUserPreset(chat.genPreset)
+    if (preset) return preset
+  }
+
   if (chat.genSettings) return chat.genSettings
-  if (!chat.genPreset) return defaultPresets.basic
-
-  if (isDefaultPreset(chat.genPreset)) return defaultPresets[chat.genPreset]
-  if (guest) return defaultPresets.basic
-
-  const preset = await store.users.getUserPreset(chat.genPreset)
-  return preset || defaultPresets.basic
+  return defaultPresets.basic
 }
