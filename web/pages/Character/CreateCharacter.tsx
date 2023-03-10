@@ -57,8 +57,8 @@ const CreateCharacter: Component = () => {
       scenario: 'string',
       summary: 'string',
       xp: 'number',
-      premium: 'string',
-      match: 'string',
+      premium: 'any',
+      match: 'any',
       sampleChat: 'string',
     } as const)
     const attributes = getAttributeMap(ev)
