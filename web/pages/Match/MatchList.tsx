@@ -3,23 +3,24 @@ import Button from '../../shared/Button'
 import PageHeader from '../../shared/PageHeader'
 import { Check } from 'lucide-solid'
 import { AppSchema } from '../../../srv/db/schema'
-import { A } from '@solidjs/router'
+import { A,useNavigate } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
-import { matchStore } from '../../store'
-
+import { matchStore,userStore } from '../../store'
 
 const MatchList: Component = () => { 
   const chars = matchStore((s) => s.characters)
   const [showImport, setImport] = createSignal(false)
   const [showDelete, setDelete] = createSignal<AppSchema.Character>()
-  
+  const user = userStore()
+  const navigate=useNavigate()
   createEffect(() => {
-    matchStore.getMatches()
+    matchStore.getMatches(user.userId)
   })
 
-  const createMatch= (charId: string) => {
+  const createMatch=async (charId: string) => {
     const char = chars.list.find((c) => c._id === charId)
-    matchStore.createMatch(char)
+    matchStore.createMatch(char).then(() => navigate('/character/list'))
+   
   }
 
   return (

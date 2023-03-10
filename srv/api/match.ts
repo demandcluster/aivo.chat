@@ -5,6 +5,7 @@ import {v4} from 'uuid'
 import { loggedIn } from './auth'
 import { handle, StatusError } from './wrap'
 import { handleUpload } from './upload'
+import {now} from '../db/util'
 import { PERSONA_FORMATS } from '../../common/adapters'
 
 const router = Router()
@@ -17,6 +18,7 @@ const valid = {
   sampleChat: 'string',
   match: "boolean",
   xp: "number",
+
   premium: "boolean",
   summary: "string", 
   persona: {
@@ -32,8 +34,15 @@ const getMatches = handle(async (req ) => {
    
     const {userId}=req?.user||{userId:""}
   const chars = await store.matches.getMatches(userId)
-  
-  return { characters: chars }
+  const ownChars = await store.characters.getCharacters(userId)
+  // return all chars that are now in ownChars
+    const newChars = chars.filter((char) => {
+        return !ownChars.some((ownChar) => {
+            return ownChar.name === char.name
+        })
+    })
+
+  return { characters: newChars }
 })
 const createCharacter = handle(async (req) => {
    // const body = await handleUpload(req, { ...valid, persona: 'string' })
@@ -48,6 +57,8 @@ const createCharacter = handle(async (req) => {
         newChar.xp=0
         newChar._id=v4()
         newChar.userId=userId
+        newChar.createdAt=now()
+        newChar.updatedAt=now()
     }
      if(newChar?._id){
      const char = await store.characters.createCharacter(userId!,newChar)

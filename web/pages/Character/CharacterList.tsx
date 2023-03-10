@@ -1,7 +1,7 @@
 import { Component, createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 import Button from '../../shared/Button'
 import PageHeader from '../../shared/PageHeader'
-import { Copy, Download, Edit, Import, Plus, Save, Trash, X } from 'lucide-solid'
+import { Copy, Download, Edit, Import, Plus, Save, Trash,User, X } from 'lucide-solid'
 import { AppSchema } from '../../../srv/db/schema'
 import { A } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
@@ -11,6 +11,7 @@ import DeleteCharacterModal from './DeleteCharacter'
 import Modal from '../../shared/Modal'
 import Dropdown from '../../shared/Dropdown'
 import { exportCharacter } from '../../../common/prompt'
+import {userStore} from '../../store'
 
 const CharacterList: Component = () => {
   const chars = characterStore((s) => s.characters)
@@ -18,6 +19,7 @@ const CharacterList: Component = () => {
   const [showImport, setImport] = createSignal(false)
   const [showDelete, setDelete] = createSignal<AppSchema.Character>()
   const [char, setChar] = createSignal<AppSchema.Character>()
+  const {user} = userStore()
 
   const onSave = (char: NewCharacter) => {
     characterStore.createCharacter(char, () => setImport(false))
@@ -36,6 +38,7 @@ const CharacterList: Component = () => {
       </Show>
       <Show when={chars.loaded}>
         <div class="flex w-full flex-col gap-2">
+          <Show when={user?.admin}>
           <div class="flex w-full justify-end gap-2">
             <Button onClick={() => setImport(true)}>
               <Import />
@@ -48,10 +51,12 @@ const CharacterList: Component = () => {
               </Button>
             </A>
           </div>
+          </Show>
           <For each={chars.list}>
             {(char) => (
               <Character
                 character={char}
+                user={user}
                 delete={() => setDelete(char)}
                 download={() => setChar(char)}
               />
@@ -60,8 +65,10 @@ const CharacterList: Component = () => {
         </div>
         {chars.list.length === 0 ? <NoCharacters /> : null}
       </Show>
+      <Show when = {user?.admin}>
       <ImportCharacterModal show={showImport()} close={() => setImport(false)} onSave={onSave} />
       <DownloadModal show={!!char()} close={() => setChar()} char={char()} />
+      </Show>
       <DeleteCharacterModal
         char={showDelete()}
         show={!!showDelete()}
@@ -73,6 +80,7 @@ const CharacterList: Component = () => {
 
 const Character: Component<{
   character: AppSchema.Character
+  user: Function
   delete: () => void
   download: () => void
 }> = (props) => {
@@ -88,6 +96,7 @@ const Character: Component<{
         </A>
       </div>
       <div class="flex flex-row items-center justify-center gap-2 sm:w-3/12">
+       <Show when={props.user?.admin}>
         <a onClick={props.download}>
           <Download class="cursor-pointer text-white/25 hover:text-white" />
         </a>
@@ -98,8 +107,15 @@ const Character: Component<{
         <A href={`/character/create/${props.character._id}`}>
           <Copy class="cursor-pointer text-white/25 hover:text-white" />
         </A>
-
+        </Show>
+        <Show when={props.character.name!=="Aiva"}>
         <Trash class="cursor-pointer text-white/25 hover:text-white" onClick={props.delete} />
+        
+        <A href={`/likes/${props.character._id}/profile`}>
+          <User  class="cursor-pointer text-white/25 hover:text-white" />
+        </A>
+        </Show>
+        
       </div>
     </div>
   )

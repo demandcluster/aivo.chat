@@ -15,7 +15,7 @@ const MatchProfile: Component = () => {
     const { id } = useParams()
     //const [showCreate, setCreate] = createSignal(false)
     const chars = matchStore((s) => s.characters)
-  console.log(chars)
+ 
     createEffect(() => {
         matchStore.getMatch(id)
       })
