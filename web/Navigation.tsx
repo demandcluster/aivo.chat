@@ -112,7 +112,7 @@ const GuestNavigation: Component = () => {
         </Item>
 
         <Item href="/character/list">
-          <Bot /> Characters
+          <Bot /> Matches
         </Item>
 
         <Item href="/chats">

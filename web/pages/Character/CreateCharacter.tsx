@@ -27,6 +27,7 @@ const matchoptions = [
   { id: "true", label: 'Matchable' },
   { id: "false", label: 'Hidden' },
 ]
+
 const CreateCharacter: Component = () => {
   const { editId, duplicateId } = useParams()
   const srcId = editId || duplicateId || ''
@@ -49,16 +50,15 @@ const CreateCharacter: Component = () => {
   }
 
   const onSubmit = (ev: Event) => {
-    console.log(ev)
     const body = getStrictForm(ev, {
       kind: PERSONA_FORMATS,
       name: 'string',
-      summary: 'string',
-      xp: 'number',
-      match: 'string',
-      premium: 'string',
       greeting: 'string',
       scenario: 'string',
+      summary: 'string',
+      xp: 'number',
+      premium: 'string',
+      match: 'string',
       sampleChat: 'string',
     } as const)
     const attributes = getAttributeMap(ev)
@@ -72,17 +72,16 @@ const CreateCharacter: Component = () => {
       name: body.name,
       scenario: body.scenario,
       avatar: avatar(),
-      greeting: body.greeting,
-      xp: body.xp,
-      match: Boolean(body.match),
-      premium: Boolean(body.premium),
       summary: body.summary,
+      xp: body.xp,
+      match: body.match,
+      premium: body.premium,
+      greeting: body.greeting,
       sampleChat: body.sampleChat,
       persona,
     }
 
     if (editId) {
-      
       characterStore.editCharacter(editId, payload, () => nav('/character/list'))
     } else {
       characterStore.createCharacter(payload, () => nav('/character/list'))
@@ -131,6 +130,7 @@ const CreateCharacter: Component = () => {
             onUpdate={updateFile}
           />
         </div>
+
         <TextInput 
            fieldName="summary"
            label="Summary"
@@ -179,7 +179,6 @@ const CreateCharacter: Component = () => {
           helperText="Start XP of character (best to leave at 0)"
           value={state.edit?.xp}
         />
-          
         <TextInput
           fieldName="scenario"
           label="Scenario"

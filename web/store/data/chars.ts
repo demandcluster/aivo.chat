@@ -46,13 +46,17 @@ export async function editChracter(charId: string, { avatar: file, ...char }: Ne
     form.append('name', char.name)
     form.append('greeting', char.greeting)
     form.append('scenario', char.scenario)
+    form.append('summary', char.summary)
+    form.append('match', char.match)
+    form.append('xp', char.xp)
+    form.append('premium', char.premium)
     form.append('persona', JSON.stringify(char.persona))
     form.append('sampleChat', char.sampleChat)
     if (avatar) {
       form.append('avatar', avatar)
     }
 
-    const res = await api.upload(`/character/${char}`, form)
+    const res = await api.upload(`/character/${charId}`, form)
     return res
   }
 
@@ -76,6 +80,10 @@ export async function createCharacter(char: ImportCharacter) {
     form.append('name', char.name)
     form.append('greeting', char.greeting)
     form.append('scenario', char.scenario)
+    form.append('summary', char.summary)
+    form.append('match', char.match)
+    form.append('xp', char.xp)
+    form.append('premium', char.premium)
     form.append('persona', JSON.stringify(char.persona))
     form.append('sampleChat', char.sampleChat)
     if (char.avatar) {

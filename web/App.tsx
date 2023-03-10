@@ -31,6 +31,7 @@ const App: Component = () => {
           <div class="mx-auto h-full w-full max-w-5xl px-2 pt-2 sm:px-3 sm:pt-4 ">
             <Routes>
               <CharacterRoutes />
+              <MatchRoutes/>
               <Route path="/chats" component={ChatList} />
               <Route path="/chat" component={ChatDetail} />
               <Route path="/chat/:id" component={ChatDetail} />
@@ -39,16 +40,6 @@ const App: Component = () => {
               <Route path="/profile" component={ProfilePage} />
               <Route path="/settings" component={Settings} />
               <Show when={state.loggedIn}>
-              <Show when={state.loggedIn}>
-                <Route path="/chats" component={ChatList} />
-                <Route path="/chat" component={ChatDetail} />
-                <Route path="/chat/:id" component={ChatDetail} />
-                <CharacterRoutes />
-                <MatchRoutes/>
-                <Route path="/" component={HomePage} />
-                <Route path="/presets" component={GenerationPresetsPage} />
-                <Route path="/profile" component={ProfilePage} />
-                <Route path="/settings" component={Settings} />
                 <Route path="/invites" component={InvitesPage} />
                 <Show when={state.user?.admin}>
                   <Route path="/admin/users" component={UsersPage} />

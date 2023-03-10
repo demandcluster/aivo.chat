@@ -1,17 +1,15 @@
 import { Route } from '@solidjs/router'
-import { Component } from 'solid-js'
-//import CharacterChats from './CharacterChats'
-//import CreateCharacter from './CreateCharacter'
+import {Component} from 'solid-js'
 import MatchList from './MatchList'
+import MatchProfile from './MatchProfile'
 
-//<Route path="/create" component={CreateCharacter} />
-//<Route path="/create/:duplicateId" component={CreateCharacter} />
 const MatchRoutes: Component = () => (
   <Route path="/likes">
-    
     <Route path="/list" component={MatchList} />
+    <Route path="/:id/like" component={MatchList} />
+    <Route path="/:id/profile" component={MatchProfile} />
+    </Route>
 
-  </Route>
 )
 
 export default MatchRoutes

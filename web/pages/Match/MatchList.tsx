@@ -43,7 +43,7 @@ const Match: Component<{ character: AppSchema.Character; delete: () => void }> =
       <div class="flex h-12 w-full flex-row items-center gap-4 rounded-xl bg-[var(--bg-800)]">
         <A
           class="ml-4 flex h-3/4 cursor-pointer items-center rounded-2xl  sm:w-9/12"
-          href={`/character/${props.character._id}/chats`}
+          href={`/likes/${props.character._id}/profile`}
         >
           <AvatarIcon avatarUrl={props.character.avatar} class="mx-4 h-10 w-10 rounded-md" />
           <div class="text-lg font-bold">{props.character.name}</div>
@@ -51,7 +51,7 @@ const Match: Component<{ character: AppSchema.Character; delete: () => void }> =
       </div>
       <div class="flex flex-row items-center justify-center gap-2 sm:w-3/12">
         <a
-          href={`/likes/${props.character._id}/profile`}
+          href={`/likes/${props.character._id}/match`}
          >
           <Check class="cursor-pointer text-white/25 hover:text-white" />
         </a>
