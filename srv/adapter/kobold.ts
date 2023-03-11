@@ -1,7 +1,7 @@
 import needle from 'needle'
-import { defaultPresets } from '../../../common/presets'
-import { logger } from '../../logger'
-import { trimResponse } from '../chat/common'
+import { defaultPresets } from '../../common/presets'
+import { logger } from '../logger'
+import { trimResponse } from '../api/chat/common'
 import { ModelAdapter } from './type'
 
 const REQUIRED_SAMPLERS = defaultPresets.basic.order

@@ -1,6 +1,6 @@
 import needle from 'needle'
-import { logger } from '../../logger'
-import { joinParts, trimResponse } from '../chat/common'
+import { logger } from '../logger'
+import { joinParts, trimResponse } from '../api/chat/common'
 import { ModelAdapter } from './type'
 
 const MAX_NEW_TOKENS = 196

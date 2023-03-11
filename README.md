@@ -4,7 +4,7 @@
 
 AI Agnostic Chat
 
-[Try it out!](https://agn.carlossus.com)
+[Try it out!](https://agnai.chat)
 
 Based upon the early work of https://github.com/PygmalionAI/galatea-ui.
 
@@ -35,7 +35,7 @@ See the [roadmap here](https://github.com/users/sceuick/projects/1).
 
 ## Quick Start for Users
 
-You can visit the hosted version at [Agn.carlossus.com](https://agn.carlossus.com)
+You can visit the hosted version at [agnai.chat](https://agnai.chat)
 
 > CAUTION: This project is in an early stage of development. You may experience breaking changes between updates.
 
@@ -78,6 +78,16 @@ Ultimately the design goals for this project are my own.
 - Avoiding native dependencies and Docker to be easy for non-technical people to install and run
 
 ## For Developers
+
+### Recommended Development Tooling
+
+I'd highly recommend using [VSCode](https://code.visualstudio.com/) with the following extensions:
+
+- `Prettier - Code formatter`: For auto-formatting
+- `Tailwind CSS Intellisense`: For auto-completion and intellisense with Tailwind CSS classes
+- And adding `"editor.formatOnSave": true` to your VSCode `settings.json` to auto-format with Prettier
+
+When using `pnpm start`, the Node.JS server is run using `--inspect`. This means you can use various [Inspector Clients](https://nodejs.org/en/docs/guides/debugging-getting-started/#inspector-clients) for debugging.
 
 ### Tech Stack
 
