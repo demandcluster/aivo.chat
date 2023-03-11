@@ -65,7 +65,7 @@ const ImportCharacterModal: Component<{
         <FileInput
           label="JSON File"
           fieldName="json"
-          accept="text/json"
+          accept="text/json,application/json"
           helperText="Supported formats: Agnaistic, CAI, TavernAI, TextGen, Pygmalion"
           required
           onUpdate={updateJson}
@@ -113,6 +113,8 @@ type ImportKeys = {
 
 function jsonToCharacter(json: any): NewCharacter {
   const format = getImportFormat(json)
+
+  console.log(json)
 
   if (format === 'agnai') {
     return json
