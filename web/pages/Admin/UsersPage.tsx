@@ -67,7 +67,10 @@ const InfoModel: Component<{ show: boolean; close: () => void; userId: string }>
       <div class="flex flex-col gap-4">
         <TextInput fieldName="id" label="User ID" value={state.info?.userId} disabled />
         <TextInput fieldName="handle" label="Handle" value={state.info?.handle} disabled />
+        <TextInput fieldName="credits" label="Credits" value={state.info?.membership.credits} disabled />
+        <TextInput fieldName="premium" label="Premium" value={state.info?.membership.premium} disabled />
         <TextInput fieldName="chats" label="Chats" value={state.info?.chats} disabled />
+
         <TextInput
           fieldName="characters"
           label="Characters"

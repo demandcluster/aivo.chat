@@ -85,6 +85,7 @@ export async function createUser(newUser: NewUser, admin?: boolean) {
     admin: !!admin,
     novelApiKey: '',
     premium: false,
+    premiumUntil: 0,
     credits: 0,
     defaultAdapter: 'kobold',
     koboldUrl: 'https://ai.aivo.chat',

@@ -10,7 +10,7 @@ import {
   Settings,
   Sliders,
   User,
-  Users
+  Users,
 } from 'lucide-solid'
 import { Component, createMemo, JSX, Show } from 'solid-js'
 import AvatarIcon from './shared/AvatarIcon'
@@ -59,9 +59,13 @@ const UserNavigation: Component = () => {
       <Item href="/profile">
         <User /> Profile
       </Item>
-
+    <Show when={user.loggedIn}>
+      <Item href="/likes/list">
+        <Users /> Likes
+      </Item>
+    </Show>
       <Item href="/character/list">
-        <Bot /> Characters
+        <Bot /> Matches
       </Item>
 
       <Item href="/chats">
@@ -76,24 +80,18 @@ const UserNavigation: Component = () => {
         <Settings /> Settings
       </Item>
 
+    <Show when={user.user?.admin}>
       <Item href="/presets">
         <Sliders /> Presets
       </Item>
-
+    </Show>
       <Show when={user.user?.admin}>
         <Item href="/admin/users">
           <Eye /> Users
         </Item>
       </Show>
 
-      <a
-        class="flex h-12 items-center justify-start gap-4 rounded-xl px-2 hover:bg-[var(--bg-700)]"
-        href="https://github.com/luminai-companion/agn-ai"
-        target="_blank"
-      >
-        <Github />
-        GitHub
-      </a>
+    
     </>
   )
 }
@@ -112,30 +110,20 @@ const GuestNavigation: Component = () => {
       <Item href="/profile">
         <User /> Profile
       </Item>
-
-        <Item href="/character/list">
-          <Bot /> Matches
-        </Item>
+     
+      <Item href="/character/list">
+        <Bot /> Matches
+      </Item>
 
       <Item href="/chats">
         <MessageCircle /> Chats
       </Item>
 
-       
+      <Item href="/settings">
+        <Settings /> Settings
+      </Item>
 
-      </div>
-      <div class="flex h-16 w-full items-center justify-between border-t-2 border-[var(--bg-800)] px-4 ">
-        <div class="flex items-center gap-4">
-          <AvatarIcon avatarUrl={state.profile?.avatar} />
-          <div>{state.profile?.handle === 'You' ? 'Guest' : state.profile?.handle}</div>
-        </div>
-        <Show when={state.loggedIn}>
-          <div onClick={userStore.logout}>
-            <LogOut class="cursor-pointer text-white/50 hover:text-white" />
-          </div>
-        </Show>
-      </div>
-    </div>
+    </>
   )
 }
 

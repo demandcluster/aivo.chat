@@ -34,6 +34,7 @@ export namespace AppSchema {
     oobaUrl: string
     premium: boolean
     credits: number
+    premiumUntil?: number
     oaiKey: string
 
     hordeKey: string

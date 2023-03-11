@@ -20,7 +20,6 @@ const CharacterList: Component = () => {
   const [showDelete, setDelete] = createSignal<AppSchema.Character>()
   const [char, setChar] = createSignal<AppSchema.Character>()
   const {user} = userStore()
-
   const onImport = (char: NewCharacter) => {
     characterStore.createCharacter(char, () => setImport(false))
   }
@@ -65,7 +64,7 @@ const CharacterList: Component = () => {
         </div>
         {chars.list.length === 0 ? <NoCharacters /> : null}
       </Show>
-      <Shown when={user.admin}>
+      <Show when={user.admin}>
       <ImportCharacterModal show={showImport()} close={() => setImport(false)} onSave={onImport} />
       <DownloadModal show={!!char()} close={() => setChar()} char={char()} />
       </Show>
