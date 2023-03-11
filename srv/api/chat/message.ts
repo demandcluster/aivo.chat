@@ -154,7 +154,8 @@ export const summarizeChat = handle(async (req) => {
   const chatId = req.params.id
   const entities = await getResponseEntities(chatId, req.userId!)
   const prompt = await createPrompt(entities)
-
+  const maxTokens = 2048
+ 
   const summary = await post({ url: '/summarize', body: { prompt }, host: PY_URL })
   return { summary }
 })

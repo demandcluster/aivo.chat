@@ -152,7 +152,7 @@ const Settings: Component = () => {
             />
           </Show>
 
-          <Show when={cfg.config.adapters.includes('openai')}>
+          
             <Divider />
             <TextInput
               fieldName="oaiKey"
@@ -164,7 +164,7 @@ const Settings: Component = () => {
             <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('openai')}>
               Delete OpenAI Key
             </Button>
-          </Show>
+         
 
           <Show when={cfg.config.adapters.includes('novel')}>
             <Divider />
