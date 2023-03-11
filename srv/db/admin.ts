@@ -18,6 +18,6 @@ export async function getUserInfo(userId: string) {
   const user = await db('user').findOne({ _id: userId })
   const chats = await db('chat').countDocuments({ userId })
   const characters = await db('character').countDocuments({ userId })
-  const premiumInfo = {credits: user.credits, premium: user.premium, premiumUntil: user.premiumUntil||0}
+  const premiumInfo = {credits: user?.credits||0, premium: user?.premium||false, premiumUntil: user?.premiumUntil||0}
   return { userId, chats, characters, membership: premiumInfo, handle: profile?.handle, avatar: profile?.avatar }
 }
