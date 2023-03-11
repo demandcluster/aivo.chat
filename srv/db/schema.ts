@@ -34,6 +34,8 @@ export namespace AppSchema {
     oobaUrl: string
     premium: boolean
     credits: number
+    oaiKey: string
+
     hordeKey: string
     hordeModel: string
     hordeName?: string
@@ -163,10 +165,16 @@ export namespace AppSchema {
     topA: number
     tailFreeSampling: number
     order?: number[]
+
+    frequencyPenalty?: number
+    presencePenalty?: number
+    gaslight?: string
+    oaiModel?: string
   }
 
   export interface AppConfig {
     adapters: AIAdapter[]
+    version: string
     canAuth: boolean
   }
 }

@@ -93,6 +93,7 @@ export async function createUser(newUser: NewUser, admin?: boolean) {
     oobaUrl: '',
     hordeModel: 'KoboldAI/OPT-13B-Erebus',
     hordeKey: '',
+    oaiKey: '',
   }
 
   const startChar: AppSchema.Character = {

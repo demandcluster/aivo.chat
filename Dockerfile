@@ -6,6 +6,8 @@ VOLUME [ "/app/assets" ]
 
 RUN npm install pnpm -g
 
+ARG SHA=unknown
+
 ADD package.json pnpm-lock.yaml ./
 RUN pnpm i --frozen-lockfile
 
@@ -14,9 +16,9 @@ ADD common/ ./common/
 ADD srv/ ./srv/
 ADD web/ ./web
 
-RUN pnpm run build:server && pnpm run build && pnpm run init
+RUN pnpm run build:server && pnpm run build && mkdir -p /app/assets && echo "${SHA}" > /app/version.txt
 
-ENV ADAPTERS=horde,kobold \
+ENV ADAPTERS=horde,novel,kobold,luminai,openai \
   LOG_LEVEL=info \
   INITIAL_USER=administrator \
   DB_NAME=aivo \
