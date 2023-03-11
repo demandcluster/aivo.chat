@@ -45,7 +45,7 @@ export const STARTER_CHARACTER: AppSchema.Character = {
   match: false,
   premium: false,
   persona: {
-    kind: 'boostyle',
+    kind: 'wpp',
     attributes: {
       species: ['chatbot'],
       sex: ['incapable'],
