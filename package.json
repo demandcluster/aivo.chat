@@ -15,7 +15,7 @@
     "build:server:watch": "tsc -p srv.tsconfig.json -w",
     "format": "prettier web --check && prettier srv --check",
     "format:fix": "prettier web --write && prettier srv --write",
-    "init": "cp -r web/assets/* dist/assets",
+    "init": "cp -r web/assets/* dist/assets/",
     "model": "python -m flask --app model/app.py run --host 0.0.0.0 -p 5001",
     "model:watch": "nodemon -e py --watch model --exec \"python -m flask --app model/app.py run --host 0.0.0.0 -p 5001\"",
     "server": "node srv/start.js",

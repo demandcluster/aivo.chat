@@ -82,6 +82,7 @@ export async function create(
     overrides: props.overrides || char.persona,
     createdAt: now(),
     updatedAt: now(),
+    genPreset: "basic",
     messageCount: props.greeting ? 1 : 0,
   }
 

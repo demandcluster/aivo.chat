@@ -37,7 +37,7 @@ export const handleKobold: ModelAdapter = async function* ({
   }
 
   const endTokens = ['END_OF_DIALOG']
-console.log('body:',body)
+
   const resp = await needle('post', `${user.koboldUrl}/api/v1/generate`, body, {
     json: true,
   }).catch((err) => ({ error: err }))

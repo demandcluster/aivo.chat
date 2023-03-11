@@ -3,7 +3,7 @@ import { mkdirpSync } from 'mkdirp'
 import { Request } from 'express'
 import { rename, writeFile } from 'fs/promises'
 import { basename, dirname, extname, resolve } from 'path'
-import { createReadStream, mkdirSync, readdirSync } from 'fs'
+import { createReadStream, mkdirSync, readdirSync,existsSync } from 'fs'
 import { v4 } from 'uuid'
 import { assertValid, Validator } from 'frisker'
 import { config } from '../config'
@@ -97,13 +97,11 @@ export function getFile(filename: string) {
   return { stream, type }
 }
 
-function createAssetFolder() {
-  try {
-    readdirSync(config.assetFolder)
-  } catch (ex) {
-    mkdirpSync(config.assetFolder)
+  function createAssetFolder() {
+    if (!existsSync(config.assetFolder)) {
+      mkdirpSync(config.assetFolder);
+    }
   }
-}
 
 function getType(filename: string) {
   const ext = extname(filename)

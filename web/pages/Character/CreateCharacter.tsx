@@ -81,10 +81,10 @@ const CreateCharacter: Component = () => {
       sampleChat: body.sampleChat,
       persona,
     }
-    console.log(payload)
+   
     
     if (editId) {
-      console.log('going to edit')
+     
       characterStore.editCharacter(editId, payload, () => nav('/character/list'))
     } else {
       characterStore.createCharacter(payload, () => nav('/character/list'))

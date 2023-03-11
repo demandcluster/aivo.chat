@@ -30,7 +30,7 @@ const MatchProfile: Component = () => {
             <div>Loading...</div>
           </Show>
           <Show when={chars.loaded}>
-           <div class="flex flex-columns"> 
+           <div class="flex flex-row min-w-full"> 
           <ProfileCard href={`/likes/${chars.list._id}/profile}`} character={chars.list}/>
             </div>
             

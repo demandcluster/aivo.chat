@@ -40,7 +40,7 @@ export async function deleteCharacter(charId: string) {
 }
 
 
-export async function editChracter(charId: string, { avatar: file, ...char }: NewCharacter) {
+export async function editCharacter(charId: string, { avatar: file, ...char }: NewCharacter) {
   if (isLoggedIn()) {
   
     const form = new FormData()
