@@ -48,9 +48,79 @@ const HomePage: Component = () => {
           be stored on any servers.
         </p>
         <p>
-          It is a bit pointless to use AIVO without an account though, you will not get any likes...
+          If you choose to register, your data will be stored and accessible on any devices you
+          login with.
         </p>
-       </div>
+        <div class="text-2xl font-bold">Getting Started</div>
+
+        <div class="text-xl font-bold">Quick Start</div>
+        <div class="lg">
+          <p>
+            A character has been created for you! You can head to the{' '}
+            <A href="/character/list" class="link">
+              Characters
+            </A>{' '}
+            page, choose a character and create a conversation to get started!
+          </p>
+          <p>
+            You can edit the character from the Characters page or from the Chat. This may be
+            helpful to see an example of how to author your own character.
+          </p>
+        </div>
+
+        <div class="lg">
+          <p>
+            Head over to the{' '}
+            <A href="/settings" class="link">
+              settings
+            </A>{' '}
+            page and choose your AI service. It is configured to use{' '}
+            <a href="https://aihorde.net" target="_blank">
+              Pygmalion 6B on AI Horde
+            </a>{' '}
+            by default.
+          </p>
+          <p>
+            <span class="font-bold">Available services:</span>{' '}
+            {cfg.adapters.map((a) => a.label).join(', ')}.
+          </p>
+        </div>
+        <div class="text-lg font-bold"> Using Kobold AI</div>
+        <div>
+          If you're self-hosting KoboldAI or using Colab, you can use the LocalTunnel URL in the{' '}
+          <b>Kobold URL</b> field in the Settings page.
+        </div>
+        <div class="text-lg font-bold"> Using AI Horde</div>
+        <div>
+          By default we use anonymous access and the <b>Pygmalion 6B</b> model. You can provide your
+          API key or change the model in the Settings page.
+        </div>
+        <div class="text-lg font-bold"> Using Novel AI</div>
+        <div>
+          You can provide your API key and choose between Euterpe and Krake in the settings page.
+          Visit the{' '}
+          <a
+            href="https://github.com/luminai-companion/agn-ai/blob/dev/instructions/novel.md"
+            target="_blank"
+            class="link"
+          >
+            instructions page
+          </a>{' '}
+          to learn how to retrieve your API key.
+        </div>
+        <div class="text-2xl font-bold">Create a Character</div>
+        <div>
+          Once you've chosen your AI service you can head to the{' '}
+          <A class="link" href="/character/create">
+            Character Creation
+          </A>{' '}
+          page to create a character to start chatting!
+        </div>
+        <div class="text-lg">
+          <p>If you have feature suggestions or have an issue please let me know on GitHub!</p>
+        </div>
+        <div class="text-xl">Enjoy!</div>
+      </div>
     </div>
   )
 }
