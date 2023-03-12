@@ -63,6 +63,7 @@ function onMessage(msg: MessageEvent<any>) {
 }
 
 function onConnected() {
+  console.log('connected')
   const token = getAuth()
   if (!token) return
   publish({ type: 'login', token })

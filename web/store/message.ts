@@ -85,6 +85,12 @@ export const msgStore = createStore<MsgStore>('messages', {
         yield { partial: undefined }
         return
       }
+      const user = userStore()
+      if((user.user.credits<=10&&!user.user.premium)||user.user.credits<=5&&user.user.premium && user.loggedIn){
+        toastStore.error('Could not send message: Not enough credits. Wait a few minutes or buy more credits.')
+        yield { partial: undefined }
+        return
+      }
 
       yield { partial: '', waiting: chatId }
 

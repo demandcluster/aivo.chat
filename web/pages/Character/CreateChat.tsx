@@ -8,7 +8,7 @@ import Modal from '../../shared/Modal'
 import PersonaAttributes, { getAttributeMap } from '../../shared/PersonaAttributes'
 import TextInput from '../../shared/TextInput'
 import { getStrictForm } from '../../shared/util'
-import { characterStore, chatStore } from '../../store'
+import { characterStore, chatStore,userStore } from '../../store'
 
 const options = [
   { value: 'wpp', label: 'W++' },
@@ -24,7 +24,8 @@ const CreateChatModal: Component<{
   let ref: any
 
   const nav = useNavigate()
-  const user = userStore((s) => s.user)  const [selectedChar, setChar] = createSignal<AppSchema.Character>()
+  const user = userStore()  
+  const [selectedChar, setChar] = createSignal<AppSchema.Character>()
   const state = characterStore((s) => ({ chars: s.characters.list, loaded: s.characters.loaded }))
 
   const char = createMemo(() => {
@@ -46,17 +47,35 @@ const CreateChatModal: Component<{
     const character = selectedChar() || props.char
     if (!character) return
 
-    const body = getStrictForm(ref, {
-      name: 'string',
-      greeting: 'string',
-      scenario: 'string',
-      sampleChat: 'string',
-      schema: ['wpp', 'boostyle', 'sbf'],
-    } as const)
-
-    const attributes = getAttributeMap(ref)
-
-    const characterId = props.char._id
+    let body    
+    const characterId = character._id
+    if(user.admin){
+      body = getStrictForm(ref, {
+        name: 'string',
+        greeting: 'string',
+        scenario: 'string',
+        sampleChat: 'string',
+        schema: ['wpp', 'boostyle', 'sbf'],
+      } as const)
+      const attributes = getAttributeMap(ref)
+      body = getStrictForm(ref, {
+       name: 'string',
+       greeting: 'string',
+       scenario: 'string',
+       sampleChat: 'string',
+       schema: ['wpp', 'boostyle', 'sbf'],
+     } as const)
+     attributes = getAttributeMap(ref)
+   }else{
+       body = getStrictForm(ref, {
+       name: 'string',
+     } as const)
+     body.scenario = character.scenario
+     body.greeting  = character.greeting
+     body.sampleChat = character.sampleChat
+     attributes =character.persona.attributes
+     body.schema = character.persona.kind
+    }
 
     const payload = { ...body, overrides: { kind: body.schema, attributes } }
     chatStore.createChat(characterId, payload, (id) => nav(`/chat/${id}`))

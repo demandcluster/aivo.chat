@@ -58,7 +58,8 @@ export function createPromptSurrounds(opts: Pick<PromptOpts, 'chat' | 'char' | '
     chat.sampleChat.includes('<START>') ||
     chat.greeting.includes('<START>')
 
-  const pre: string[] = [`${char.name}'s Persona: ${formatCharacter(char.name, chat.overrides)}`]
+  const pre: string[] = []
+  pre.push(`${char.name}'s Persona: ${formatCharacter(char.name, chat.overrides)}`)
 
   if (chat.scenario) pre.push(`Scenario: ${chat.scenario}`)
 

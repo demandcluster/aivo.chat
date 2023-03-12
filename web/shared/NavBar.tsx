@@ -2,6 +2,7 @@ import { Menu } from 'lucide-solid'
 import { Component } from 'solid-js'
 import { A } from '@solidjs/router'
 import { settingStore } from '../store'
+import logo from '../assets/logo.png'
 
 const NavBar: Component = () => {
   return (
@@ -12,7 +13,7 @@ const NavBar: Component = () => {
         </div>
         <div>
           <A href="/">
-            <span class="rounded-xl bg-[var(--hl-900)] py-2 px-4">AIVO</span>
+            <img width="100px" class="px-4 ph-1 pt-2" src={logo}/>
           </A>
         </div>
         <div class="w-8 lg:hidden"></div>

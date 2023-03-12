@@ -5,7 +5,7 @@ export type GenerationPreset = keyof typeof defaultPresets
 
 export type GenMap = { [key in keyof Omit<AppSchema.GenSettings, 'name'>]: string }
 
-const MAX_TOKENS = 80
+const MAX_TOKENS = 120
 
 export const presetValidator = {
   name: 'string',
@@ -32,10 +32,10 @@ export const defaultPresets = {
     name: 'Simple',
     maxTokens: MAX_TOKENS,
     maxContextLength: 2048,
-    repetitionPenalty: 1.08,
-    repetitionPenaltySlope: 0.9,
-    repetitionPenaltyRange: 1024,
-    temp: 0.65,
+    repetitionPenalty: 1.085,
+    repetitionPenaltySlope: 1,
+    repetitionPenaltyRange: 512,
+    temp: 0.58,
     topK: 0,
     topP: 0.9,
     typicalP: 1,

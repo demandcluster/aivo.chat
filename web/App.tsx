@@ -32,6 +32,9 @@ const App: Component = () => {
           <div class="mx-auto h-full w-full max-w-5xl px-2 pt-2 sm:px-3 sm:pt-4 ">
             <Routes>
               <CharacterRoutes />
+              <Show when={state.loggedIn}>
+              <MatchRoutes />
+              </Show>
               <Route path="/chats" component={CharacterChats} />
               <Route path="/chat" component={ChatDetail} />
               <Route path="/chat/:id" component={ChatDetail} />

@@ -64,7 +64,7 @@ const CharacterList: Component = () => {
         </div>
         {chars.list.length === 0 ? <NoCharacters /> : null}
       </Show>
-      <Show when={user.admin}>
+      <Show when={user?.admin}>
       <ImportCharacterModal show={showImport()} close={() => setImport(false)} onSave={onImport} />
       <DownloadModal show={!!char()} close={() => setChar()} char={char()} />
       </Show>

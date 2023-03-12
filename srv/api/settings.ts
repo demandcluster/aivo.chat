@@ -15,8 +15,10 @@ const appConfig: any = {
 const getAppConfig = handle(async () => {
   const canAuth = isConnected()
 
+  const v = process?.env?.npm_package_version || 'version unknown'
+
   if (appConfig.version === null) {
-    const content = await readFile(resolve(process.cwd(), 'version.txt')).catch(() => 'unknown')
+    const content = v
     appConfig.version = content.toString().trim().slice(0, 11)
   }
 

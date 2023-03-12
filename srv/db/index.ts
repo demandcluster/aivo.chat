@@ -4,11 +4,13 @@ import * as users from './user'
 import * as invites from './invite'
 import * as admin from './admin'
 import * as matches from './matches'
+import * as credits from './credits'
 export { db } from './client'
 
 export const store = {
   chats,
   characters,
+  credits,
   users,
   matches,
   invites,

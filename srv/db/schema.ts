@@ -36,7 +36,7 @@ export namespace AppSchema {
     credits: number
     premiumUntil?: number
     oaiKey: string
-
+    nextCredits?: number
     hordeKey: string
     hordeModel: string
     hordeName?: string

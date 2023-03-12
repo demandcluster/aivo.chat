@@ -4,7 +4,7 @@ import { createTextStream, getResponseEntities } from '../../adapter/generate'
 import { createPrompt } from '../../adapter/prompt'
 import { post, PY_URL } from '../request'
 import { errors, handle } from '../wrap'
-import { sendMany } from '../ws'
+import { sendMany,sendOne } from '../ws'
 import { obtainLock, releaseLock, verifyLock } from './lock'
 
 export const generateMessage = handle(async ({ userId, params, body, log }, res) => {
@@ -29,6 +29,8 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
   sendMany(members, { type: 'message-creating', chatId: chat._id })
   await verifyLock(lockProps)
 
+
+
   if (!body.retry) {
     const userMsg = await store.chats.createChatMessage({
       chatId: id,
@@ -37,6 +39,8 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
     })
     await store.chats.update(id, {})
     sendMany(members, { type: 'message-created', msg: userMsg, chatId: id })
+  //  const credits = await store.credits.updateCredits(userId!, -10)
+   // sendOne(userId!, { type: 'credits-updated', credits })
   }
 
   const { stream, adapter } = await createTextStream({
@@ -72,6 +76,8 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
       body.ephemeral
     )
     sendMany(members, { type: 'message-created', msg, chatId: id, adapter })
+    const credits = await store.credits.updateCredits(userId!, - 10)
+    sendOne(userId!, { type: 'credits-updated', credits })
   }
 
   await store.chats.update(id, {})
@@ -100,6 +106,9 @@ export const retryMessage = handle(async ({ body, params, userId, log }, res) =>
 
   const props = { chatId: id, messageId }
   sendMany(members, { type: 'message-retrying', ...props })
+
+  const credits = await store.credits.updateCredits(userId!, - 3)
+  sendOne(userId!, { type: 'credits-updated', credits })
 
   await verifyLock({ chatId: id, lockId })
 

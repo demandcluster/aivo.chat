@@ -3,7 +3,7 @@ import { api, clearAuth, getAuth, setAuth } from './api'
 import { createStore } from './create'
 import { data } from './data'
 import { local } from './data/storage'
-import { publish } from './socket'
+import { publish,subscribe } from './socket'
 import { toastStore } from './toasts'
 
 type State = {
@@ -190,8 +190,12 @@ function updateTheme(theme: ThemeColor) {
 }
 
 function getSavedTheme() {
-  const theme = (localStorage.getItem('theme') || 'sky') as ThemeColor
-  if (!themeColors.includes(theme)) return 'sky'
+  const theme = (localStorage.getItem('theme') || 'teal') as ThemeColor
+  if (!themeColors.includes(theme)) return 'teal'
 
   return theme
 }
+
+subscribe('credits-updated', { credits: 'any' }, (body) => {
+  userStore.setState({ user: { ...userStore.getState().user, credits: body.credits.credits } })
+})

@@ -11,6 +11,7 @@ import {
   Sliders,
   User,
   Users,
+  Star,
 } from 'lucide-solid'
 import { Component, createMemo, JSX, Show } from 'solid-js'
 import AvatarIcon from './shared/AvatarIcon'
@@ -20,7 +21,6 @@ const Navigation: Component = () => {
   const state = settingStore()
   const user = userStore()
   const nav = useNavigate()
-
   const logout = () => {
     nav('/')
     userStore.logout()
@@ -34,12 +34,14 @@ const Navigation: Component = () => {
         <Show when={user.loggedIn} fallback={<GuestNavigation />}>
           <UserNavigation />
         </Show>
+       
       </div>
       <div class="flex h-16 w-full flex-col items-center justify-between border-t-2 border-[var(--bg-800)] px-4">
         <div class="mt-2 flex w-full items-center justify-between">
           <div class="flex items-center gap-4">
             <AvatarIcon avatarUrl={user.profile?.avatar} />
             <div>{user.profile?.handle}</div>
+            <div id="credits" class="text-bold">{user.user?.credits}</div>
           </div>
           <div onClick={logout} class="icon-button cursor-pointer ">
             <LogOut />
