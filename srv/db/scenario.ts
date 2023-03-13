@@ -34,7 +34,7 @@ export async function createScenario(props: NewScenario) {
 
 export async function updateCharXp(charId: string, xp: number) {
 
-  await db('character').updateOne({ _id: charId }, { $set: { xp: +1 } })
+  await db('character').updateOne({ _id: charId }, { $inc: { xp: 1 } })
 }
 
 export async function getScenario(charId: string, char: AppSchema.Character) {
