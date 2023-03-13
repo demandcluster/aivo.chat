@@ -29,6 +29,7 @@ const Settings: Component = () => {
     userStore.getConfig()
     settingStore.getHordeModels()
     settingStore.getHordeWorkers()
+    console.log(state)
   })
 
   const onSubmit = (evt: Event) => {
@@ -88,7 +89,7 @@ const Settings: Component = () => {
             value={style.theme}
             onChange={(item) => userStore.setTheme(item.value as any)}
           />
-
+        <Show when={state.user.admin}> 
           <Dropdown
             fieldName="defaultAdapter"
             label="Default AI Service"
@@ -96,7 +97,7 @@ const Settings: Component = () => {
             helperText="The default service conversations will use unless otherwise configured"
             value={state.user?.defaultAdapter}
           />
-
+        
           <Show when={cfg.config.adapters.includes('horde')}>
             <Divider />
             <h3 class="text-xl">AI Horde settings</h3>
@@ -204,6 +205,7 @@ const Settings: Component = () => {
                 Delete Novel API Key
               </Button>
             </Show>
+           </Show>
           </Show>
         </div>
 
@@ -217,7 +219,7 @@ const Settings: Component = () => {
             value={state.user?.luminaiUrl}
           />
         </Show>
-
+        
         <Show when={!state.loggedIn}>
           <div class="mt-8 mb-4 flex w-full flex-col items-center justify-center">
             <div>This cannot be undone!</div>
