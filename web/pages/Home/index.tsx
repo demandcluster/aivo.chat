@@ -3,7 +3,7 @@ import { Component } from 'solid-js'
 import PageHeader from '../../shared/PageHeader'
 import { adaptersToOptions } from '../../shared/util'
 import { settingStore } from '../../store'
-
+import logo from '../../assets/logo.png'
 const HomePage: Component = () => {
   const cfg = settingStore((cfg) => ({ adapters: adaptersToOptions(cfg.config.adapters) }))
   return (
@@ -11,116 +11,17 @@ const HomePage: Component = () => {
       <PageHeader
         title={
           <>
-            Welcome to <span class="text-[var(--hl-500)]"> AI</span>VO<span class="text-[var(--hl-500)]">.CHAT</span>
+            Welcome to <img src={logo} alt="logo" class="w-1/4 mx-10" />
           </>
         }
       />
       <div class="flex flex-col gap-4">
-        <div>
-          <span class="font-bold">Useful Links:</span>
-          <ul>
-            <li>
-              •{' '}
-              <a
-                href="https://github.com/luminai-companion/agn-ai/issues"
-                target="_blank"
-                class="link"
-              >
-                Github Repository
-              </a>
-            </li>
-            <li>
-              •{' '}
-              <a
-                href="https://github.com/users/sceuick/projects/1/views/1"
-                target="_blank"
-                class="link"
-              >
-                Feature Roadmap
-              </a>
-            </li>
-          </ul>
-        </div>
-        
-        <div class="text-2xl font-bold">Registration</div>
-        <p>
-          You don't need to register to use AIVO. You can use it anonymously and no data will
-          be stored on any servers.
-        </p>
-        <p>
-          If you choose to register, your data will be stored and accessible on any devices you
-          login with.
-        </p>
-        <div class="text-2xl font-bold">Getting Started</div>
-
-        <div class="text-xl font-bold">Quick Start</div>
-        <div class="lg">
-          <p>
-            A character has been created for you! You can head to the{' '}
-            <A href="/character/list" class="link">
-              Characters
-            </A>{' '}
-            page, choose a character and create a conversation to get started!
-          </p>
-          <p>
-            You can edit the character from the Characters page or from the Chat. This may be
-            helpful to see an example of how to author your own character.
-          </p>
-        </div>
-
-        <div class="lg">
-          <p>
-            Head over to the{' '}
-            <A href="/settings" class="link">
-              settings
-            </A>{' '}
-            page and choose your AI service. It is configured to use{' '}
-            <a href="https://aihorde.net" target="_blank">
-              Pygmalion 6B on AI Horde
-            </a>{' '}
-            by default.
-          </p>
-          <p>
-            <span class="font-bold">Available services:</span>{' '}
-            {cfg.adapters.map((a) => a.label).join(', ')}.
-          </p>
-        </div>
-        <div class="text-lg font-bold"> Using Kobold AI</div>
-        <div>
-          If you're self-hosting KoboldAI or using Colab, you can use the LocalTunnel URL in the{' '}
-          <b>Kobold URL</b> field in the Settings page.
-        </div>
-        <div class="text-lg font-bold"> Using AI Horde</div>
-        <div>
-          By default we use anonymous access and the <b>Pygmalion 6B</b> model. You can provide your
-          API key or change the model in the Settings page.
-        </div>
-        <div class="text-lg font-bold"> Using Novel AI</div>
-        <div>
-          You can provide your API key and choose between Euterpe and Krake in the settings page.
-          Visit the{' '}
-          <a
-            href="https://github.com/luminai-companion/agn-ai/blob/dev/instructions/novel.md"
-            target="_blank"
-            class="link"
-          >
-            instructions page
-          </a>{' '}
-          to learn how to retrieve your API key.
-        </div>
-        <div class="text-2xl font-bold">Create a Character</div>
-        <div>
-          Once you've chosen your AI service you can head to the{' '}
-          <A class="link" href="/character/create">
-            Character Creation
-          </A>{' '}
-          page to create a character to start chatting!
-        </div>
-        <div class="text-lg">
-          <p>If you have feature suggestions or have an issue please let me know on GitHub!</p>
-        </div>
-        <div class="text-xl">Enjoy!</div>
+       <span class="text-lg text-italic">Artificial Intelligence Virtual Other</span>
       </div>
+      <div class="text-gray-400">
+        <p>All matches on this website are AI. They are not real people.</p>
+        <p>You have entered a simulation, where your significant other is virtual.</p>
+      </div> 
     </div>
   )
 }
