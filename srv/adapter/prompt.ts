@@ -22,7 +22,7 @@ export async function createPrompt({ chat, char, members, retry, settings }: Pro
   const scenarioPrompt = await store.scenario.getScenario(char._id, char)
   if(scenarioPrompt && char.name!='Aiva'){
     char.scenario=scenarioPrompt.prompt
-    char.greeting=scenerioPrompt.greeting
+    char.greeting=scenarioPrompt.greeting
   }
 
   const hasStartSignal =

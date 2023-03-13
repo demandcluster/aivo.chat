@@ -202,6 +202,7 @@ export namespace AppSchema {
     name: string
     prompt: string
     xp: number
+    nextxp: number
     greeting: string
     
   }

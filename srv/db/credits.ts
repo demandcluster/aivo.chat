@@ -21,10 +21,24 @@ export async function updateCredits(userId: string, amount: number) {
 }
 
 export async function getFreeCredits() {
-    const now= new Date().getTime()
-    const nextTime:number = Number(now) + 60000
 
-    await db('user').updateMany({ kind: 'user', premium: { $eq: true} ,nextCredits: { $lt: Number(now) }, credits: { $lt: 1000 } }, { $inc: { credits: + 10 }, $set: { nextCredits: nextTime } })
-    await db('user').updateMany({ kind: 'user', nextCredits: { $lt: Number(now) }, credits: { $lt: 200 } }, { $inc: { credits: + 5 }, $set: { nextCredits: nextTime } })
-   
+    const now = new Date().getTime();
+    const nextTime:number = Number(now) + 60000
+    const users = await db('user').find({ kind: 'user', nextCredits: { $lte: now } ,premium: false, credits: { $lt: 200 } }).toArray();
+    const premiumUsers = await db('user').find({ kind: 'user', nextCredits: { $lte: now } , credits: { $lt: 1000 }, premium: true }).toArray();
+    
+    for (const user of users) {
+      const lastCredits = user.nextCredits||now;
+      const diff = now - lastCredits;
+      const creditsToAdd = Math.floor(diff / 60000) * 5;
+      const updatedCredits = Math.min(user.credits + creditsToAdd, 200);
+      await db('user').updateOne({ _id: user._id, credits: { $lt: 200 } }, { $inc: { credits: updatedCredits - user.credits }, $set: { nextCredits: nextTime } });
+    }
+    for (const user of premiumUsers) {
+      const lastCredits = user.nextCredits||now;
+      const diff = now - lastCredits;
+      const creditsToAdd = Math.floor(diff / 60000) * 10;
+      const updatedCredits = Math.min(user.credits + creditsToAdd, 1000);
+      await db('user').updateOne({ _id: user._id, credits: { $lt: 1000 } }, { $inc: { credits: updatedCredits - user.credits }, $set: { nextCredits: nextTime } });
+    }
 }
