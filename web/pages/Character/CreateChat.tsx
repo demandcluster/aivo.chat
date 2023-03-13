@@ -49,6 +49,7 @@ const CreateChatModal: Component<{
 
     let body    
     const characterId = character._id
+    let attributes:any = []
     if(user.admin){
       body = getStrictForm(ref, {
         name: 'string',
@@ -57,7 +58,7 @@ const CreateChatModal: Component<{
         sampleChat: 'string',
         schema: ['wpp', 'boostyle', 'sbf'],
       } as const)
-      const attributes = getAttributeMap(ref)
+      attributes = getAttributeMap(ref)
       body = getStrictForm(ref, {
        name: 'string',
        greeting: 'string',
@@ -65,8 +66,8 @@ const CreateChatModal: Component<{
        sampleChat: 'string',
        schema: ['wpp', 'boostyle', 'sbf'],
      } as const)
-     attributes = getAttributeMap(ref)
-   }else{
+    }else{
+      
        body = getStrictForm(ref, {
        name: 'string',
      } as const)

@@ -75,8 +75,10 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
       { chatId: id, message: generated, characterId: chat.characterId, adapter },
       body.ephemeral
     )
+    
     sendMany(members, { type: 'message-created', msg, chatId: id, adapter })
     const credits = await store.credits.updateCredits(userId!, - 10)
+    await store.scenario.updateCharXp(chat.characterId!, + 1)
     sendOne(userId!, { type: 'credits-updated', credits })
   }
 
@@ -108,6 +110,8 @@ export const retryMessage = handle(async ({ body, params, userId, log }, res) =>
   sendMany(members, { type: 'message-retrying', ...props })
 
   const credits = await store.credits.updateCredits(userId!, - 3)
+  //const charXp = await store.scenario.updateCharXp(userId!, - 3)
+  
   sendOne(userId!, { type: 'credits-updated', credits })
 
   await verifyLock({ chatId: id, lockId })

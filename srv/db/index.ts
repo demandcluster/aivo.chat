@@ -5,6 +5,7 @@ import * as invites from './invite'
 import * as admin from './admin'
 import * as matches from './matches'
 import * as credits from './credits'
+import * as scenario from './scenario'
 export { db } from './client'
 
 export const store = {
@@ -15,4 +16,5 @@ export const store = {
   matches,
   invites,
   admin,
+  scenario
 }

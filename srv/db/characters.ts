@@ -8,7 +8,7 @@ export async function createCharacter(
   userId: string,
   char: Pick<
     AppSchema.Character,
-    'name' | 'avatar' | 'summary' | 'match' | 'xp' | 'premium' | 'persona' | 'sampleChat' | 'greeting' | 'scenario'
+    'name' | 'avatar' | 'summary' | 'match' | 'xp' | 'premium' | 'persona' | 'sampleChat' | 'greeting' | 'scenario' | 'parent'
   >
 ) {
   const newChar: AppSchema.Character = {
@@ -19,7 +19,6 @@ export async function createCharacter(
     updatedAt: now(),
     ...char,
   }
-console.log('newChar',newChar) 
   await db('character').insertOne(newChar)
   return newChar
 }

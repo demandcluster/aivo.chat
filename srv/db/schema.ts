@@ -113,6 +113,7 @@ export namespace AppSchema {
     match: boolean
     xp: number
     premium: boolean
+    parent?: string
     avatar?: string
 
     createdAt: string
@@ -193,6 +194,17 @@ export namespace AppSchema {
     keywords: string[]
     entry: string
   }
+
+  export interface Scenario{
+    _id: string
+    kind: 'scenario'
+    charId: string
+    name: string
+    prompt: string
+    xp: number
+    greeting: string
+    
+  }
 }
 
 export type Doc<T extends AllDoc['kind'] = AllDoc['kind']> = Extract<AllDoc, { kind: T }>
@@ -207,5 +219,6 @@ export type AllDoc =
   | AppSchema.ChatMember
   | AppSchema.ChatInvite
   | AppSchema.UserGenPreset
+  | AppSchema.Scenario 
 
 export const defaultGenPresets: AppSchema.GenSettings[] = []

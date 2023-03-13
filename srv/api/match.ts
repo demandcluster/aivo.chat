@@ -39,7 +39,7 @@ const getMatches = handle(async (req ) => {
   // return all chars that are now in ownChars
     const newChars = chars.filter((char) => {
         return !ownChars.some((ownChar) => {
-            return ownChar.name === char.name
+            return ownChar.parent === char._id
         })
     })
 
@@ -52,10 +52,12 @@ const createCharacter = handle(async (req) => {
    const {userId} = req?.user||{userId:""}
    
    const matchChar = await store.matches.getMatch(userId,id)
+   const oldId = matchChar?._id.toString()
    const newChar = matchChar
     if (newChar){
         newChar.match=false
         newChar.xp=0
+        newChar.parent=oldId
         newChar._id=v4()
         newChar.userId=userId
         newChar.createdAt=now()

@@ -19,6 +19,11 @@ const SELF_REPLACE = /\{\{user\}\}/g
 export async function createPrompt({ chat, char, members, retry, settings }: PromptOpts) {
   const pre: string[] = [`${char.name}'s Persona: ${formatCharacter(char.name, chat.overrides)}`]
 
+  const scenarioPrompt = await store.scenario.getScenario(char._id, char)
+  if(scenarioPrompt && char.name!='Aiva'){
+    char.scenario=scenarioPrompt.prompt
+  }
+
   const hasStartSignal =
     chat.scenario.includes('<START>') ||
     chat.sampleChat.includes('<START>') ||
