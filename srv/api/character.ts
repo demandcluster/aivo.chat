@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { assertValid } from 'frisker'
 import { store } from '../db'
-import { loggedIn } from './auth'
+import { loggedIn,isAdmin } from './auth'
 import { handle, StatusError } from './wrap'
 import { handleUpload } from './upload'
 import { PERSONA_FORMATS } from '../../common/adapters'
@@ -96,10 +96,10 @@ const deleteCharacter = handle(async ({ userId, params }) => {
 })
 
 router.use(loggedIn)
-router.post('/', createCharacter)
+router.post('/',isAdmin, createCharacter)
 router.get('/', getCharacters)
-router.post('/:id', editCharacter)
+router.post('/:id', isAdmin,editCharacter)
 router.get('/:id', getCharacter)
-router.delete('/:id', deleteCharacter)
+router.delete('/:id',isAdmin, deleteCharacter)
 
 export default router
