@@ -12,6 +12,7 @@ import {
   User,
   Users,
   Star,
+  Clapperboard
 } from 'lucide-solid'
 import { Component, createMemo, JSX, Show } from 'solid-js'
 import AvatarIcon from './shared/AvatarIcon'
@@ -88,9 +89,13 @@ const UserNavigation: Component = () => {
       </Item>
     </Show>
       <Show when={user.user?.admin}>
-        <Item href="/admin/users">
+       <Item href="/admin/users">
           <Eye /> Users
-        </Item>
+        </Item> 
+        
+       <Item href="/admin/scenarios">
+          <Clapperboard /> Scenarios
+        </Item> 
       </Show>
 
     

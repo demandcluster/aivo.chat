@@ -16,6 +16,7 @@ import Navigation from './Navigation'
 import GenerationPresetsPage from './pages/GenerationPresets'
 import CharacterChats from './pages/Character/CharacterChats'
 import CharacterScenarios from './pages/Scenarios/CharacterScenarios'
+import CreateScenario from './pages/Scenarios/CreateScenario'
 import PresetList from './pages/GenerationPresets/PresetList'
 
 const App: Component = () => {
@@ -50,6 +51,7 @@ const App: Component = () => {
                 <Show when={state.user?.admin}>
                   <Route path="/admin/users" component={UsersPage} />
                   <Route path="/admin/scenarios" component={CharacterScenarios} />
+                  <Route path="/admin/scenarios/:editId/edit" component={CreateScenario} />
                 </Show>
               </Show>
               <Show when={cfg.config.canAuth}>

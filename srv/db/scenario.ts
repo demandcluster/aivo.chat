@@ -38,6 +38,12 @@ export async function updateCharXp(charId: string, xp: number) {
   await db('character').updateOne({ _id: charId }, { $inc: { xp: 1 } })
 }
 
+export async function getScenarios(charId: string) {
+ 
+  let scenarios = await db('scenario').find({charId:charId}).toArray()
+  return scenarios ||[]
+}
+
 export async function getScenario(charId: string, char: AppSchema.Character) {
     await ensureInitialScenario()
     let sCharId = charId

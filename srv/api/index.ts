@@ -9,6 +9,7 @@ import admin from './admin'
 import horde from './horde'
 import settings from './settings'
 import freeCredits from './freecredits'
+import scenario from './scenario'
 
 const router = Router()
 
@@ -22,4 +23,5 @@ router.use('/admin', admin)
 router.use('/horde', horde)
 router.use('/settings', settings)
 router.use('/freecredits', freeCredits)
+router.use('/scenarios',scenario)
 export default router

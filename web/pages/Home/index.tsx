@@ -15,23 +15,24 @@ const HomePage: Component = () => {
           </>
         }
       />
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4  flex-shrink">
        <span class="text-lg text-italic">Artificial Intelligence Virtual Other</span>
       </div>
       <div class="text-gray-400">
         <p>All matches on this website are AI. They are not real people.</p>
         <p>You have entered a simulation, where your significant other is virtual.</p>
       </div> 
-      <div class="border-red-400 my-8 w-1/2 mx-4 bg-red-900 border-2-dotted rounded-lg p-4 gap-4">
+      <div class="border-red-400 opacity-60 my-8 w-1/2 max-w-1/2 mx-4 bg-red-900 border-2-dotted rounded-lg p-4 gap-4">
         <div class="flex flex-row">
         <div>
-        <p class="text-gray-300">This website is not for children. It is for adults only.</p>
-        <p class="text-gray-300">You must be 18 years of age or older to use this website.</p>
+        <p class="text-red-100">This website is not for children.<br/>It is for adults only.</p>
+      
         </div>
-        <div class="text-lg">
+        <div class="text-red-300 shrink-0 text-right max-w-4 text-6xl">
         18+
           </div>
       </div>
+    </div>
     </div>
   )
 }

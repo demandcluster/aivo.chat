@@ -1,7 +1,7 @@
 import { Component, createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 import Button from '../../shared/Button'
 import PageHeader from '../../shared/PageHeader'
-import { Copy, Download, Edit, Import, Plus, Save, Trash,User, X } from 'lucide-solid'
+import { Copy, Download, Edit, Import, Plus, Save, Trash,User, X,Clapperboard } from 'lucide-solid'
 import { AppSchema } from '../../../srv/db/schema'
 import { A } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
@@ -20,10 +20,7 @@ const CharacterList: Component = () => {
   const [showDelete, setDelete] = createSignal<AppSchema.Character>()
   const [char, setChar] = createSignal<AppSchema.Character>()
   const {user} = userStore()
-  const onImport = (char: NewCharacter) => {
-    characterStore.createCharacter(char, () => setImport(false))
-  }
-
+ 
   createEffect(() => {
     characterStore.getCharacters()
   })
@@ -43,7 +40,6 @@ const CharacterList: Component = () => {
               <Character
                 character={char}
                 user={user}
-                
               />
             )}
           </For>
@@ -72,24 +68,22 @@ const Character: Component<{
         </A>
       </div>
       <div class="flex flex-row items-center justify-center gap-2 sm:w-3/12">
-       <Show when={props.user?.admin}>
-        <a onClick={props.download}>
-          <Download class="cursor-pointer text-white/25 hover:text-white" />
-        </a>
-        <A href={`/character/${props.character._id}/edit`}>
-          <Edit class="cursor-pointer text-white/25 hover:text-white" />
-        </A>
-
-        <A href={`/character/create/${props.character._id}`}>
-          <Copy class="cursor-pointer text-white/25 hover:text-white" />
-        </A>
-        </Show>
+     
         <Show when={props.character.name!=="Aiva"}>
-        <Trash class="cursor-pointer text-white/25 hover:text-white" onClick={props.delete} />
-        
-        <A href={`/likes/${props.character._id}/profile`}>
-          <User  class="cursor-pointer text-white/25 hover:text-white" />
+        <A
+          class="ml-4 flex h-3/4 cursor-pointer items-center rounded-2xl  sm:w-9/12"
+          href={`/admin/scenarios/${props.character._id}/edit`}
+        >
+        <Clapperboard class="cursor-pointer text-white/25 hover:text-white" />
         </A>
+        
+        <A
+          class="ml-4 flex h-3/4 cursor-pointer items-center rounded-2xl  sm:w-9/12"
+          href={`/admin/scenarios/${props.character._id}/create`}
+        >
+        <Clapperboard class="cursor-pointer text-white/25 hover:text-white" />
+        </A>
+        
         </Show>
         
       </div>
