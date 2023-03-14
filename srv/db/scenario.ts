@@ -44,6 +44,10 @@ export async function getScenarios(charId: string) {
   return scenarios ||[]
 }
 
+export async function getNextXP(charId: string, xp: number){
+  let scenrario = await db('scenario').findOne({charId:charId, xp: { $gt: xp } })
+  return scenrario?.xp || 0
+}
 export async function getScenario(charId: string, char: AppSchema.Character) {
     await ensureInitialScenario()
     let sCharId = charId

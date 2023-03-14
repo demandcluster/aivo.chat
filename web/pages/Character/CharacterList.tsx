@@ -13,6 +13,8 @@ import Dropdown from '../../shared/Dropdown'
 import { exportCharacter } from '../../../common/prompt'
 import {userStore} from '../../store'
 
+import Gauge from '../../shared/Gauge'
+
 const CharacterList: Component = () => {
   const chars = characterStore((s) => s.characters)
 
@@ -93,6 +95,7 @@ const Character: Component<{
           <AvatarIcon avatarUrl={props.character.avatar} size="10" class="mx-4" />
           <div class="text-lg font-bold">{props.character.name}</div>
         </A>
+          <div><Gauge currentXP={props.character.xp} /></div>
       </div>
       <div class="flex flex-row items-center justify-center gap-2 sm:w-3/12">
        <Show when={props.user?.admin}>
