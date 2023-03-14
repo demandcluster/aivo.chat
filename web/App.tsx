@@ -16,6 +16,7 @@ import Navigation from './Navigation'
 import GenerationPresetsPage from './pages/GenerationPresets'
 import CharacterChats from './pages/Character/CharacterChats'
 import CharacterScenarios from './pages/Scenarios/CharacterScenarios'
+import PresetList from './pages/GenerationPresets/PresetList'
 
 const App: Component = () => {
   const state = userStore()
@@ -41,7 +42,7 @@ const App: Component = () => {
               <Route path="/chat/:id" component={ChatDetail} />
               <Route path="/" component={HomePage} />
               <Route path="/presets/:id" component={GenerationPresetsPage} />
-              <Route path="/presets" component={GenerationPresetsPage} />
+              <Route path="/presets" component={PresetList} />
               <Route path="/profile" component={ProfilePage} />
               <Route path="/settings" component={Settings} />
               <Show when={state.loggedIn}>

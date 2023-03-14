@@ -43,6 +43,16 @@ const Settings: Component = () => {
       defaultAdapter: adapterOptions,
     } as const)
 
+    const defaultPresets = getFormEntries(evt)
+      .filter(([name]) => name.startsWith('preset.'))
+      .map(([name, value]) => {
+        return { adapter: name.replace('preset.', '') as AIAdapter, presetId: value }
+      })
+      .reduce((prev, curr) => {
+        prev![curr.adapter] = curr.presetId
+        return prev
+      }, {} as AppSchema.User['defaultPresets'])
+
     userStore.updateConfig({
       ...body,
       hordeWorkers: workers()?.map((w) => w.value) || state.user?.hordeWorkers || [],
