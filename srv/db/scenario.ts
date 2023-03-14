@@ -4,7 +4,7 @@ import { AppSchema } from './schema'
 import { now } from './util'
 import { logger } from '../logger'
 
-type NewScenario = Pick<AppSchema.Scenario, '_id'|'kind'|'name'|'charId' | 'xp' | 'nextxp' | 'greeting' | 'prompt'>
+type NewScenario = Pick<AppSchema.Scenario, '_id'|'kind'|'name'|'charId' | 'xp' |  'greeting' | 'prompt'>
 
 
 export async function ensureInitialScenario() {
@@ -20,8 +20,7 @@ export async function ensureInitialScenario() {
       name: 'Just matched',
       prompt: '{{char}} and {{user}} just matched, {{char}} will take things slow, {{user}} should be patient.',
       greeting: 'Hi {{char}}, I just matched with you. I am {{user}}. I am a bit shy...',
-      xp: 10,
-      nextxp: 50
+      xp: 10     
     }
   )
 
@@ -44,10 +43,7 @@ export async function getScenarios(charId: string) {
   return scenarios ||[]
 }
 
-export async function getNextXP(charId: string, xp: number){
-  let scenrario = await db('scenario').findOne({charId:charId, xp: { $gt: xp } })
-  return scenrario?.xp || 0
-}
+
 export async function getScenario(charId: string, char: AppSchema.Character) {
     await ensureInitialScenario()
     let sCharId = charId

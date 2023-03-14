@@ -112,7 +112,7 @@ const CreateScenario: Component = () => {
             <p>Prompt: {scenario.prompt}</p>
             <p>Greeting: {scenario.greeting}</p>
             <p>XP: {scenario.xp}</p>
-            <p>Next XP: {scenario.nextxp}</p>
+          
 
             <Divider />
           </div>
