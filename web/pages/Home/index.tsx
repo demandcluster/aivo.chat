@@ -22,6 +22,11 @@ const HomePage: Component = () => {
         <p>All matches on this website are AI. They are not real people.</p>
         <p>You have entered a simulation, where your significant other is virtual.</p>
       </div> 
+      <div class="border-red-400 border-2-dotted rounded-lg p-4 gap-4">
+        <p class="text-red-500">This website is not for children. It is for adults only.</p>
+        <p class="text-red-500">You must be 18 years of age or older to use this website.</p>
+
+      </div>
     </div>
   )
 }
