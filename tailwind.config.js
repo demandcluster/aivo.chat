@@ -3,6 +3,10 @@ module.exports = {
   content: ['./web/**/*.{html,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        'body': ['Bai Jamjuree', 'sans-serif'],
+        'sans': ['Bai Jamjuree', 'sans-serif'],
+      },
       colors: {
         background: '#090b10',
         'background-lighter': '#0d1017',

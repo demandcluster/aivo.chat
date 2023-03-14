@@ -10,7 +10,7 @@ const base = {
   use_story: false,
   use_memory: false,
   use_authors_note: false,
-  use_world_info: false,
+  use_world_info: true,
 
   /**
    * We deliberately use a low 'max length' to aid with streaming and the lack of support of 'stop tokens' in Kobold.
