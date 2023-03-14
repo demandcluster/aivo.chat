@@ -62,19 +62,13 @@ const CreateChatModal: Component<{
         greeting: 'string',
         scenario: 'string',
         sampleChat: 'string',
-        schema: ['wpp', 'boostyle', 'sbf'],
+        schema: ['wpp', 'boostyle', 'sbf' ,'text'],
       } as const)
       attributes = getAttributeMap(ref)
-      body = getStrictForm(ref, {
-       name: 'string',
-       greeting: 'string',
-       scenario: 'string',
-       sampleChat: 'string',
-       schema: ['wpp', 'boostyle', 'sbf','text'],
-     } as const)
+    
     }else{
       
-       body = getStrictForm(ref, {
+         body = getStrictForm(ref, {
        name: 'string',
      } as const)
      body.scenario = character.scenario
