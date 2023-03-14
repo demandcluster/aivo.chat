@@ -36,18 +36,6 @@ const Gauge = (props: Props) => {
   const levelXP = calculateTotalXPNeededForLevel(level)
   const percentFilled =  Math.min((currentXP - levelXP) / xpNeeded, 1) * 100;
 
- 
-  const [color, setColor] = createSignal('bg-red-500');
-
-  // Change the color based on the percentage filled
-  if (percentFilled >= 50) {
-    setColor('bg-red-500');
-  } else if (percentFilled >= 25) {
-    setColor('bg-yellow-500');
-  } else {
-    setColor('bg-green-500');
-  }
-
   return (
     <>
     <Show when = {currentXP>10}>
