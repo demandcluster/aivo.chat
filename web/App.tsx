@@ -15,6 +15,7 @@ import HomePage from './pages/Home'
 import Navigation from './Navigation'
 import GenerationPresetsPage from './pages/GenerationPresets'
 import CharacterChats from './pages/Character/CharacterChats'
+import CharacterScenarios from './pages/Scenarios/CharacterScenarios'
 
 const App: Component = () => {
   const state = userStore()
@@ -47,6 +48,7 @@ const App: Component = () => {
                 <Route path="/invites" component={InvitesPage} />
                 <Show when={state.user?.admin}>
                   <Route path="/admin/users" component={UsersPage} />
+                  <Route path="/admin/scenarios" component={CharacterScenarios} />
                 </Show>
               </Show>
               <Show when={cfg.config.canAuth}>
