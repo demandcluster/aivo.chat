@@ -102,6 +102,10 @@ export function formatCharacter(name: string, persona: AppSchema.CharacterPerson
       )
       return attrs.join(' + ')
     }
+
+    case 'text': {
+      return persona.attributes.text[0]
+    }
   }
 }
 

@@ -96,6 +96,7 @@ export async function createUser(newUser: NewUser, admin?: boolean) {
     hordeModel: 'KoboldAI/OPT-13B-Erebus',
     hordeKey: '',
     oaiKey: '',
+    defaultPresets: {},
   }
 
   const startChar: AppSchema.Character = {

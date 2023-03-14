@@ -7,7 +7,7 @@ import Dropdown from '../../shared/Dropdown'
 import Modal from '../../shared/Modal'
 import PersonaAttributes, { getAttributeMap } from '../../shared/PersonaAttributes'
 import TextInput from '../../shared/TextInput'
-import { getStrictForm } from '../../shared/util'
+import { getForm, getFormEntries, getStrictForm } from '../../shared/util'
 import { characterStore, chatStore,userStore } from '../../store'
 
 const options = [
@@ -70,7 +70,7 @@ const CreateChatModal: Component<{
        greeting: 'string',
        scenario: 'string',
        sampleChat: 'string',
-       schema: ['wpp', 'boostyle', 'sbf'],
+       schema: ['wpp', 'boostyle', 'sbf','text'],
      } as const)
     }else{
       
@@ -170,6 +170,7 @@ const CreateChatModal: Component<{
             label="Persona"
             items={options}
             value={props.char?.persona.kind || char()?.persona.kind}
+            disabled
           />
         </Show>
 
@@ -179,7 +180,7 @@ const CreateChatModal: Component<{
             fieldName="schema"
             label="Persona"
             items={[{ label: 'Plain text', value: 'text' }]}
-            value={props.char?.persona.kind || char()?.persona.kind}
+            value={'text'}
             disabled
           />
         </Show>
