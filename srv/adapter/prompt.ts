@@ -24,6 +24,7 @@ export async function createPrompt({ chat, char, members, retry, settings }: Pro
     char.scenario=scenarioPrompt.prompt
     char.greeting=scenarioPrompt.greeting
   }
+    
 
   const hasStartSignal =
     chat.scenario.includes('<START>') ||
