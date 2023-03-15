@@ -96,10 +96,10 @@ const deleteCharacter = handle(async ({ userId, params }) => {
 })
 
 router.use(loggedIn)
-router.post('/',isAdmin, createCharacter)
+router.post('/', createCharacter)
 router.get('/', getCharacters)
 router.post('/:id', isAdmin,editCharacter)
 router.get('/:id', getCharacter)
-router.delete('/:id',isAdmin, deleteCharacter)
+router.delete('/:id', deleteCharacter)
 
 export default router
