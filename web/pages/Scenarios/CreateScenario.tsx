@@ -25,23 +25,22 @@ const CreateScenario: Component = () => {
   const scenarios = scenarioStore()
   const [xpNeeded,setXpNeeded] = createSignal(0)
   
+const baseXP = 30
+const xpMultiplier = 1.1
+const xpNeededForFirstLevel = 10
 
 function calculateTotalXPNeededForLevel(level) {
-  const baseXP = 30
-  const xpMultiplier = 1.1
-  const xpNeededForFirstLevel = 10
-  
-
-  if (level == 1) {
+  if (level < 1) {
     return xpNeededForFirstLevel;
   } else {
-    return Math.floor(baseXP * Math.pow(xpMultiplier, level -1 )) + calculateTotalXPNeededForLevel(level -1 );
+    return Math.floor(baseXP * Math.pow(xpMultiplier, level -1  )) + calculateTotalXPNeededForLevel(level -1 );
   }
 }
 
+
 const xpNeededForLevel = (level) => {
-  if(level===xpNeeded||level<1||level=="")return
-  setXpNeeded(calculateTotalXPNeededForLevel(level.target.value))
+  
+  setXpNeeded(calculateTotalXPNeededForLevel(level.target.value-1))
 }
  
   createEffect(() => {

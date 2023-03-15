@@ -10,23 +10,28 @@ const xpMultiplier = 1.1
 const xpNeededForFirstLevel = 10
 
 function calculateTotalXPNeededForLevel(level) {
-  if (level === 0) {
+  if (level < 1) {
     return xpNeededForFirstLevel;
   } else {
-    return Math.floor(baseXP * Math.pow(xpMultiplier, level - 1)) + calculateTotalXPNeededForLevel(level - 1);
+    return Math.floor(baseXP * Math.pow(xpMultiplier, level -1  )) + calculateTotalXPNeededForLevel(level -1 );
   }
 }
 function xpNeededForLevelUp(currentXP:number) {
-  
-  let xpNeededForNextLevel = xpNeededForFirstLevel
-  let currentLevel = 1
+  let xpNeededForNextLevel = xpNeededForFirstLevel;
+  let currentLevel = 1;
+
+  if (currentXP < xpNeededForFirstLevel) {
+    return { xp: xpNeededForFirstLevel - currentXP, lvl: currentLevel };
+  }
 
   while (currentXP >= xpNeededForNextLevel) {
-    xpNeededForNextLevel = Math.floor(baseXP * (xpMultiplier ** (currentLevel - 1)))
-    currentXP -= xpNeededForNextLevel
-    currentLevel++
+    const totalXPNeeeded = calculateTotalXPNeededForLevel(currentLevel - 1);
+    xpNeededForNextLevel = calculateTotalXPNeededForLevel(currentLevel) - totalXPNeeeded;
+    currentXP -= xpNeededForNextLevel;
+    currentLevel++;
   }
-  return {xp:xpNeededForNextLevel - currentXP,lvl:currentLevel-1}
+
+  return { xp: xpNeededForNextLevel - currentXP, lvl: currentLevel };
 }
 
 const Gauge = (props: Props) => {
@@ -34,7 +39,8 @@ const Gauge = (props: Props) => {
   const xpNeeded=xpNeededForLevelUp(currentXP).xp
   const level = xpNeededForLevelUp(currentXP).lvl
   const levelXP = calculateTotalXPNeededForLevel(level)
-  const percentFilled =  Math.min((currentXP - levelXP) / xpNeeded, 1) * 100;
+  const percentFilled = Math.min((currentXP - levelXP) / (xpNeeded - xpNeededForFirstLevel), 1) * 100;
+
 
   return (
     <>
