@@ -128,7 +128,7 @@ export async function createMatch(char: ImportCharacter) {
   
 }
 
-async function getImageData(file?: File) {
+export async function getImageData(file?: File) {
   if (!file) return
   const reader = new FileReader()
 
@@ -138,6 +138,20 @@ async function getImageData(file?: File) {
     reader.onload = (evt) => {
       if (!evt.target?.result) return reject(new Error(`Failed to process image`))
       resolve(evt.target.result.toString())
+    }
+  })
+}
+
+export async function getImageBuffer(file?: File) {
+  if (!file) return
+  const reader = new FileReader()
+
+  return new Promise<Buffer>((resolve, reject) => {
+    reader.readAsArrayBuffer(file)
+
+    reader.onload = (evt) => {
+      if (!evt.target?.result) return reject(new Error(`Failed to process image`))
+      resolve(Buffer.from(evt.target.result as ArrayBuffer))
     }
   })
 }

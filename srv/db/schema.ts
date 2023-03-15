@@ -175,6 +175,8 @@ export namespace AppSchema {
     oaiModel?: string
 
     memoryDepth?: number
+    memoryContextLimit?: number
+    memoryReverseWeight?: boolean
   }
 
   export interface AppConfig {
@@ -192,6 +194,12 @@ export namespace AppSchema {
 
   export interface MemoryEntry {
     name: string
+
+    /** When choosing which memories to discard, lowest priority will be discarded first */
+    priority: number
+
+    /** When determining what order to render the memories, the highest will be at the bottom  */
+    weight: number
     keywords: string[]
     entry: string
   }
