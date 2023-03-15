@@ -223,7 +223,7 @@ function getUIsettings() {
   const settings: State['ui'] = JSON.parse(
     localStorage.getItem(UI_KEY) || JSON.stringify(defaultUIsettings)
   )
-  const theme = (localStorage.getItem('theme') || 'sky') as ThemeColor
+  const theme = (localStorage.getItem('theme') || 'teal') as ThemeColor
   localStorage.removeItem('theme')
 
   if (theme && UI_THEME.includes(theme)) {
