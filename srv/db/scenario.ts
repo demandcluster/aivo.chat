@@ -31,7 +31,7 @@ export async function createScenario(props: NewScenario) {
    const res = await db('scenario').insertOne(props)
    return res
 }
-export async function addScenario(props: AppSchema:Scenario) {
+export async function addScenario(props: AppSchema.Scenario) {
   const res = await db('scenario').insertOne(props)
   return res
 }
