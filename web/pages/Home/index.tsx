@@ -33,6 +33,9 @@ const HomePage: Component = () => {
           </div>
       </div>
     </div>
+      <div>
+        <p class="text-2xl text-gray-500">We will launch in early access as soon as we have a payment provider</p>
+      </div>
     </div>
   )
 }

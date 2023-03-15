@@ -8,16 +8,18 @@ import { Check } from 'lucide-solid'
 import { AppSchema } from '../../../srv/db/schema'
 import { A } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
-import { matchStore } from '../../store'
+import { matchStore,characterStore } from '../../store'
 
 
 const MatchProfile: Component = () => {
     const { id } = useParams()
     //const [showCreate, setCreate] = createSignal(false)
-    const chars = matchStore((s) => s.characters)
- 
+    let chars = matchStore((s) => s.characters)
+    if (!chars) chars = characterStore((s) => s.characters)
+
     createEffect(() => {
         matchStore.getMatch(id)
+        characterStore.getCharacters()
       })
 
  

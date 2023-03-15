@@ -17,6 +17,7 @@ import {
 import { Component, createMemo, JSX, Show } from 'solid-js'
 import AvatarIcon from './shared/AvatarIcon'
 import { inviteStore, settingStore, userStore } from './store'
+import logo from './assets/logo.png'
 
 const Navigation: Component = () => {
   const state = settingStore()
@@ -38,9 +39,7 @@ const Navigation: Component = () => {
       <div class="drawer__content flex flex-col gap-2 px-4">
         <div class="hidden w-full items-center justify-center sm:flex">
           <A href="/">
-            <div class="h-7 w-fit items-center justify-center rounded-lg bg-[var(--hl-600)] px-4">
-              Agnaistic
-            </div>
+          <img width="100px" class="px-4 ph-1 pt-2" src={logo}/>
           </A>
         </div>
         <Show when={user.loggedIn} fallback={<GuestNavigation />}>
