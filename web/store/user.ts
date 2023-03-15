@@ -9,7 +9,7 @@ import { toastStore } from './toasts'
 const UI_KEY = 'ui-settings'
 
 const defaultUIsettings: State['ui'] = {
-  theme: 'sky',
+  theme: 'teal',
   mode: 'dark',
   avatarSize: 'md',
   avatarCorners: 'circle',

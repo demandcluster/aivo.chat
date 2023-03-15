@@ -65,7 +65,7 @@ export const updateConfig = handle(async ({ userId, body }) => {
       hordeWorkers: ['string'],
       oaiKey: 'string?',
       defaultAdapter: config.adapters,
-      defaultPresets: 'any',
+ //     defaultPresets: 'any',
     },
     body
   )
@@ -78,7 +78,7 @@ export const updateConfig = handle(async ({ userId, body }) => {
   const update: Partial<AppSchema.User> = {
     defaultAdapter: body.defaultAdapter,
     hordeWorkers: body.hordeWorkers,
-    defaultPresets: body.defaultPresets,
+ //   defaultPresets: body.defaultPresets,
   }
 
   if (body.hordeApiKey) {

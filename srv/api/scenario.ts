@@ -50,6 +50,8 @@ const createScenario = handle(async (req) => {
   return char
 })
 
+
+
 const getScenarios = handle(async ( req ) => {
 const charId = req.params.charId
 console.log(charId,'params')
@@ -95,7 +97,7 @@ const getCharacter = handle(async ({ userId, params }) => {
 
 router.use(loggedIn, isAdmin)
 //router.post('/', createScenario)
-//router.post('/:id', editScenario)
+//router.post('/:id', addScenario)
 router.get('/:charId', getScenarios)
 
 export default router

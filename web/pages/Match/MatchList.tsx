@@ -36,7 +36,7 @@ const MatchList: Component = () => {
             {(char) => <Match character={char} match={createMatch}/>}
           </For>
         </div>
-        {chars.list.length === 0 ? <NoMatches /> : null}
+        {chars.list?.length === 0 ? <NoMatches /> : null}
       </Show>
     
     </>

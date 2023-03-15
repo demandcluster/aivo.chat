@@ -128,8 +128,10 @@ const ChatDetail: Component = () => {
                 <div class="icon-button">
                   <Settings onClick={() => setShowConfig(true)} />
                 </div>
-
-                <Show when={!cfg.fullscreen}>
+              </Show>
+              </Show>
+              <Show when={chats.chat?.userId === user.user?._id}>
+              <Show when={!cfg.fullscreen}>
                   <div class="icon-button" onClick={() => settingStore.fullscreen(true)}>
                     <ArrowUpRight />
                   </div>
@@ -140,8 +142,7 @@ const ChatDetail: Component = () => {
                     <ArrowDownLeft />
                   </div>
                 </Show>
-              </Show>
-              </Show>
+                </Show>
             </div>
           </div>
           <div class="flex h-[calc(100%-32px)] flex-col-reverse">

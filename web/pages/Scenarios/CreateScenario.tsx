@@ -23,8 +23,26 @@ const CreateScenario: Component = () => {
     edit: s.characters.list.find((ch) => ch._id === srcId),
   }))
   const scenarios = scenarioStore()
+  const [xpNeeded,setXpNeeded] = createSignal(0)
   
+
+function calculateTotalXPNeededForLevel(level) {
+  const baseXP = 30
+  const xpMultiplier = 1.1
+  const xpNeededForFirstLevel = 10
   
+
+  if (level == 1) {
+    return xpNeededForFirstLevel;
+  } else {
+    return Math.floor(baseXP * Math.pow(xpMultiplier, level -1 )) + calculateTotalXPNeededForLevel(level -1 );
+  }
+}
+
+const xpNeededForLevel = (level) => {
+  if(level===xpNeeded||level<1||level=="")return
+  setXpNeeded(calculateTotalXPNeededForLevel(level.target.value))
+}
  
   createEffect(() => {
     characterStore.getCharacters()
@@ -39,42 +57,26 @@ const CreateScenario: Component = () => {
   const onSubmit = (ev: Event) => {
     
     const body = getStrictForm(ev, {
-      kind: PERSONA_FORMATS,
-      name: 'string',
-      greeting: 'string',
-      scenario: 'string',
-      summary: 'string',
-      xp: 'number',
-      premium: 'string',
-      match: 'string',
-      sampleChat: 'string',
+      title: "string",
+      prompt: "string",
+      greeting: "string",
     } as const)
     const attributes = getAttributeMap(ev)
     
-    const persona = {
-      kind: body.kind,
-      attributes,
-    }
+    
     
     const payload = {
-      name: body.name,
-      scenario: body.scenario,
-      avatar: avatar(),
-      summary: body.summary,
-      xp: body.xp,
-      match: body.match,
-      premium: body.premium,
-      greeting: body.greeting,
-      sampleChat: body.sampleChat,
-      persona,
+      title: body.title,
+      prompt: body.prompt,
+      greeeting: body.greeting,
     }
    
     
     if (editId) {
-     
-      characterStore.editCharacter(editId, payload, () => nav('/character/list'))
+      scenarioStore.createScenario(srcId,payload, () => nav('/admin/scenarios'))
+     // characterStore.editCharacter(editId, payload, () => nav('/character/list'))
     } else {
-      characterStore.createCharacter(payload, () => nav('/character/list'))
+    //  characterStore.createCharacter(payload, () => nav('/character/list'))
     }
   }
 
@@ -108,18 +110,18 @@ const CreateScenario: Component = () => {
       <For each={scenarios.scenarios.list}>
          { (scenario)=>(
             <div>
-            <h1>Title: {scenario.name}</h1>
-            <p>Prompt: {scenario.prompt}</p>
-            <p>Greeting: {scenario.greeting}</p>
-            <p>XP: {scenario.xp}</p>
+            <h1 class="text-lg text-gray-200">Title: <span class="text-white">{scenario.name}</span></h1>
+            <p class="text-gray-200">Prompt: <span class="text-white">{scenario.prompt}</span></p>
+            <p class="text-gray-200">Greeting: <span class="text-white">{scenario.greeting}</span></p>
+            <p class="text-gray-100">XP: {scenario.xp}</p>
           
 
             <Divider />
           </div>
           )}
         </For>
-        
-    
+      <h1>LEVEL XP FOR LEVEL {xpNeeded}</h1>
+      <TextInput fieldName="xpcalc" label="XP For Level" onChange={xpNeededForLevel} />
     </div>
   )
 }

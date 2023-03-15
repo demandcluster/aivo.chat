@@ -13,15 +13,14 @@ import { matchStore,characterStore } from '../../store'
 
 const MatchProfile: Component = () => {
     const { id } = useParams()
-    //const [showCreate, setCreate] = createSignal(false)
-    let chars = matchStore((s) => s.characters)
-    if (!chars) chars = characterStore((s) => s.characters)
-
+   
+    const chars = matchStore((s) => s.characters)
+   
     createEffect(() => {
-        matchStore.getMatch(id)
-        characterStore.getCharacters()
-      })
-
+      matchStore.getMatch(id)
+    
+    })
+ 
  
   
     return (

@@ -114,7 +114,7 @@ const Character: Component<{
         <Trash class="icon-button" onClick={props.delete} />
         
         <A href={`/likes/${props.character._id}/profile`}>
-          <User  class="cursor-pointer text-white/25 hover:text-white" />
+          <User  class="icon-button" />
         </A>
         </Show>
         

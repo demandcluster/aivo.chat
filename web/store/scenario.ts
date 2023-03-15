@@ -28,15 +28,15 @@ export const scenarioStore = createStore<Scenariosstate>('Scenario', {
           return { scenarios: { list: res.result.scenarios, loaded: true } }
         }
       },
-    async createScenario(_,charId: string) {
+    async createScenario(_,charId: string, payload: AppSchema.Scenario) {
        // if (state.loading) return
   
         //yield { loading: true }
+        console.log('creating stuff',charId)
        
-        const res = await api.post(`/scenarios/${charId}`)
+        const res = await api.post(`/scenarios/${charId}`,payload)
      //   yield { loading: false }
-      console.log(res)
-        if (res.error) toastStore.error('Failed to retrieve scenarios')
+        if (res.error) toastStore.error('Failed to save scenarios')
         if (res.result) {
           return { scenarios: { list: res.result.scenarios, loaded: true } }
         }

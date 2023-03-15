@@ -3,7 +3,7 @@ import { AlertTriangle, Save, X } from 'lucide-solid'
 import Button from '../../shared/Button'
 import PageHeader from '../../shared/PageHeader'
 import TextInput from '../../shared/TextInput'
-import { adaptersToOptions, getStrictForm } from '../../shared/util'
+import { adaptersToOptions, getFormEntries,getStrictForm } from '../../shared/util'
 import Dropdown, { DropdownItem } from '../../shared/Dropdown'
 import {
   CHAT_ADAPTERS,
@@ -101,13 +101,18 @@ const Settings: Component = () => {
         <div class="flex flex-col gap-4">
           <UISettings />
 
+          
+
           <Dropdown
             fieldName="defaultAdapter"
             label="Default AI Service"
             items={adaptersToOptions(cfg.config.adapters)}
             helperText="The default service conversations will use unless otherwise configured"
             value={state.user?.defaultAdapter}
+            disabled
           />
+          <Show when={state.user?.admin}>
+          <DefaultPresets/>
 
           <Show when={cfg.config.adapters.includes('horde')}>
             <Divider />
@@ -118,7 +123,7 @@ const Settings: Component = () => {
               helperText={HordeHelpText}
               placeholder={state.user?.hordeName ? 'API key has been verified' : ''}
               type="password"
-            />
+              />
 
             <Show when={state.user?.hordeName}>
               <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('horde')}>
@@ -141,7 +146,8 @@ const Settings: Component = () => {
               </div>
             </div>
           </Show>
-
+          </Show>
+          <Show when={state.user?.admin}>
           <Show when={cfg.config.adapters.includes('kobold')}>
             <Divider />
             <TextInput
@@ -152,7 +158,8 @@ const Settings: Component = () => {
               value={state.user?.koboldUrl}
             />
           </Show>
-
+          </Show>
+          <Show when={state.user?.admin}>
           <Show when={cfg.config.adapters.includes('luminai')}>
             <Divider />
             <TextInput
@@ -163,7 +170,8 @@ const Settings: Component = () => {
               value={state.user?.luminaiUrl}
             />
           </Show>
-
+          </Show>
+          <Show when={state.user?.admin}>
           <Show when={cfg.config.adapters.includes('openai')}>
             <Divider />
             <TextInput
@@ -173,12 +181,13 @@ const Settings: Component = () => {
               placeholder="E.g. sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
               type="password"
               value={state.user?.oaiKey}
-            />
+              />
             <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('openai')}>
               Delete OpenAI Key
             </Button>
           </Show>
-
+        </Show>
+        <Show when={state.user?.admin}>
           <Show when={cfg.config.adapters.includes('novel')}>
             <Divider />
             <h3 class="text-xl">NovelAI settings</h3>
@@ -204,7 +213,7 @@ const Settings: Component = () => {
                     class="link"
                     target="_blank"
                     href="https://github.com/luminai-companion/agn-ai/blob/dev/instructions/novel.md"
-                  >
+                    >
                     Instructions
                   </a>
                   .
@@ -212,14 +221,17 @@ const Settings: Component = () => {
               }
               placeholder={novelVerified()}
             />
+                    </Show>
+                    <Show when={state.user?.admin}>
             <Show when={state.user?.novelVerified}>
               <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('novel')}>
                 Delete Novel API Key
               </Button>
             </Show>
           </Show>
+          </Show>
         </div>
-
+        <Show when={state.user?.admin}>
         <Show when={cfg.config.adapters.includes('luminai')}>
           <Divider />
           <TextInput
@@ -230,7 +242,7 @@ const Settings: Component = () => {
             value={state.user?.luminaiUrl}
           />
         </Show>
-
+        </Show>
         <Show when={!state.loggedIn}>
           <div class="mt-8 mb-4 flex w-full flex-col items-center justify-center">
             <div>This cannot be undone!</div>

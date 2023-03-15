@@ -4,13 +4,7 @@ import { AppSchema } from '../../srv/db/schema'
 import { characterStore } from '../../store'
 
 
-const ProfileCard: Component<{ character: AppSchema.Character; href: string }> = (props) =>
-{
-  console.log('props', props)
-
-}
-return
-(
+const ProfileCard: Component<{ character: AppSchema.Character; href: string }> = (props) =>(
   <>
   <Show when={props.character}>
   <div class="flex flex-col flex-wrap xl:flex-nowrap xl:flex-row">
