@@ -41,7 +41,7 @@ export async function updateCharXp(charId: string, xp: number) {
  
     const originalCharacter = await db('character')
     .findOne({ _id: charId})
-    if (originalCharacter.name==='Aiva'){
+    if (originalCharacter?.name==='Aiva'){
       return
     }
   await db('character').updateOne({ _id: charId }, { $inc: { xp: 1 } })

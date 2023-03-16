@@ -79,11 +79,12 @@ type FormProps = { isLoading: boolean }
 const RegisterForm: Component<FormProps> = (props) => {
   const navigate = useNavigate()
   const register = (evt: Event) => {
-    const { username, password, confirm, handle } = getStrictForm(evt, {
+    const { username, password, confirm, handle,invitecode } = getStrictForm(evt, {
       handle: 'string',
       username: 'string',
       password: 'string',
       confirm: 'string',
+      invitecode: 'string'
     })
 
     if (!handle || !username || !password) return
@@ -108,6 +109,7 @@ const RegisterForm: Component<FormProps> = (props) => {
           required
         />
         <TextInput fieldName="confirm" placeholder="Confirm Password" type="password" required />
+        <TextInput label="Invite code" fieldName="invitecode" placeholder="" required />
       </div>
 
       <Button type="submit" disabled={props.isLoading}>
