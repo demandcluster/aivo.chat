@@ -9,7 +9,7 @@ const REQUIRED_SAMPLERS = defaultPresets.basic.order
 const base = {
   use_story: false,
   use_memory: false,
-  use_authors_note: false,
+  use_authors_note: true,
   use_world_info: false,
 
   /**
