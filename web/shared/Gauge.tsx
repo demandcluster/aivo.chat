@@ -5,49 +5,34 @@ interface Props {
   currentXP: number;
   
 }
-const baseXP = 30
-const xpMultiplier = 1.1
-const xpNeededForFirstLevel = 10
+const xpNeeded = [10, 40, 73, 109,148,191,239,292,350,414,484,561,646,740,843,956,1081,1218,1369,1535]
 
-function calculateTotalXPNeededForLevel(level) {
-  if (level < 1) {
-    return xpNeededForFirstLevel;
-  } else {
-    return Math.floor(baseXP * Math.pow(xpMultiplier, level -1  )) + calculateTotalXPNeededForLevel(level -1 );
-  }
-}
-function xpNeededForLevelUp(currentXP:number) {
-  let xpNeededForNextLevel = xpNeededForFirstLevel;
-  let currentLevel = 1;
+function calculateLevelAndPercent(xp) {
+  let level = 0;
+  let xpNeededForCurrentLevel = xpNeeded[level];
+  let xpNeededForPreviousLevel = xpNeeded[level];
 
-  if (currentXP < xpNeededForFirstLevel) {
-    return { xp: xpNeededForFirstLevel - currentXP, lvl: currentLevel };
+  while (xp >= xpNeededForCurrentLevel) {
+    level++;
+    xpNeededForPreviousLevel = xpNeededForCurrentLevel;
+    xpNeededForCurrentLevel = xpNeeded[level] || xpNeededForCurrentLevel;
   }
 
-  while (currentXP >= xpNeededForNextLevel) {
-    const totalXPNeeeded = calculateTotalXPNeededForLevel(currentLevel - 1);
-    xpNeededForNextLevel = calculateTotalXPNeededForLevel(currentLevel) - totalXPNeeeded;
-    currentXP -= xpNeededForNextLevel;
-    currentLevel++;
-  }
+  const percent = ((xp - xpNeededForPreviousLevel) / (xpNeededForCurrentLevel - xpNeededForPreviousLevel)) * 100;
 
-  return { xp: xpNeededForNextLevel - currentXP, lvl: currentLevel };
+  return { level, percent };
 }
 
 const Gauge = (props: Props) => {
-  const { currentXP } = props
-  const xpNeeded=xpNeededForLevelUp(currentXP).xp
-  const level = xpNeededForLevelUp(currentXP).lvl
-  const levelXP = calculateTotalXPNeededForLevel(level)
-  const percentFilled = Math.min((currentXP - levelXP) / (xpNeeded - xpNeededForFirstLevel), 1) * 100;
+  const { currentXP } = props;
+  const {percent,level} = calculateLevelAndPercent(currentXP)
 
-
-  return (
+  return ( 
     <>
-    <Show when = {currentXP>10}>
+    <Show when = {level>0}>
      <div class="flex">
     <div class="relative my-auto h-7 w-6 rounded-full overflow-hidden bg-gray-300">
-      <div class={`absolute bottom-0 bg-red-500 w-full`} style={{ height: `${percentFilled}%` }}>
+      <div class={`absolute bottom-0 bg-red-500 w-full`} style={{ height: `${percent}%` }}>
       <Heart class="absolute  text-white bottom-0 left-1/2 transform -translate-x-1/2" /></div>
     </div>
       <div class="text-2xl opacity-60 text-teal-300 m-2">{level}</div>

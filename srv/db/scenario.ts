@@ -60,9 +60,12 @@ export async function getScenario(charId: string, char: AppSchema.Character) {
       sCharId = originalCharacter._id
      }
    }
-    let scenarioPrompt = await db('scenario')
-    .find({ charId: {$eq: sCharId}, xp: { $lte: char.xp } }).toArray()
-   
+   let scenarioPrompt = await db('scenario')
+    .find({ charId: {$eq: sCharId}, xp: { $lte: char.xp } })
+    .sort({ xp: -1 })
+    .limit(1)
+    .toArray();
+
 
     return scenarioPrompt[0] ||""
   }
