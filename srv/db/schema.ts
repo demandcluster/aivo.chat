@@ -212,7 +212,12 @@ export namespace AppSchema {
     prompt: string
     xp: number
     greeting: string
-    
+  }
+
+  export interface InviteCode{
+    _id: string
+    kind: 'invitecode'
+    count: number
   }
 }
 
@@ -223,11 +228,12 @@ export type AllDoc =
   | AppSchema.ChatMessage
   | AppSchema.Character
   | AppSchema.User
-  | AppSchema.Profile
+  | AppSchema.Profile 
   | AppSchema.ChatLock
   | AppSchema.ChatMember
   | AppSchema.ChatInvite
   | AppSchema.UserGenPreset
   | AppSchema.Scenario 
+  | AppSchema.InviteCode
 
 export const defaultGenPresets: AppSchema.GenSettings[] = []

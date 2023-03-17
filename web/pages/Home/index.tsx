@@ -15,7 +15,7 @@ const HomePage: Component = () => {
           </>
         }
       />
-      <div class="flex flex-col gap-4  flex-shrink">
+      <div class="flex flex-col gap-4  flex-shrink" >
        <span class="text-lg text-italic">Artificial Intelligence Virtual Other</span>
       </div>
       <div class="text-gray-400">

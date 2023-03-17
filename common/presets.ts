@@ -35,7 +35,7 @@ export const defaultPresets = {
     repetitionPenalty: 1.085,
     repetitionPenaltySlope: 1,
     repetitionPenaltyRange: 512,
-    temp: 0.58,
+    temp: 0.51,
     topK: 0,
     topP: 0.9,
     typicalP: 1,

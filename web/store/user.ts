@@ -112,7 +112,7 @@ export const userStore = createStore<State>(
     },
     async *register(
       _,
-      newUser: { handle: string; username: string; password: string },
+      newUser: { handle: string; username: string; password: string,invitecode: string },
       onSuccess?: () => void
     ) {
       yield { loading: true }
@@ -132,7 +132,7 @@ export const userStore = createStore<State>(
         jwt: res.result.token,
       }
 
-      toastStore.success('Welcome to Agnaistic')
+      toastStore.success('Welcome to AIVO')
       onSuccess?.()
       publish({ type: 'login', token: res.result.token })
     },

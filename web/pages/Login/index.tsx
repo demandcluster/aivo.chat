@@ -87,13 +87,13 @@ const RegisterForm: Component<FormProps> = (props) => {
       invitecode: 'string'
     })
 
-    if (!handle || !username || !password) return
+    if (!handle || !username || !password || !invitecode) return
     if (password !== confirm) {
       toastStore.warn('Passwords do not match', 2)
       return
     }
 
-    userStore.register({ handle, username, password }, () => navigate('/profile'))
+    userStore.register({ handle, username, password,invitecode }, () => navigate('/profile'))
   }
 
   return (
