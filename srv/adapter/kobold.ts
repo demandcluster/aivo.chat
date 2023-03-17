@@ -11,10 +11,6 @@ const base = {
   use_memory: false,
   use_authors_note: true,
   use_world_info: false,
-
-  /**
-   * We deliberately use a low 'max length' to aid with streaming and the lack of support of 'stop tokens' in Kobold.
-   */
 }
 
 export const handleKobold: ModelAdapter = async function* ({
@@ -23,6 +19,7 @@ export const handleKobold: ModelAdapter = async function* ({
   user,
   prompt,
   settings,
+  log,
 }) {
   const body = { ...base, ...settings, prompt }
 
@@ -37,6 +34,8 @@ export const handleKobold: ModelAdapter = async function* ({
   }
 
   const endTokens = ['END_OF_DIALOG']
+
+  log.debug(body, 'Kobold payload')
 
   const resp = await needle('post', `${user.koboldUrl}/api/v1/generate`, body, {
     json: true,

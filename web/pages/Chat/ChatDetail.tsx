@@ -10,7 +10,6 @@ import {
   X,
 } from 'lucide-solid'
 import { Component, createEffect, createMemo, createSignal, For, Show } from 'solid-js'
-import { createMutable } from 'solid-js/store'
 import { ADAPTER_LABELS } from '../../../common/adapters'
 import { AppSchema } from '../../../srv/db/schema'
 import Button from '../../shared/Button'
@@ -35,9 +34,17 @@ const ChatDetail: Component = () => {
     msgs: s.msgs,
     partial: s.partial,
     waiting: s.waiting,
-    retries: s.retries?.list || [],
-    swipeId: s.retries?.msgId,
+    retries: s.retries,
   }))
+
+  const retries = createMemo(() => {
+    const last = msgs.msgs.slice(-1)[0]
+    if (!last) return
+
+    const msgId = last._id
+
+    return { msgId, list: msgs.retries?.[msgId] || [] }
+  })
 
   const [swipe, setSwipe] = createSignal(0)
   const [removeId, setRemoveId] = createSignal('')
@@ -49,14 +56,15 @@ const ChatDetail: Component = () => {
   const nav = useNavigate()
 
   const clickSwipe = (dir: -1 | 1) => () => {
+    const ret = retries()
+    if (!ret || !ret.list.length) return
     const prev = swipe()
-    const max = msgs.retries.length - 1
+    const max = ret.list.length - 1
 
     let next = prev + dir
     if (next < 0) next = max
     else if (next > max) next = 0
 
-    console.log(msgs.retries[next])
     setSwipe(next)
   }
 
@@ -89,8 +97,8 @@ const ChatDetail: Component = () => {
     setSwipe(0)
   }
 
-  const confirmSwipe = () => {
-    msgStore.confirmSwipe(swipe(), () => setSwipe(0))
+  const confirmSwipe = (msgId: string) => {
+    msgStore.confirmSwipe(msgId, swipe(), () => setSwipe(0))
   }
 
   return (
@@ -113,7 +121,7 @@ const ChatDetail: Component = () => {
             </A>
 
             <div class="flex flex-row items-center gap-2">
-              <div class="text-xs italic text-white/25">{ADAPTER_LABELS[adapter()]}</div>
+              <div class="text-xs italic text-[var(--text-500)]">{ADAPTER_LABELS[adapter()]}</div>
               <div class="icon-button cursor-pointer" onClick={() => setShowInvite(true)}>
                 <Tooltip tip="Invite user" position="bottom">
                   <MailPlus />
@@ -157,7 +165,7 @@ const ChatDetail: Component = () => {
               pos={swipe()}
               prev={clickSwipe(-1)}
               next={clickSwipe(1)}
-              list={msgs.retries}
+              list={retries()?.list || []}
             />
             <div class="flex flex-col-reverse gap-4 overflow-y-scroll">
               <div class="flex flex-col gap-2">
@@ -169,8 +177,10 @@ const ChatDetail: Component = () => {
                       char={chats.char!}
                       last={i() >= 1 && i() === msgs.msgs.length - 1}
                       onRemove={() => setRemoveId(msg._id)}
-                      swipe={msg._id === msgs.swipeId && swipe() > 0 && msgs.retries[swipe()]}
-                      confirmSwipe={confirmSwipe}
+                      swipe={
+                        msg._id === retries()?.msgId && swipe() > 0 && retries()?.list[swipe()]
+                      }
+                      confirmSwipe={() => confirmSwipe(msg._id)}
                       cancelSwipe={cancelSwipe}
                     />
                   )}
@@ -255,17 +265,17 @@ const SwipeMessage: Component<{
   pos: number
 }> = (props) => {
   return (
-    <div class="flex h-6 w-full items-center justify-between text-white/50">
+    <div class="flex h-6 w-full items-center justify-between text-[var(--text-800)]">
       <Show when={props.list.length > 1}>
-        <div class="cursor:pointer hover:text-white">
+        <div class="cursor:pointer hover:text-[var(--text-900)]">
           <Button schema="clear" onClick={props.prev}>
             <ChevronLeft />
           </Button>
         </div>
-        <div class="text-white/40">
+        <div class="text-[var(--text-800)]">
           {props.pos + 1} / {props.list.length}
         </div>
-        <div class="cursor:pointer hover:text-white">
+        <div class="cursor:pointer hover:text-[var(--text-800)]">
           <Button schema="clear" onClick={props.next}>
             <ChevronRight />
           </Button>

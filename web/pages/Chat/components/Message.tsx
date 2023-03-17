@@ -40,16 +40,20 @@ const Message: Component<MessageProps> = (props) => {
           char={props.char}
           onRemove={props.onRemove}
           last={props.last && i() === splits().length - 1}
+          lastSplit={i() === splits().length - 1}
           swipe={props.swipe}
           confirmSwipe={props.confirmSwipe}
           cancelSwipe={props.cancelSwipe}
+          original={props.msg}
         />
       )}
     </For>
   )
 }
 
-const SingleMessage: Component<MessageProps> = (props) => {
+const SingleMessage: Component<
+  MessageProps & { original: AppSchema.ChatMessage; lastSplit: boolean }
+> = (props) => {
   const user = userStore()
   const members = chatStore((s) => s.memberIds)
 
@@ -61,9 +65,8 @@ const SingleMessage: Component<MessageProps> = (props) => {
 
   const saveEdit = () => {
     if (!ref) return
-    setEdit(false)
-
     msgStore.editMessage(props.msg._id, ref.innerText)
+    setEdit(false)
   }
 
   const resendMessage = () => {
@@ -75,11 +78,10 @@ const SingleMessage: Component<MessageProps> = (props) => {
   }
 
   const startEdit = () => {
-    if (ref) {
-      ref.innerText = props.msg.msg
-    }
-
     setEdit(true)
+    if (ref) {
+      ref.innerText = props.original.msg
+    }
     ref?.focus()
   }
 
@@ -124,7 +126,11 @@ const SingleMessage: Component<MessageProps> = (props) => {
             <b class="text-900 mr-2" data-bot-name={isBot()} data-user-name={isUser()}>
               {props.msg.characterId ? props.char?.name! : members[props.msg.userId!]?.handle}
             </b>
-            <span class="text-300 text-sm" data-bot-time={isBot} data-user-time={isUser()}>
+            <span
+              class="text-400 flex items-center text-sm"
+              data-bot-time={isBot}
+              data-user-time={isUser()}
+            >
               {new Date(props.msg.createdAt).toLocaleString()}
             </span>
             <Show when={props.msg.characterId && user.user?._id === props.chat?.userId && false}>
@@ -146,7 +152,7 @@ const SingleMessage: Component<MessageProps> = (props) => {
               <Show when={props.last && !props.msg.characterId}>
                 <RefreshCw size={16} class="cursor-pointer" onClick={resendMessage} />
               </Show>
-              <Show when={!props.msg.split}>
+              <Show when={!props.msg.split || props.lastSplit}>
                 <Pencil size={16} class="icon-button" onClick={startEdit} />
                 <Trash size={16} class="icon-button" onClick={props.onRemove} />
               </Show>
@@ -184,9 +190,7 @@ const SingleMessage: Component<MessageProps> = (props) => {
             />
           </Show>
           <Show when={edit()}>
-            <div ref={ref} contentEditable={true}>
-              {msgText()}
-            </div>
+            <div ref={ref} contentEditable={true}></div>
           </Show>
         </div>
       </div>
@@ -197,7 +201,12 @@ const SingleMessage: Component<MessageProps> = (props) => {
 export default Message
 
 function parseMessage(msg: string, char: AppSchema.Character, profile: AppSchema.Profile) {
-  return msg.replace(BOT_REPLACE, char.name).replace(SELF_REPLACE, profile?.handle || 'You')
+  return msg
+    .replace(BOT_REPLACE, char.name)
+    .replace(SELF_REPLACE, profile?.handle || 'You')
+    .split('\n')
+    .filter((v) => !!v)
+    .join('\n\n')
 }
 
 export type SplitMessage = AppSchema.ChatMessage & { split?: boolean }

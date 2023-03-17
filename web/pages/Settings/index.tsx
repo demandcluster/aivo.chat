@@ -158,8 +158,7 @@ const Settings: Component = () => {
               value={state.user?.koboldUrl}
             />
           </Show>
-          </Show>
-          <Show when={state.user?.admin}>
+
           <Show when={cfg.config.adapters.includes('luminai')}>
             <Divider />
             <TextInput
@@ -170,8 +169,7 @@ const Settings: Component = () => {
               value={state.user?.luminaiUrl}
             />
           </Show>
-          </Show>
-          <Show when={state.user?.admin}>
+
           <Show when={cfg.config.adapters.includes('openai')}>
             <Divider />
             <TextInput
