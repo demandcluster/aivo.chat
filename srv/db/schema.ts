@@ -37,6 +37,10 @@ export namespace AppSchema {
     premiumUntil?: number
     oaiKey: string
     nextCredits?: number
+
+    oaiKey: string
+    oaiKeySet?: boolean
+
     hordeKey: string
     hordeModel: string
     hordeName?: string
@@ -91,6 +95,7 @@ export namespace AppSchema {
 
     createdAt: string
     updatedAt: string
+    first?: boolean
   }
 
   /** Description of the character */

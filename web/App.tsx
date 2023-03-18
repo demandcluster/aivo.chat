@@ -14,9 +14,9 @@ import { InvitesPage } from './pages/Invite/InvitesPage'
 import HomePage from './pages/Home'
 import Navigation from './Navigation'
 import GenerationPresetsPage from './pages/GenerationPresets'
-import CharacterChats from './pages/Character/CharacterChats'
 import CharacterScenarios from './pages/Scenarios/CharacterScenarios'
 import CreateScenario from './pages/Scenarios/CreateScenario'
+import CharacterChats from './pages/Character/ChatList'
 import PresetList from './pages/GenerationPresets/PresetList'
 
 const App: Component = () => {

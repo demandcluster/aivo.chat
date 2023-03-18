@@ -7,6 +7,9 @@ import * as matches from './matches'
 import * as credits from './credits'
 import * as scenario from './scenario'
 import * as invitecode from './invitecode'
+import * as presets from './presets'
+import * as msgs from './messages'
+
 export { db } from './client'
 
 export const store = {
@@ -19,4 +22,6 @@ export const store = {
   admin,
   scenario,
   invitecode
+  presets,
+  msgs,
 }
