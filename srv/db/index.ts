@@ -21,7 +21,7 @@ export const store = {
   invites,
   admin,
   scenario,
-  invitecode
+  invitecode,
   presets,
   msgs,
 }

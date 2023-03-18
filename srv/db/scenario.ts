@@ -48,8 +48,8 @@ export async function updateCharXp(charId: string, xp: number) {
 }
 
 export async function getScenarios(charId: string) {
- 
-  let scenarios = await db('scenario').find({charId:charId}).toArray()
+  
+  const  scenarios = await db('scenario').find({charId:charId}).toArray()
   return scenarios ||[]
 }
 

@@ -34,7 +34,7 @@ const HomePage: Component = () => {
       </div>
     </div>
       <div>
-        <p class="text-2xl text-gray-500">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
+        <p class="text-lg text-center lg:text-2xl text-gray-500">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
       </div>
     </div>
   )

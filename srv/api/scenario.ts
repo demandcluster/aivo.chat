@@ -53,8 +53,7 @@ const createScenario = handle(async (req) => {
 
 
 const getScenarios = handle(async ( req ) => {
-const charId = req.params.charId
-console.log(charId,'params')
+  const charId = req.params?.charId || "false"
   const scenarios = await store.scenario.getScenarios(charId!)
   return { scenarios: scenarios }
 })
@@ -95,7 +94,7 @@ const getCharacter = handle(async ({ userId, params }) => {
 
 
 
-router.use(loggedIn, isAdmin)
+router.use(loggedIn)
 //router.post('/', createScenario)
 //router.post('/:id', addScenario)
 router.get('/:charId', getScenarios)

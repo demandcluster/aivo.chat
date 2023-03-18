@@ -35,9 +35,7 @@ export namespace AppSchema {
     premium: boolean
     credits: number
     premiumUntil?: number
-    oaiKey: string
     nextCredits?: number
-
     oaiKey: string
     oaiKeySet?: boolean
 
