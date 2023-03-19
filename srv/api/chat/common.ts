@@ -11,7 +11,13 @@ export function trimResponse(
   members: AppSchema.Profile[],
   endTokens: string[]
 ) {
-  const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>'] //, '\n']
+  const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>', '\n\n']
+  const placeholder = 'NEWLINE_PLACEHOLDER'
+  const trimmedGenerated = generated
+    .replace(/\n\n/g, placeholder)
+    .trim()
+    .replace(new RegExp(placeholder, 'g'), '\n\n')
+  // const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>', '\n\n']
 
   for (const member of members) {
     baseEndTokens.push(`${member.handle}:`, `${member.handle} :`)

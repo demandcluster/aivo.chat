@@ -48,6 +48,7 @@
     "babel-preset-solid": "^1.6.9",
     "bcryptjs": "^2.4.3",
     "buffer": "^5.5.0",
+    "card-flick": "^1.6.0",
     "concurrently": "^7.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -74,6 +75,8 @@
     "showdown": "^2.1.0",
     "solid-js": "^1.6.9",
     "solid-refresh": "^0.4.2",
+    "solid-spring": "^0.0.7",
+    "solid-swipe-card": "github:demandcluster/solid-swipe-card",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.9.5",
     "uuid": "^9.0.0",
@@ -86,5 +89,4 @@
     "png-chunks-encode": "^1.0.0",
     "png-chunks-extract": "^1.0.0"
   }
-  
 }
