@@ -7,6 +7,7 @@ import {
   LogOut,
   MailPlus,
   MessageCircle,
+  HelpCircle,
   Settings,
   Sliders,
   User,
@@ -18,6 +19,7 @@ import { Component, createMemo, JSX, Show } from 'solid-js'
 import AvatarIcon from './shared/AvatarIcon'
 import { inviteStore, settingStore, userStore } from './store'
 import logo from './assets/logo.png'
+
 
 const Navigation: Component = () => {
   const state = settingStore()
@@ -110,8 +112,9 @@ const UserNavigation: Component = () => {
           <Clapperboard /> Scenarios
         </Item> 
       </Show>
-
-    
+      <Item href="/help">
+        <HelpCircle/> Help
+      </Item>
     </>
   )
 }

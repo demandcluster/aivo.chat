@@ -4,14 +4,16 @@ import { AppSchema } from './schema'
 
 export async function checkInviteCode(
     _id:any){
-  const char = await db('invitecode').findOne({ kind: 'invitecode', _id: _id,count: { $gt: 0 } })
-  console.log('invite is ',char)
-  console.log(_id)
+  const char = await db('invitecode').findOne({ kind: 'invitecode', _id: _id.toUpperCase(),count: { $gt: 0 } })
+  
   return char?.kind?true:false
 }
 
 export async function takeInviteCode( id: string) {
-  const list = await db('invitecode').updateOne({ kind: 'invitecode', _id: id }, { $inc: { count: -1 } })
+  // convert id to uppercase
+  const uppercaseId = id.toUpperCase()
+
+  const list = await db('invitecode').updateOne({ kind: 'invitecode', _id: id.toUpperCase() }, { $inc: { count: -1 } })
   return list
 }
 
