@@ -29,7 +29,7 @@ const HelpPage: Component = () => {
         <div>When talking about the other person always refer to them by their name. Example: Hello Julia how are you?</div>
         <div>You can perform an action by placing the action in between asterisks *action*.</div>
         <div>If you don't like a reply, you can just reroll it and get another reply. You can even edit the reply to be exactly as you like. This will take away the fun for a large part, so in order to access the edit feaetures, you first have to toggle the switch on top of the chat window to activate them.</div>
-        
+        <div>When you do not want to answer the character but just want them to continue, just say continue. This can be helpful if the character is telling you a story.</div>
         </section>
         <Divider />
         <section class="flex flex-col gap-4  flex-shrink" >
