@@ -35,7 +35,7 @@ export const defaultPresets = {
     repetitionPenalty: 1.085,
     repetitionPenaltySlope: 1,
     repetitionPenaltyRange: 512,
-    temp: 0.58,
+    temp: 0.51,
     topK: 0,
     topP: 0.9,
     typicalP: 1,
@@ -45,8 +45,10 @@ export const defaultPresets = {
     frequencyPenalty: 0.7,
     presencePenalty: 0.7,
     gaslight: '',
-    oaiModel: 'text-davinci-003',
+    oaiModel: OPENAI_MODELS.Turbo,
     memoryDepth: 5,
+    memoryContextLimit: 500,
+    memoryReverseWeight: false,
   },
   novel_20BC: {
     name: 'Novel 20BC+',
@@ -79,13 +81,13 @@ export const defaultPresets = {
   openai: {
     name: 'OpenAI',
     temp: 0.5,
-    oaiModel: OPENAI_MODELS.DaVinci,
+    oaiModel: OPENAI_MODELS.Turbo,
     maxTokens: 300,
     maxContextLength: 4095,
     frequencyPenalty: 0.7,
     presencePenalty: 0.7,
     gaslight:
-      "Enter roleplay mode. You will write {{name}}'s next reply in a dialogue between {{name}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)\nAvoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.\n\nDescription of {{name}}:\n{{personality}}\nCircumstances and context of the dialogue: {{scenario}}\n",
+      "Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)\nAvoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.\n\nDescription of {{char}}:\n{{personality}}\nCircumstances and context of the dialogue: {{scenario}}\nThis is how {{char}} should talk\n{{example_dialogue}}",
   },
 } satisfies Record<string, Partial<AppSchema.GenSettings>>
 
@@ -255,4 +257,21 @@ export const serviceGenMap: Record<Exclude<ChatAdapter, 'default'>, GenMap> = {
 export function isDefaultPreset(value?: string): value is GenerationPreset {
   if (!value) return false
   return value in defaultPresets
+}
+
+export function getFallbackPreset(adapter: AIAdapter) {
+  switch (adapter) {
+    case 'chai':
+    case 'kobold':
+    case 'horde':
+    case 'luminai':
+    case 'ooba':
+      return defaultPresets.basic
+
+    case 'openai':
+      return defaultPresets.openai
+
+    case 'novel':
+      return defaultPresets.novel_20BC
+  }
 }

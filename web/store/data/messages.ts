@@ -1,7 +1,7 @@
 import { v4 } from 'uuid'
-import { defaultPresets, isDefaultPreset } from '../../../common/presets'
+import { isDefaultPreset } from '../../../common/presets'
 import { createPrompt } from '../../../common/prompt'
-import { AppSchema, defaultGenPresets } from '../../../srv/db/schema'
+import { AppSchema } from '../../../srv/db/schema'
 import { api, isLoggedIn } from '../api'
 import { loadItem, local } from './storage'
 
@@ -15,6 +15,16 @@ export async function editMessage(msg: AppSchema.ChatMessage, replace: string) {
   const next = local.replace(msg._id, messages, { msg: replace })
   local.saveMessages(msg.chatId, next)
   return local.result({ success: true })
+}
+
+export async function getMessages(chatId: string, before: string) {
+  // Guest users already have their entire chat history
+  if (!isLoggedIn()) return local.result({ messages: [] })
+
+  const res = await api.get<{ messages: AppSchema.ChatMessage[] }>(`/chat/${chatId}/messages`, {
+    before,
+  })
+  return res
 }
 
 /**
@@ -40,14 +50,15 @@ export async function sendMessage(chatId: string, message: string) {
   // We intentionally do not store the new message in local storage
   // The server will send the 'user message' via the socket if the this request is not a retry
   const next = msgs.concat(newMessage(chat, local.ID, message.trim()))
-  const prompt = createPrompt({ char, chat, members: [profile], messages: next })
+  const prompt = createPrompt({ char, chat, members: [profile], messages: next, config: user })
 
   await api.post(`/chat/${chat._id}/guest-message`, {
     char,
     chat,
     user,
     sender: profile,
-    prompt,
+    prompt: prompt.prompt,
+    lines: prompt.lines,
     message,
   })
   return local.result({ success: true })
@@ -78,14 +89,21 @@ export async function retryUserMessage(chatId: string, message: string) {
   if ('error' in entities) return entities
 
   const { chat, char, profile, msgs, user } = entities
-  const prompt = createPrompt({ char, chat, members: [profile], messages: msgs })
+  const prompt = createPrompt({
+    char,
+    chat,
+    members: [profile],
+    messages: msgs,
+    config: entities.user,
+  })
 
   await api.post(`/chat/${chat._id}/guest-message`, {
     char,
     chat,
     user,
     sender: profile,
-    prompt,
+    prompt: prompt.prompt,
+    lines: prompt.lines,
     message,
     retry: true,
   })
@@ -123,8 +141,10 @@ export async function retryCharacterMessage(
     char,
     chat,
     members: [profile],
-    messages: msgs.slice(0, index),
+    messages: msgs,
     continue: continueOn,
+    retry: replace,
+    config: entities.user,
   })
 
   return api.post(`/chat/${chat._id}/guest-message`, {
@@ -132,7 +152,8 @@ export async function retryCharacterMessage(
     chat,
     user,
     sender: profile,
-    prompt,
+    prompt: prompt.prompt,
+    lines: prompt.lines,
     retry: true,
     message: message.msg,
     continue: continueOn,

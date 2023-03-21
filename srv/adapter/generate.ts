@@ -1,5 +1,10 @@
 import { AIAdapter } from '../../common/adapters'
-import { mapPresetsToAdapter, defaultPresets, isDefaultPreset } from '../../common/presets'
+import {
+  mapPresetsToAdapter,
+  defaultPresets,
+  isDefaultPreset,
+  getFallbackPreset,
+} from '../../common/presets'
 import { store } from '../db'
 import { AppSchema } from '../db/schema'
 import { AppLog, logger } from '../logger'
@@ -12,8 +17,9 @@ import { handleLuminAI } from './luminai'
 import { handleNovel } from './novel'
 import { handleOoba } from './ooba'
 import { handleOAI } from './openai'
-import { createPrompt } from './prompt'
+import { getMessagesForPrompt } from './prompt'
 import { ModelAdapter } from './type'
+import { createPrompt } from '../../common/prompt'
 
 export type GenerateOptions = {
   senderId: string
@@ -42,6 +48,7 @@ export async function createGuestTextStream(opts: {
   log: AppLog
   socketId: string
   prompt: string
+  lines?: string[]
   continue?: string
 }) {
   const adapter = getAdapater(opts.chat, opts.user)
@@ -69,13 +76,25 @@ export async function createTextStream(opts: GenerateOptions) {
     throw new StatusError('Sender not found in chat members', 400)
   }
 
-  const prompt = await createPrompt({
+  const promptOpts = {
     char,
     chat,
     members,
     retry: opts.retry,
     settings,
     continue: opts.continue,
+  }
+  const { messages } = await getMessagesForPrompt(promptOpts)
+
+  const prompt = createPrompt({
+    char,
+    chat,
+    members,
+    retry: opts.retry,
+    settings,
+    continue: opts.continue,
+    messages,
+    config: user,
   })
 
   const adapterOpts = {
@@ -85,8 +104,8 @@ export async function createTextStream(opts: GenerateOptions) {
     members,
     user,
     sender,
-    prompt,
     settings,
+    ...prompt,
   }
 
   const handler = handlers[adapter]
@@ -159,12 +178,14 @@ async function getGenerationSettings(
     if (isDefaultPreset(chat.genPreset)) return defaultPresets[chat.genPreset]
     if (guest) {
       if (chat.genSettings) return chat.genSettings
-      return defaultPresets.basic
+      return getFallbackPreset(adapter)
     }
 
-    const preset = await store.users.getUserPreset(chat.genPreset)
+    const preset = await store.presets.getUserPreset(chat.genPreset)
     if (preset) return preset
   }
+
+  if (chat.genSettings) return chat.genSettings
 
   const servicePreset = user.defaultPresets?.[adapter]
   if (servicePreset) {
@@ -173,13 +194,12 @@ async function getGenerationSettings(
     // No user presets are persisted for anonymous users
     // Do not try to check the database for them
     if (guest) {
-      return defaultPresets.basic
+      return getFallbackPreset(adapter)
     }
 
-    const preset = await store.users.getUserPreset(servicePreset)
+    const preset = await store.presets.getUserPreset(servicePreset)
     if (preset) return preset
   }
 
-  if (chat.genSettings) return chat.genSettings
-  return defaultPresets.basic
+  return getFallbackPreset(adapter)
 }

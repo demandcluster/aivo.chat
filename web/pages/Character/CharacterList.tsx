@@ -11,17 +11,19 @@ import DeleteCharacterModal from './DeleteCharacter'
 import Modal from '../../shared/Modal'
 import Dropdown from '../../shared/Dropdown'
 import { exportCharacter } from '../../../common/prompt'
-import {userStore} from '../../store'
+import {userStore, scenarioStore} from '../../store'
 
 import Gauge from '../../shared/Gauge'
 
 const CharacterList: Component = () => {
   const chars = characterStore((s) => s.characters)
-
+  const scenarios = scenarioStore((s) => s.scenarios)
   const [showImport, setImport] = createSignal(false)
   const [showDelete, setDelete] = createSignal<AppSchema.Character>()
   const [char, setChar] = createSignal<AppSchema.Character>()
   const {user} = userStore()
+  const {scenario} = scenarioStore()
+
   const onImport = (char: NewCharacter) => {
     characterStore.createCharacter(char, () => setImport(false))
   }
@@ -54,7 +56,7 @@ const CharacterList: Component = () => {
           </div>
           </Show>
           <For each={chars.list}>
-            {(char) => (
+            {(char) => (           
               <Character
                 character={char}
                 user={user}
@@ -80,6 +82,7 @@ const CharacterList: Component = () => {
 }
 
 const Character: Component<{
+  scenario: AppSchema.Scenario
   character: AppSchema.Character
   user: Function
   delete: () => void

@@ -38,13 +38,18 @@ export async function addScenario(props: AppSchema.Scenario) {
 
 
 export async function updateCharXp(charId: string, xp: number) {
-
+ 
+    const originalCharacter = await db('character')
+    .findOne({ _id: charId})
+    if (originalCharacter?.name==='Aiva'){
+      return
+    }
   await db('character').updateOne({ _id: charId }, { $inc: { xp: 1 } })
 }
 
 export async function getScenarios(charId: string) {
- 
-  let scenarios = await db('scenario').find({charId:charId}).toArray()
+  
+  const  scenarios = await db('scenario').find({charId:charId}).toArray()
   return scenarios ||[]
 }
 

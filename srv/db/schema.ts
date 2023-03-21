@@ -35,8 +35,10 @@ export namespace AppSchema {
     premium: boolean
     credits: number
     premiumUntil?: number
-    oaiKey: string
     nextCredits?: number
+    oaiKey: string
+    oaiKeySet?: boolean
+
     hordeKey: string
     hordeModel: string
     hordeName?: string
@@ -91,6 +93,7 @@ export namespace AppSchema {
 
     createdAt: string
     updatedAt: string
+    first?: boolean
   }
 
   /** Description of the character */
@@ -212,7 +215,12 @@ export namespace AppSchema {
     prompt: string
     xp: number
     greeting: string
-    
+  }
+
+  export interface InviteCode{
+    _id: string
+    kind: 'invitecode'
+    count: number
   }
   export interface Swipe{
     count: int
@@ -226,12 +234,13 @@ export type AllDoc =
   | AppSchema.ChatMessage
   | AppSchema.Character
   | AppSchema.User
-  | AppSchema.Profile
+  | AppSchema.Profile 
   | AppSchema.ChatLock
   | AppSchema.ChatMember
   | AppSchema.ChatInvite
   | AppSchema.UserGenPreset
   | AppSchema.Scenario 
   | AppSchema.Swipe 
+  | AppSchema.InviteCode
 
 export const defaultGenPresets: AppSchema.GenSettings[] = []

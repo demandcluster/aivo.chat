@@ -3,7 +3,9 @@ import { sanitise, trimResponse } from '../api/chat/common'
 import { ModelAdapter } from './type'
 import { decryptText } from '../db/util'
 import { defaultPresets } from '../../common/presets'
-import { formatCharacter } from '../../common/prompt'
+import { BOT_REPLACE, formatCharacter, getPromptParts, SELF_REPLACE } from '../../common/prompt'
+import { getEncoder } from '../../common/tokenize'
+import { OPENAI_MODELS } from '../../common/adapters'
 
 const baseUrl = `https://api.openai.com/v1`
 
@@ -11,16 +13,8 @@ type OpenAIMessagePropType = {
   role: 'user' | 'assistant' | 'system'
   content: string
 }
-export const handleOAI: ModelAdapter = async function* ({
-  char,
-  members,
-  user,
-  prompt,
-  settings,
-  sender,
-  log,
-  guest,
-}) {
+export const handleOAI: ModelAdapter = async function* (opts) {
+  const { char, members, user, prompt, settings, sender, log, guest, lines } = opts
   if (!user.oaiKey) {
     yield { error: `OpenAI request failed: Not configured` }
     return
@@ -35,34 +29,50 @@ export const handleOAI: ModelAdapter = async function* ({
     frequency_penalty: settings.frequency_penalty ?? defaultPresets.openai.frequencyPenalty,
   }
 
-  const turbo = oaiModel === 'gpt-3.5-turbo'
-  if (turbo) {
-    // i looked at miku code before writing this
-    // https://github.com/miku-gg/miku/blob/master/packages/extensions/src/chat-prompt-completers/OpenAIPromptCompleter.ts#L86
-    // https://github.com/miku-gg/miku/blob/master/packages/extensions/src/chat-prompt-completers/OpenAIPromptCompleter.ts#L65
-    const conversation = prompt.replace(char.greeting, '')
-    const lines = conversation.split('\n')
-    const messages: OpenAIMessagePropType[] = [
-      {
-        role: 'system',
-        content: settings.gaslight
-          .replace(/\{\{name\}\}/g, char.name)
-          .replace(/\{\{char\}\}/g, char.name)
-          .replace(/\{\{user\}\}/g, sender.handle || 'You')
-          .replace(/\{\{personality\}\}/g, formatCharacter(char.name, char.persona))
-          .replace(/\{\{scenario\}\}/g, char.scenario),
-      },
-    ]
+  const promptParts = getPromptParts(opts)
 
-    for (const line of lines) {
-      const startsChar = line.startsWith(char.name)
-      messages.push({
-        role: startsChar ? 'assistant' : 'user',
-        content: line.substring(line.indexOf(':')),
-      })
+  const turbo = oaiModel === OPENAI_MODELS.Turbo
+  if (turbo) {
+    const encoder = getEncoder('openai', OPENAI_MODELS.Turbo)
+    const user = sender.handle || 'You'
+
+    const messages: OpenAIMessagePropType[] = [{ role: 'system', content: promptParts.gaslight }]
+    const history: OpenAIMessagePropType[] = []
+
+    const all = []
+
+    const maxBudget =
+      (settings.maxContextLength || defaultPresets.basic.maxContextLength) - settings.max_tokens
+    let tokens = encoder(promptParts.gaslight)
+
+    if (lines) all.push(...lines)
+
+    for (const line of all.reverse()) {
+      let role: 'user' | 'assistant' | 'system' = 'assistant'
+      const isBot = line.startsWith(char.name)
+      const isUser = line.startsWith(sender.handle)
+      const content = line
+        .substring(line.indexOf(':') + 1)
+        .trim()
+        .replace(BOT_REPLACE, char.name)
+        .replace(SELF_REPLACE, user)
+
+      if (isBot) {
+        role = 'assistant'
+      } else if (isUser) {
+        role = 'user'
+      } else if (line === '<START>') {
+        role = 'system'
+      }
+
+      const length = encoder(content)
+      if (tokens + length > maxBudget) break
+
+      tokens += length
+      history.push({ role, content })
     }
 
-    body.messages = messages
+    body.messages = messages.concat(history.reverse())
   } else {
     body.prompt = prompt
   }
@@ -74,10 +84,13 @@ export const handleOAI: ModelAdapter = async function* ({
     Authorization: bearer,
   }
 
+  log.debug(body, 'OpenAI payload')
+
   const url = turbo ? `${baseUrl}/chat/completions` : `${baseUrl}/completions`
   const resp = await needle('post', url, JSON.stringify(body), { json: true, headers }).catch(
     (err) => ({ error: err })
   )
+
   if ('error' in resp) {
     log.error({ error: resp.error }, 'OpenAI failed to send')
     yield { error: `OpenAI request failed: ${resp.error?.message || resp.error}` }
@@ -85,7 +98,7 @@ export const handleOAI: ModelAdapter = async function* ({
   }
 
   if (resp.statusCode && resp.statusCode >= 400) {
-    log.error({ body: resp.body }, 'OpenAI request failed')
+    log.error({ body: resp.body }, `OpenAI request failed (${resp.statusCode})`)
     yield { error: `OpenAI request failed: ${resp.statusMessage}` }
     return
   }

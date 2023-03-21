@@ -1,11 +1,20 @@
 import { assertValid } from 'frisker'
 import { store } from '../../db'
 import { createTextStream, getResponseEntities } from '../../adapter/generate'
-import { createPrompt } from '../../adapter/prompt'
 import { post, PY_URL } from '../request'
 import { errors, handle } from '../wrap'
 import { sendMany,sendOne } from '../ws'
 import { obtainLock, releaseLock, verifyLock } from './lock'
+
+export const getMessages = handle(async ({ userId, params, query }) => {
+  const chatId = params.id
+
+  assertValid({ before: 'string' }, query)
+  const before = query.before
+
+  const messages = await store.msgs.getMessages(chatId, before)
+  return { messages }
+})
 
 export const generateMessage = handle(async ({ userId, params, body, log }, res) => {
   const id = params.id
@@ -32,7 +41,7 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
 
 
   if (!body.retry) {
-    const userMsg = await store.chats.createChatMessage({
+    const userMsg = await store.msgs.createChatMessage({
       chatId: id,
       message: body.message,
       senderId: userId!,
@@ -57,7 +66,6 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
   for await (const gen of stream) {
     if (typeof gen === 'string') {
       generated = gen
-      sendMany(members, { type: 'message-partial', partial: gen, adapter, chatId: id })
       continue
     }
 
@@ -71,7 +79,7 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
   await verifyLock(lockProps)
 
   if (!error && generated) {
-    const msg = await store.chats.createChatMessage(
+    const msg = await store.msgs.createChatMessage(
       { chatId: id, message: generated, characterId: chat.characterId, adapter },
       body.ephemeral
     )
@@ -149,7 +157,7 @@ export const retryMessage = handle(async ({ body, params, userId, log }, res) =>
     await verifyLock({ chatId: id, lockId })
 
     if (!error && generated) {
-      await store.chats.editMessage(messageId, response, adapter)
+      await store.msgs.editMessage(messageId, response, adapter)
     }
 
     await store.chats.update(id, {})
@@ -170,9 +178,8 @@ export const retryMessage = handle(async ({ body, params, userId, log }, res) =>
 export const summarizeChat = handle(async (req) => {
   const chatId = req.params.id
   const entities = await getResponseEntities(chatId, req.userId!)
-  const prompt = await createPrompt(entities)
-  const maxTokens = 2048
- 
+  const prompt = 'TODO' // await createPrompt(entities)
+
   const summary = await post({ url: '/summarize', body: { prompt }, host: PY_URL })
   return { summary }
 })

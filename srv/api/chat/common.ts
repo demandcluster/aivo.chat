@@ -11,6 +11,7 @@ export function trimResponse(
   members: AppSchema.Profile[],
   endTokens: string[]
 ) {
+  const allEndTokens = getEndTokens(char, members)
   const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>', '\n\n']
   const placeholder = 'NEWLINE_PLACEHOLDER'
   const trimmedGenerated = generated
@@ -24,7 +25,7 @@ export function trimResponse(
   }
 
   let index = -1
-  const trimmed = baseEndTokens.concat(...endTokens).reduce((prev, endToken) => {
+  const trimmed = allEndTokens.concat(...endTokens).reduce((prev, endToken) => {
     const idx = generated.indexOf(endToken)
 
     if (idx === -1) return prev
@@ -43,6 +44,27 @@ export function trimResponse(
   }
 
   return sanitise(trimmed)
+}
+
+export function getEndTokens(
+  char: AppSchema.Character,
+  members: AppSchema.Profile[],
+  endTokens: string[] = []
+) {
+  const baseEndTokens = endTokens.concat([
+    `${char.name}:`,
+    `${char.name} :`,
+    'END_OF_DIALOG',
+    '<END>',
+    '\n\n',
+  ])
+
+  for (const member of members) {
+    baseEndTokens.push(`${member.handle}:`, `${member.handle} :`)
+  }
+
+  const uniqueTokens = Array.from(new Set(baseEndTokens))
+  return uniqueTokens
 }
 
 export function joinParts(parts: string[]) {

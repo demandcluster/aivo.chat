@@ -15,7 +15,7 @@ const HomePage: Component = () => {
           </>
         }
       />
-      <div class="flex flex-col gap-4  flex-shrink">
+      <div class="flex flex-col gap-4  flex-shrink" >
        <span class="text-lg text-italic">Artificial Intelligence Virtual Other</span>
       </div>
       <div class="text-gray-400">
@@ -34,7 +34,7 @@ const HomePage: Component = () => {
       </div>
     </div>
       <div>
-        <p class="text-2xl text-gray-500">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
+        <p class="text-lg text-center lg:text-2xl text-gray-500">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
       </div>
     </div>
   )

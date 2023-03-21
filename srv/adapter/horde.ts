@@ -22,6 +22,7 @@ export const handleHorde: ModelAdapter = async function* ({
   sender,
   settings,
   guest,
+  log,
 }) {
   if (!user.hordeModel) {
     yield { error: `Horde request failed: Not configured` }
@@ -57,6 +58,8 @@ export const handleHorde: ModelAdapter = async function* ({
   }
 
   const headers = { apikey: key, 'Client-Agent': 'KoboldAiLite:11' }
+
+  log.debug(body, 'Horde payload')
 
   const init = await needle(
     'post',
@@ -100,12 +103,13 @@ export const handleHorde: ModelAdapter = async function* ({
     }).catch((error) => ({ error }))
 
     if ('error' in check) {
+      logger.error({ error: check.error }, `Horde request failed (check)`)
       yield { error: `Horde request failed: ${check.error}` }
       return
     }
 
     if (check.statusCode && check.statusCode >= 400) {
-      logger.error({ error: check.body }, `Horde request failed`)
+      logger.error({ error: check.body }, `Horde request failed (${check.statusCode})`)
       yield { error: `Horde request failed: ${check.statusMessage}` }
       return
     }

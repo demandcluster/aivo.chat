@@ -20,6 +20,7 @@ export const guestGenerateMsg = handle(async ({ params, body, log, socketId }, r
       message: 'string',
       prompt: 'string',
       retry: 'boolean?',
+      lines: ['string?'],
       continue: 'string?',
     },
     body
@@ -50,7 +51,6 @@ export const guestGenerateMsg = handle(async ({ params, body, log, socketId }, r
   for await (const gen of stream) {
     if (typeof gen === 'string') {
       generated = gen
-      sendGuest(socketId, { type: 'guest-message-partial', partial: gen, chatId: id })
       continue
     }
 
