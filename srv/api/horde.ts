@@ -62,7 +62,7 @@ async function updateModelCache() {
     get<HordeModel[]>({ url: `/status/models?type=text` }).catch(() => null),
     get<HordeWorker[]>({ url: `/workers?type=text` }),
   ])
-
+  console.log('models',models)
   if (models?.result) {
     TEXT_CACHE = models.result.filter((model) => model.type !== 'image')
   }

@@ -9,10 +9,10 @@ import { ModelAdapter } from './type'
 
 const REQUIRED_SAMPLERS = defaultPresets.basic.order
 
-const baseUrl = 'https://stablehorde.net/api/v2'
+const baseUrl = 'https://horde.aivo.chat/api/v2'
 
 const base = { n: 1 }
-const defaultModel = 'PygmalionAI/pygmalion-6b'
+const defaultModel = 'PygmalionAI/pygmalion-2b'
 
 export const handleHorde: ModelAdapter = async function* ({
   char,

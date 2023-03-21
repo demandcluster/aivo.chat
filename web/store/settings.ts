@@ -11,7 +11,7 @@ type SettingStore = {
   workers: HordeWorker[]
 }
 
-const HORDE_URL = `https://stablehorde.net/api/v2`
+const HORDE_URL = `https://horde.aivo.chat/api/v2`
 
 export const settingStore = createStore<SettingStore>('settings', {
   showMenu: false,

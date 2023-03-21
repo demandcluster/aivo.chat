@@ -109,7 +109,7 @@ const Settings: Component = () => {
             items={adaptersToOptions(cfg.config.adapters)}
             helperText="The default service conversations will use unless otherwise configured"
             value={state.user?.defaultAdapter}
-            disabled
+           
           />
           <Show when={state.user?.admin}>
           <DefaultPresets/>
