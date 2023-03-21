@@ -76,7 +76,6 @@
     "solid-js": "^1.6.9",
     "solid-refresh": "^0.4.2",
     "solid-spring": "^0.0.7",
-    "solid-swipe-card": "github:demandcluster/solid-swipe-card",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.9.5",
     "uuid": "^9.0.0",

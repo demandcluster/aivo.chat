@@ -2,6 +2,7 @@ import * as local from './storage'
 import * as chars from './chars'
 import * as chats from './chats'
 import * as user from './user'
+import * as swipe from './swipe'
 import * as msg from './messages'
 import * as presets from './presets'
 
@@ -11,5 +12,6 @@ export const data = {
   chats,
   msg,
   user,
+  swipe,
   presets,
 }

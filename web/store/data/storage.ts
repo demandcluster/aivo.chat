@@ -14,6 +14,7 @@ export const KEYS = {
   chats: 'chats',
   presets: 'presets',
   lastChatId: 'guestLastChatId',
+  swipe: 'swipe',
 }
 
 type LocalStorage = {
@@ -24,8 +25,8 @@ type LocalStorage = {
   config: AppSchema.User
   presets: AppSchema.UserGenPreset[]
   lastChatId: string
+  swipe: number
 }
-
 const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
   characters: [
     {
@@ -71,6 +72,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
     koboldUrl: 'https://ai.aivo.chat',
     luminaiUrl: '',
   },
+  swipe:0,
   profile: { _id: '', kind: 'profile', userId: ID, handle: 'You' },
   lastChatId: '',
   messages: [],
@@ -82,6 +84,10 @@ export function saveChars(state: AppSchema.Character[]) {
 
 export function saveChats(state: AppSchema.Chat[]) {
   localStorage.setItem(KEYS.chats, JSON.stringify(state))
+}
+
+export function saveSwipe(state: AppSchema.Swipe) {
+  localStorage.setItem('swipe', JSON.stringify(state))
 }
 
 export function saveMessages(chatId: string, messages: AppSchema.ChatMessage[]) {
@@ -143,6 +149,7 @@ export const local = {
   saveMessages,
   savePresets,
   saveProfile,
+  saveSwipe,
   deleteChatMessages,
   loadItem,
   getMessages,
