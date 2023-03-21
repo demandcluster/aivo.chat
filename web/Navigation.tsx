@@ -98,7 +98,7 @@ const UserNavigation: Component = () => {
         <Settings /> Settings
       </Item>
 
-    <Show when={user.user?.admin}>
+    <Show when={user.user?.admin||user.user?.premium}>
       <Item href="/presets">
         <Sliders /> Presets
       </Item>

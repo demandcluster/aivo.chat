@@ -144,7 +144,7 @@ const ChatDetail: Component = () => {
                   <MailPlus />
                 </Tooltip>
               </div>
-            <Show when={user.user?.admin}>
+            <Show when={user.user?.admin||user.user?.premium}>
               <Show when={chats.chat?.userId === user.user?._id}>
                 <div class="icon-button">
                   <Sliders onClick={() => setShowGen(true)} />
