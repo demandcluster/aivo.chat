@@ -222,9 +222,6 @@ export namespace AppSchema {
     kind: 'invitecode'
     count: number
   }
-  export interface Swipe{
-    count: int
-  }
 }
 
 export type Doc<T extends AllDoc['kind'] = AllDoc['kind']> = Extract<AllDoc, { kind: T }>
@@ -240,7 +237,6 @@ export type AllDoc =
   | AppSchema.ChatInvite
   | AppSchema.UserGenPreset
   | AppSchema.Scenario 
-  | AppSchema.Swipe 
   | AppSchema.InviteCode
 
 export const defaultGenPresets: AppSchema.GenSettings[] = []

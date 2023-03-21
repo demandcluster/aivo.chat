@@ -12,17 +12,6 @@ export function trimResponse(
   endTokens: string[]
 ) {
   const allEndTokens = getEndTokens(char, members)
-  const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>', '\n\n']
-  const placeholder = 'NEWLINE_PLACEHOLDER'
-  const trimmedGenerated = generated
-    .replace(/\n\n/g, placeholder)
-    .trim()
-    .replace(new RegExp(placeholder, 'g'), '\n\n')
-  // const baseEndTokens = [`${char.name}:`, `${char.name} :`, 'END_OF_DIALOG', '<END>', '\n\n']
-
-  for (const member of members) {
-    baseEndTokens.push(`${member.handle}:`, `${member.handle} :`)
-  }
 
   let index = -1
   const trimmed = allEndTokens.concat(...endTokens).reduce((prev, endToken) => {

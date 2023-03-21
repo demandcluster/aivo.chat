@@ -17,10 +17,11 @@ const valid = {
   scenario: 'string',
   greeting: 'string',
   sampleChat: 'string',
-  match: 'boolean',
-  xp: 'number',
-  premium: 'boolean',
-  summary: 'string',
+  match: "boolean",
+  xp: "number",
+
+  premium: "boolean",
+  summary: "string", 
   persona: {
     kind: PERSONA_FORMATS,
     attributes: 'any',

@@ -403,15 +403,7 @@ body {
   .drawer > * > a.active {
     @apply bg-[var(--hl-900)];
   }
-  @media (min-width: 768px) {
-    .likes-middle{
-      right: calc(50% - 20rem) !important;
-    }
-  }
-  .text-shadow {
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  }
-  
+
   @keyframes hideDrawer {
     to {
       visibility: hidden;
