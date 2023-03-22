@@ -16,7 +16,7 @@ type OpenAIMessagePropType = {
 export const handleOAI: ModelAdapter = async function* (opts) {
   const { char, members, user, prompt, settings, sender, log, guest, lines } = opts
   if (!user.oaiKey) {
-    yield { error: `OpenAI request failed: Not configured` }
+    yield { error: `OpenAI request failed: Not OpenAI API key not set. Check your settings.` }
     return
   }
   const oaiModel = settings.oaiModel ?? defaultPresets.openai.oaiModel
@@ -41,13 +41,14 @@ export const handleOAI: ModelAdapter = async function* (opts) {
 
     const all = []
 
-    const maxBudget =
+    let maxBudget =
       (settings.maxContextLength || defaultPresets.basic.maxContextLength) - settings.max_tokens
+
     let tokens = encoder(promptParts.gaslight)
 
     if (lines) all.push(...lines)
 
-    for (const line of all.reverse()) {
+    for (const line of all) {
       let role: 'user' | 'assistant' | 'system' = 'assistant'
       const isBot = line.startsWith(char.name)
       const isUser = line.startsWith(sender.handle)
@@ -87,9 +88,10 @@ export const handleOAI: ModelAdapter = async function* (opts) {
   log.debug(body, 'OpenAI payload')
 
   const url = turbo ? `${baseUrl}/chat/completions` : `${baseUrl}/completions`
-  const resp = await needle('post', url, JSON.stringify(body), { json: true, headers }).catch(
-    (err) => ({ error: err })
-  )
+  const resp = await needle('post', url, JSON.stringify(body), {
+    json: true,
+    headers,
+  }).catch((err) => ({ error: err }))
 
   if ('error' in resp) {
     log.error({ error: resp.error }, 'OpenAI failed to send')

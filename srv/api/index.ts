@@ -10,6 +10,7 @@ import horde from './horde'
 import settings from './settings'
 import freeCredits from './freecredits'
 import scenario from './scenario'
+import memory from './memory'
 
 const router = Router()
 
@@ -24,4 +25,6 @@ router.use('/horde', horde)
 router.use('/settings', settings)
 router.use('/freecredits', freeCredits)
 router.use('/scenarios',scenario)
+router.use('/memory', memory)
+
 export default router

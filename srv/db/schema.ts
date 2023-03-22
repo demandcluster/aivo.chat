@@ -44,6 +44,10 @@ export namespace AppSchema {
     hordeName?: string
     hordeWorkers?: string[]
 
+    scaleUrl?: string
+    scaleApiKey?: string
+    scaleApiKeySet?: boolean
+
     defaultAdapter: AIAdapter
     defaultPresets?: { [key in AIAdapter]?: string }
   }
@@ -180,6 +184,7 @@ export namespace AppSchema {
     memoryDepth?: number
     memoryContextLimit?: number
     memoryReverseWeight?: boolean
+    src?: string
   }
 
   export interface AppConfig {
@@ -189,6 +194,7 @@ export namespace AppSchema {
   }
 
   export interface MemoryBook {
+    kind: 'memory'
     _id: string
     name: string
     userId: string
@@ -238,5 +244,6 @@ export type AllDoc =
   | AppSchema.UserGenPreset
   | AppSchema.Scenario 
   | AppSchema.InviteCode
+  | AppSchema.MemoryBook
 
 export const defaultGenPresets: AppSchema.GenSettings[] = []

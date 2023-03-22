@@ -14,6 +14,7 @@ export const KEYS = {
   chats: 'chats',
   presets: 'presets',
   lastChatId: 'guestLastChatId',
+  memory: 'memory',
 }
 
 type LocalStorage = {
@@ -24,6 +25,7 @@ type LocalStorage = {
   config: AppSchema.User
   presets: AppSchema.UserGenPreset[]
   lastChatId: string
+  memory: AppSchema.MemoryBook[]
 }
 
 const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
@@ -74,6 +76,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
   profile: { _id: '', kind: 'profile', userId: ID, handle: 'You' },
   lastChatId: '',
   messages: [],
+  memory: [],
 }
 
 export function saveChars(state: AppSchema.Character[]) {

@@ -24,9 +24,12 @@ import HelpPage from './pages/Help'
 const App: Component = () => {
   const state = userStore()
   const cfg = settingStore()
-  userStore.getProfile()
-  userStore.getConfig()
-  settingStore.getConfig()
+
+  createEffect(() => {
+    userStore.getProfile()
+    userStore.getConfig()
+    settingStore.getConfig()
+  })
 
   return (
     <div class="scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-[var(--hl-900)] flex h-screen flex-col justify-between">

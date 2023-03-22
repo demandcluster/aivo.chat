@@ -7,9 +7,21 @@ import { AppSchema } from '../../db/schema'
 import { encryptText } from '../../db/util'
 import { findUser, HORDE_GUEST_KEY } from '../horde'
 import { get } from '../request'
+import { getAppConfig } from '../settings'
 import { handleUpload } from '../upload'
 import { errors, handle, StatusError } from '../wrap'
 import { sendAll } from '../ws'
+
+export const getInitialLoad = handle(async ({ userId }) => {
+  const [profile, user, presets, settings] = await Promise.all([
+    store.users.getProfile(userId!),
+    getSafeUserConfig(userId!),
+    store.presets.getUserPresets(userId!),
+    getAppConfig(),
+  ])
+
+  return { profile, user, presets, settings }
+})
 
 export const getProfile = handle(async ({ userId, params }) => {
   const id = params.id ? params.id : userId!
@@ -18,15 +30,16 @@ export const getProfile = handle(async ({ userId, params }) => {
 })
 
 export const getConfig = handle(async ({ userId }) => {
-  const user = await store.users.getUser(userId!)
-  if (user) {
-    user.novelApiKey = ''
-    user.hordeKey = ''
-
-    if (user.oaiKey) user.oaiKeySet = true
-    user.oaiKey = ''
-  }
+  const user = await getSafeUserConfig(userId!)
   return user
+})
+
+export const deleteScaleKey = handle(async ({ userId }) => {
+  await store.users.updateUser(userId!, {
+    scaleApiKey: '',
+  })
+
+  return { success: true }
 })
 
 export const deleteHordeKey = handle(async ({ userId }) => {
@@ -67,7 +80,9 @@ export const updateConfig = handle(async ({ userId, body }) => {
       hordeWorkers: ['string'],
       oaiKey: 'string?',
       defaultAdapter: config.adapters,
- //     defaultPresets: 'any',
+      defaultPresets: 'any',
+      scaleUrl: 'string?',
+      scaleApiKey: 'string?',
     },
     body
   )
@@ -101,9 +116,9 @@ export const updateConfig = handle(async ({ userId, body }) => {
     update.hordeKey = encryptText(body.hordeApiKey)
   }
 
-  await verifyKobldUrl(prevUser, body.koboldUrl)
+  const validKoboldUrl = await verifyKobldUrl(prevUser, body.koboldUrl)
 
-  if (body.koboldUrl !== undefined) update.koboldUrl = body.koboldUrl
+  if (validKoboldUrl !== undefined) update.koboldUrl = validKoboldUrl
   if (body.luminaiUrl !== undefined) update.luminaiUrl = body.luminaiUrl
 
   if (body.hordeModel) {
@@ -129,7 +144,13 @@ export const updateConfig = handle(async ({ userId, body }) => {
     update.oaiKey = encryptText(body.oaiKey!)
   }
 
-  const user = await store.users.updateUser(userId!, update)
+  if (body.scaleUrl !== undefined) update.scaleUrl = body.scaleUrl
+  if (body.scaleApiKey) {
+    update.scaleApiKey = encryptText(body.scaleApiKey)
+  }
+
+  await store.users.updateUser(userId!, update)
+  const user = await getSafeUserConfig(userId!)
   return user
 })
 
@@ -159,10 +180,20 @@ async function verifyKobldUrl(user: AppSchema.User, incomingUrl?: string) {
   if (!incomingUrl) return
   if (user.koboldUrl === incomingUrl) return
 
-  const res = await get({ host: incomingUrl, url: '/api/v1/model' })
+  const url = incomingUrl.match(/(http(s{0,1})\:\/\/)([a-z0-9\.\-]+)(\:[0-9]+){0,1}/gm)
+  if (!url || !url[0]) {
+    throw new StatusError(
+      `Kobold URL provided could not be verified: Invalid URL format. Use a fully qualified URL, e.g.: http://127.0.0.1:5000`,
+      400
+    )
+  }
+
+  const res = await get({ host: url[0], url: '/api/v1/model' })
   if (res.error) {
     throw new StatusError(`Kobold URL could not be verified: ${res.error.message}`, 400)
   }
+
+  return url[0]
 }
 
 async function verifyNovelKey(key: string) {
@@ -173,4 +204,23 @@ async function verifyNovelKey(key: string) {
   })
 
   return res.statusCode && res.statusCode <= 400
+}
+
+async function getSafeUserConfig(userId: string) {
+  const user = await store.users.getUser(userId!)
+  if (user) {
+    user.novelApiKey = ''
+    user.hordeKey = ''
+
+    if (user.oaiKey) {
+      user.oaiKeySet = true
+      user.oaiKey = ''
+    }
+
+    if (user.scaleApiKey) {
+      user.scaleApiKeySet = true
+      user.scaleApiKey = ''
+    }
+  }
+  return user
 }
