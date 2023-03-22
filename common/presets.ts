@@ -5,7 +5,7 @@ export type GenerationPreset = keyof typeof defaultPresets
 
 export type GenMap = { [key in keyof Omit<AppSchema.GenSettings, 'name'>]: string }
 
-const MAX_TOKENS = 120
+const MAX_TOKENS = 80
 
 export const presetValidator = {
   name: 'string',
