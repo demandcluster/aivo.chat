@@ -28,7 +28,7 @@ export const createChat = handle(async ({ body, user }) => {
     body.greeting = scene.greeting
     body.scenario = scene.prompt 
   }}
-  console.log('char at createChat',char)
+  
   const chat = await store.chats.create(body.characterId, { ...body, userId: user?.userId! })
   return chat
 })

@@ -44,6 +44,7 @@ export async function updateCharXp(charId: string, xp: number) {
     if (originalCharacter?.name==='Aiva'){
       return
     }
+    
   await db('character').updateOne({ _id: charId }, { $inc: { xp: 1 } })
 }
 

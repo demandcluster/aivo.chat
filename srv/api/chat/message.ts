@@ -86,11 +86,15 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
 
       await store.chats.update(chatId, {})
       sendMany(members, { type: 'message-created', msg: userMsg, chatId })
+      const credits = await store.credits.updateCredits(userId!, - 10)
+      await store.scenario.updateCharXp(chat.characterId!, + 1)
+     
+      sendOne(userId!, { type: 'credits-updated', credits })
     }
   }
 
   res.json({ success: true, message: 'Generating message' })
-console.log(body)
+
   const { stream, adapter } = await createTextStreamV2(body, log, guest)
   log.setBindings({ adapter })
 
@@ -153,6 +157,10 @@ console.log(body)
       })
       sendMany(members, { type: 'message-created', msg, chatId, adapter })
     }
+    
+      const credits = await store.credits.updateCredits(userId!, - 3)
+      sendOne(userId!, { type: 'credits-updated', credits })
+
   } else if (body.kind === 'continue') {
     await store.msgs.editMessage(body.continuing._id, generated, adapter)
     sendMany(members, {
@@ -259,6 +267,7 @@ export const generateMessage = handle(async ({ userId, params, body, log }, res)
     sendMany(members, { type: 'message-created', msg, chatId: id, adapter })
     const credits = await store.credits.updateCredits(userId!, - 10)
     await store.scenario.updateCharXp(chat.characterId!, + 1)
+    
     sendOne(userId!, { type: 'credits-updated', credits })
   }
 
@@ -291,7 +300,7 @@ export const retryMessage = handle(async ({ body, params, userId, log }, res) =>
 
   const credits = await store.credits.updateCredits(userId!, - 3)
   //const charXp = await store.scenario.updateCharXp(userId!, - 3)
-  
+  console.log('update for reroll')
   sendOne(userId!, { type: 'credits-updated', credits })
 
   await verifyLock({ chatId: id, lockId })
