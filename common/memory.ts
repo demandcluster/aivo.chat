@@ -96,7 +96,7 @@ export function getMemoryPrompt(opts: MemoryOpts): MemoryPrompt | undefined {
     .map(({ text }) => text)
     .reverse()
     .join('. ')
-
+  if(prompt)console.log('prompt',entries.list,prompt)
   return {
     prompt: prompt ? `${baseText}${prompt}.` : '',
     entries: entries.list,

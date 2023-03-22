@@ -16,6 +16,10 @@ export function toBot(name: string): AppSchema.Character {
         text: ['PERSONA'],
       },
     },
+    summary: '',
+    match: false,
+    premium: false,
+    xp: 0,
     updatedAt: '',
     userId: '',
   }
@@ -46,6 +50,8 @@ export function toUser(name: string): AppSchema.User {
     novelModel: NOVEL_MODELS.krake,
     oaiKey: '',
     oobaUrl: '',
+    premium: false,
+    credits: 0
   }
 }
 

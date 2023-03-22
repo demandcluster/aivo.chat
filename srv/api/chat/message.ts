@@ -90,7 +90,7 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
   }
 
   res.json({ success: true, message: 'Generating message' })
-
+console.log(body)
   const { stream, adapter } = await createTextStreamV2(body, log, guest)
   log.setBindings({ adapter })
 

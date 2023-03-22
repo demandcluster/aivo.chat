@@ -1,17 +1,17 @@
 import { AppSchema } from '../srv/db/schema'
 import { OPENAI_MODELS } from './adapters'
 
-const MAX_TOKENS = 80
+const MAX_TOKENS = 120
 
 export const defaultPresets = {
   basic: {
     name: 'Simple',
     maxTokens: MAX_TOKENS,
     maxContextLength: 2048,
-    repetitionPenalty: 1.08,
-    repetitionPenaltySlope: 0.9,
+    repetitionPenalty: 1.19,
+    repetitionPenaltySlope: 0.92,
     repetitionPenaltyRange: 1024,
-    temp: 0.65,
+    temp: 0.72,
     topK: 0,
     topP: 0.9,
     typicalP: 1,
