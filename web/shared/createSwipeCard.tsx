@@ -16,7 +16,6 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
 
     const [swiped, setSwiped] = createSignal(false);
     const [style, setStyle] = createSignal<JSX.CSSProperties>({});
-    console.log("props",props.zindex);
     
     setStyle({
         "z-index": props.zindex
@@ -33,7 +32,6 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
     let offset: _Coordinate = { x: 0, y: 0 };
 
     const handleMove = (coords: _Coordinate) => {
-        console.log("handleMove");
         const finalPosition: _TemporalCoordinate = {
             x: coords.x - offset.x,
             y: coords.y - offset.y,

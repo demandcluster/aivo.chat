@@ -238,7 +238,6 @@ export const chatStore = createStore<ChatState>('chat', {
     },
     async getChatSummary(_, chatId: string) {
       const res = await api.get(`/chat/${chatId}/summary`)
-      console.log(res.result, res.error)
     },
 
     async showPrompt({ activeMembers, active }, user: AppSchema.User, msg: AppSchema.ChatMessage) {

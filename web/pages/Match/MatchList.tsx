@@ -62,7 +62,6 @@ const MatchList: Component = () => {
   }
 
   function swipeMovement (a){
-    console.log(a, this);
     switch (a) {
       case 'left':
         setSwipeLeft('bg-red-500 text-white scale-100');
@@ -105,21 +104,8 @@ const MatchList: Component = () => {
      setSwipe(showSwipes()-totalSwipes.length);
     }
     totalSwipes[totalSwipes.length-swipeCount.count-1-showSwipes()].swipe(direction);
-    
   }
-  console.log(chars);
-  // <button onclick={()=>buttonSwipe("left")} class="w-24 md:w-32 p-2 rounded-lg font-bold text-white hover:scale-125 duration-200 shadow-lg mx-3">
-  //   <span><Delete class="icon-button w-6 text-white inline-block fill-red-800"/> </span> 
-  //   <span class="hidden md:inline-block">Swipe</span> 
-  //   <span class="inline-block"> left</span>
-  // </button>
-  // <button disabled={undoDisabled()} onclick={()=>SwipeUndo()} class="w-24 md:w-32 disabled:opacity-10 disabled:hover:scale-100 bg-zinc-600 p-2 rounded-lg font-bold text-white hover:scale-125 duration-200 shadow-lg mx-3">
-  //   <Undo2 class="icon-button w-6 text-white inline-block"/> Undo
-  // </button>
-  // <button onclick={()=>buttonSwipe("right")} class="w-24 md:w-32 p-2 rounded-lg font-bold text-white hover:scale-125 duration-200 shadow-lg mx-3 "> 
-  //   <span class="hidden md:inline-block">Swipe</span> right 
-  //   <Heart class="icon-button w-6 text-white inline-block fill-cyan-500"/>
-  // </button>
+  
   return (
     <>
       <PageHeader title="Likes" subtitle="" />

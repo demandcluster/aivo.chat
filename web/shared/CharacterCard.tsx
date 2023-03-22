@@ -2,7 +2,7 @@ import { Component } from 'solid-js'
 import { A } from '@solidjs/router'
 import { AppSchema } from '../../srv/db/schema'
 
-const CharacterCard: Component<{ character: AppSchema.Character; href: string }> = (props) =>{console.log(props);return (
+const CharacterCard: Component<{ character: AppSchema.Character; href: string }> = (props) =>{return (
   <A href={props.href} class="focusable-card group flex flex-col gap-1">
     <div
       style={{ 'background-image': `url(${props.character.avatar})` }}
