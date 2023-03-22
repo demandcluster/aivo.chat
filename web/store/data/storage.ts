@@ -111,6 +111,10 @@ export function savePresets(state: AppSchema.UserGenPreset[]) {
   localStorage.setItem(KEYS.presets, JSON.stringify(state))
 }
 
+export function saveBooks(state: AppSchema.MemoryBook[]) {
+  localStorage.setItem(KEYS.memory, JSON.stringify(state))
+}
+
 export function deleteChatMessages(chatId: string) {
   localStorage.removeItem(`messages-${chatId}`)
 }
@@ -146,6 +150,7 @@ export const local = {
   saveMessages,
   savePresets,
   saveProfile,
+  saveBooks,
   deleteChatMessages,
   loadItem,
   getMessages,

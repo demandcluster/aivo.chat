@@ -1,25 +1,9 @@
 import { assertValid } from 'frisker'
+import { chatGenSettings } from '../../../common/presets'
 import { config } from '../../config'
 import { store } from '../../db'
 import { errors, handle } from '../wrap'
 import { sendMany } from '../ws'
-
-const genSetting = {
-  temp: 'number',
-  maxTokens: 'number',
-  repetitionPenalty: 'number',
-  repetitionPenaltyRange: 'number',
-  repetitionPenaltySlope: 'number',
-  typicalP: 'number',
-  topP: 'number',
-  topK: 'number',
-  topA: 'number',
-  tailFreeSampling: 'number',
-  frequencyPenalty: 'number',
-  presencePenalty: 'number',
-  gaslight: 'string',
-  oaiModel: 'string',
-} as const
 
 export const updateChat = handle(async ({ params, body, user }) => {
   assertValid(
@@ -29,13 +13,16 @@ export const updateChat = handle(async ({ params, body, user }) => {
       greeting: 'string',
       scenario: 'string',
       sampleChat: 'string',
+      memoryId: 'string?',
       overrides: {
         kind: ['wpp', 'sbf', 'boostyle', 'text'],
         attributes: 'any',
       },
     },
-    body
+    body,
+    true
   )
+
   const id = params.id
   const prev = await store.chats.getChat(id)
   if (prev?.userId !== user?.userId) throw errors.Forbidden
@@ -64,7 +51,7 @@ export const updateMessage = handle(async ({ body, params, userId }) => {
 
 export const updateChatGenSettings = handle(async ({ params, userId, body }) => {
   const chatId = params.id
-  assertValid(genSetting, body)
+  assertValid(chatGenSettings, body)
 
   const chat = await store.chats.getChat(chatId)
   if (chat?.userId !== userId) {

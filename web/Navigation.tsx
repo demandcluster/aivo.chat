@@ -1,5 +1,6 @@
 import { A, useNavigate } from '@solidjs/router'
 import {
+  Book,
   Bot,
   Eye,
   Github,
@@ -85,15 +86,15 @@ const UserNavigation: Component = () => {
       <Item href="/character/list">
         <Bot /> Matches
       </Item>
-
       <Item href="/chats">
         <MessageCircle /> Chats
       </Item>
-
+      <Item href="/memory">
+        <Book /> Memory
+      </Item>
       <Item href="/invites">
         <MailPlus /> Invites <InviteBadge />
       </Item>
-
       <Item href="/settings">
         <Settings /> Settings
       </Item>

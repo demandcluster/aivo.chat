@@ -4,6 +4,8 @@ import { createStore } from './create'
 import { data } from './data'
 import { local } from './data/storage'
 import { publish,subscribe } from './socket'
+import { settingStore } from './settings'
+
 import { toastStore } from './toasts'
 
 const UI_KEY = 'ui-settings'
@@ -44,6 +46,12 @@ export const userStore = createStore<State>(
   'user',
   init()
 )((get, set) => {
+  settingStore.subscribe(({ init }, prev) => {
+    if (init && !prev.init) {
+      userStore.setState({ user: init.user, profile: init.profile })
+    }
+  })
+
   return {
     async getProfile() {
       const res = await data.user.getProfile()
@@ -139,6 +147,8 @@ export const userStore = createStore<State>(
     logout() {
       clearAuth()
       publish({ type: 'logout' })
+      settingStore.setState({ init: undefined })
+      settingStore.init()
       return { jwt: '', profile: undefined, user: undefined, loggedIn: false }
     },
 
@@ -174,8 +184,7 @@ export const userStore = createStore<State>(
       }
 
       toastStore.error(`Guest state successfully reset`)
-      userStore.getConfig()
-      userStore.getProfile()
+      settingStore.init()
     },
   }
 })
