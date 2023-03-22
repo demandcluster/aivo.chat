@@ -12,7 +12,7 @@ const REQUIRED_SAMPLERS = defaultPresets.basic.order
 const baseUrl = 'https://horde.aivo.chat/api/v2'
 
 const base = { n: 1 }
-const defaultModel = 'PygmalionAI/pygmalion-2b'
+const defaultModel = 'PygmalionAI/pygmalion-2.7b'
 
 export const handleHorde: ModelAdapter = async function* ({
   char,
