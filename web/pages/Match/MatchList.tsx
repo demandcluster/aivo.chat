@@ -10,14 +10,13 @@ import { matchStore,userStore, swipeStore } from '../../store'
 import {SwipeCard} from '../../shared/Swipe'
 import type { SwipeCardRef} from '../../shared/Swipe'
 
-let zindexMin = 1000000
-let zindexPlus = 2000000;
-const MatchList: Component = () => { 
+const MatchList: Component = () => {
   const chars = matchStore((s) => s.characters)
   const swipeCount = swipeStore();
   
   let totalSwipes = [];
   
+  const showZindex = {min: 1000000, plus: 2000000};
   const [showSwipes, setSwipe] = createSignal(0)
   const [undoDisabled, setUndo] = createSignal('disabled')
   const [colorSwipeMove, setSwipeMove] = createSignal(
@@ -51,8 +50,8 @@ const MatchList: Component = () => {
     let swipeNowAmount = 0;
     if(direction === 'down') direction = 'left';
     if(direction === 'right' || direction === 'left'){
-      zindexMin--;
-        this.apiRef.restoreBack(zindexMin);
+        showZindex.min--;
+        this.apiRef.restoreBack(showZindex.min);
         swipeNowAmount = showSwipes() + 1;
         if(swipeNowAmount+swipeCount.count > totalSwipes.length ){
           swipeNowAmount = 0;
@@ -147,7 +146,7 @@ const MatchList: Component = () => {
       <Show when={chars.loaded && swipeCount.loaded} >
         <div class="flex w-full flex-col gap-2 overflow-hidden">
           <For each={chars.list}>
-            {(char) => <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount} totalCount={chars.list.length} />}
+            {(char) => <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount} totalCount={chars.list.length}  showZindex={showZindex} />}
           </For>
           <div class=" pl-1 md:pl-6 mx-auto m-[26em] mb-4 w-96 max-w-5xl md:w-[26rem] pb-2">
                 <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeMove().left} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
@@ -174,15 +173,16 @@ const DSwipeCard: Component<{ character: AppSchema.Character;match: Any  }> = (p
   const apiRef: SwipeCardRef = {};
   apiRef.id = props.character._id;
   props.totalSwipes.push(apiRef);
+  let zindex = 0;
   if((props.totalSwipes.length ) <= (props.totalCount - props.swipeCount.count)){
-    zindexPlus++;
-    zindex = `${zindexPlus}`;
+    props.showZindex.plus++;
+    zindex = `${ props.showZindex.plus}`;
   }else{
-    zindexMin++;
-    zindex = `${zindexMin}`;
+    props.showZindex.min++;
+    zindex = `${ props.showZindex.min}`;
   }
   if(props.totalCount === props.totalSwipes.length){
-    zindexMin -= props.totalCount;
+    props.showZindex.min -= props.totalCount;
   }
   const age = (props.character.persona.attributes.age) ? props.character.persona.attributes.age[0].split(" ")[0] : '';
   return (
