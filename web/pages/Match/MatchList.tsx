@@ -144,11 +144,11 @@ const MatchList: Component = () => {
         <div>Loading...</div>
       </Show>
       <Show when={chars.loaded && swipeCount.loaded} >
-        <div class="flex w-full flex-col gap-2 overflow-hidden">
+        <div class="flex w-full flex-col gap-2 ">
           <For each={chars.list}>
             {(char) => <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount} totalCount={chars.list.length}  showZindex={showZindex} />}
           </For>
-          <div class=" pl-1 md:pl-6 mx-auto m-[26em] mb-4 w-96 max-w-5xl md:w-[26rem] pb-2">
+          <div class=" relative sm:top-40 sm:pl-1 mx-auto m-[26em] mb-4 sm:w-96 max-w-5xl md:w-[26rem] pb-2">
                 <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeMove().left} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
                   <X size={40} class={`${colorSwipeMove().left} "  icon-button inline-block "`}/>
                 </button>
@@ -187,13 +187,13 @@ const DSwipeCard: Component<{ character: AppSchema.Character;match: Any  }> = (p
   const age = (props.character.persona.attributes.age) ? props.character.persona.attributes.age[0].split(" ")[0] : '';
   return (
     <div class="absolute w-full max-w-5xl">
-    <SwipeCard zindex={zindex} class=" right-6 likes-middle fixed w-96 h-96 m-auto shadow-lg max-w-[90%] max-h-[90%] border-white border-solid border-[10px] md:border-[20px] rounded-lg"
+    <SwipeCard zindex={zindex} class=" bg-[var(--bg-800)]  right-6 likes-middle fixed  w-96 h-96 sm:w-9/12 sm:h-3/4 m-auto shadow-lg max-w-[92%] sm:max-w-[550px] max-h-[550px] border-white border-solid border-[10px] md:border-[20px] rounded-lg"
     threshold="300" rotationmultiplier="7.5" maxrotation="90" snapbackduration="300" bouncepower="0.1" id={props.character._id} apiRef={apiRef} onSwipe={props.swipeAction} onMove={props.swipeMovement}>
-      <div class="absolute bg-cover w-96 h-96 max-w-full max-h-full" style={{ "background-image": `url(${props.character.avatar})` }}  >
-        <div class="w-full absolute size bottom-4 p-2 text-3xl text-white text-shadow"><span class=" font-black ">{props.character.name}</span> {age}</div>
-        <div class="absolute bottom-1 h-6 overflow-hidden">
+      <div class="absolute bg-cover max-w-full max-h-full w-full h-full" style={{ "background-image": `url(${props.character.avatar})` }}  >
+        <div class="w-full absolute size bottom-4 sm:bottom-10 sm:text-5xl p-2 text-3xl text-white text-shadow"><span class=" font-black ">{props.character.name}</span> {age}</div>
+        <div class="absolute bottom-1 h-6 overflow-hidden sm:h-10">
           <For each={props.character.persona.attributes.likes}>
-              {(attr) => <div class="  capitalize float-left px-2 py-1 rounded-md bg-gray-700 bg-opacity-80 text-white m-1 text-[8px]">{attr}</div>}
+              {(attr) => <div class="  capitalize float-left px-2 py-1 rounded-md bg-[var(--hl-900)] bg-opacity-80 m-1 text-[8px] sm:text-[12px] sm:py-2">{attr}</div>}
           </For>
         </div>
       </div>
