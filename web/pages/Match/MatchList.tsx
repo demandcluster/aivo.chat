@@ -7,26 +7,28 @@ import { A,useNavigate } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
 import { matchStore,userStore, swipeStore } from '../../store'
 
-import {_SwipeCard} from '../../shared/SwipeCard'
-import type {_SwipeCardRef} from '../../shared/types'
+import {SwipeCard} from '../../shared/Swipe'
+import type { SwipeCardRef} from '../../shared/Swipe'
 
-
-const SwipeCard = _SwipeCard;
 let zindexMin = 1000000
 let zindexPlus = 2000000;
 const MatchList: Component = () => { 
   const chars = matchStore((s) => s.characters)
-  console.log("swipeStore",swipeStore);
   const swipeCount = swipeStore();
   
   let totalSwipes = [];
   
   const [showSwipes, setSwipe] = createSignal(0)
   const [undoDisabled, setUndo] = createSignal('disabled')
-  const [colorSwipeLeft, setSwipeLeft] = createSignal(' text-red-500 fill-red-500 ')
-  const [colorSwipeRight, setSwipeRight] = createSignal(' text-emerald-400 fill-emerald-400')
-  const [colorSwipeUp, setSwipeUp] = createSignal(' text-cyan-300 fill-cyan-300')
-  const [colorSwipeDown, setSwipeDown] = createSignal(' text-orange-300 ')
+  const [colorSwipeMove, setSwipeMove] = createSignal(
+    {
+      left: ' text-red-500 fill-red-500 ',
+      right: ' text-emerald-400 fill-emerald-400',
+      up: ' text-cyan-300 fill-cyan-300',
+      down: ' text-orange-300 '
+    }
+  );
+
   const [showImport, setImport] = createSignal(false)
   const [showDelete, setDelete] = createSignal<AppSchema.Character>()
   const user = userStore()
@@ -46,56 +48,82 @@ const MatchList: Component = () => {
   
   const SwipeDirection = 'right' | 'left';
   function swipeAction(direction) {
-    zindexMin--;
-    this.apiRef.restoreBack(zindexMin);
-    let swipeNowAmount = showSwipes() + 1;
-    if(swipeNowAmount+swipeCount.count > totalSwipes.length ){
-      swipeNowAmount = 0;
+    let swipeNowAmount = 0;
+    if(direction === 'down') direction = 'left';
+    if(direction === 'right' || direction === 'left'){
+      zindexMin--;
+        this.apiRef.restoreBack(zindexMin);
+        swipeNowAmount = showSwipes() + 1;
+        if(swipeNowAmount+swipeCount.count > totalSwipes.length ){
+          swipeNowAmount = 0;
+        }
     }
-    if((direction === 'right' )){
-      createMatch(this.id);
-      this.apiRef.remove();
-      totalSwipes.splice((totalSwipes.length - showSwipes() - swipeCount.count),1);
-      // swipeCount.count--;
+    switch (direction) {
+      case 'right':
+        createMatch(this.id);
+        this.apiRef.remove();
+        totalSwipes.splice((totalSwipes.length - showSwipes() - swipeCount.count),1);
+        // swipeCount.count--;
+        break;
+      case 'up':
+        showProfile();
+        break;
     }
-    swipeStore.setSwipe(swipeNowAmount+swipeCount.count);
-    setSwipe(swipeNowAmount);
-    (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
+    if(direction === 'right' || direction === 'left'){
+      swipeStore.setSwipe(swipeNowAmount+swipeCount.count);
+      setSwipe(swipeNowAmount);
+      (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
+    }
   }
 
   function swipeMovement (a){
     switch (a) {
       case 'left':
-        setSwipeLeft('bg-red-500 text-white scale-100');
-        setSwipeRight(' text-emerald-400 fill-emerald-400 scale-80');
-        setSwipeUp(' text-cyan-300 fill-cyan-300 scale-100');
+        setSwipeMove({
+          left: 'bg-red-500 text-white scale-100',
+          right: ' text-emerald-400 fill-emerald-400 scale-80',
+          up: ' text-cyan-300 fill-cyan-300 scale-100',
+          down: ' text-orange-300 '
+        });
         break;
       case 'right':
-        setSwipeLeft(' text-red-500 fill-red-800 scale-80');
-        setSwipeRight('bg-emerald-400 text-white scale-100');
-        setSwipeUp(' text-cyan-300 fill-cyan-300 scale-100');
+        setSwipeMove({
+          left: ' text-red-500 fill-red-800 scale-80',
+          right: 'bg-emerald-400 text-white scale-100',
+          up: ' text-cyan-300 fill-cyan-300 scale-100',
+          down: ' text-orange-300 '
+        });
         break;
       case 'up':
-        setSwipeLeft(' text-red-500 fill-red-800');
-        setSwipeRight(' text-emerald-400 fill-emerald-400 scale-100');
-        setSwipeUp(' text-cyan-300 fill-cyan-300 scale-100');
+        setSwipeMove({
+          left: ' text-red-500 fill-red-800',
+          right: ' text-emerald-400 fill-emerald-400 scale-100',
+          up: 'bg-cyan-400 text-white scale-100',
+          down: ' text-orange-300 '
+        });
         break;
       case 'down':
-        setSwipeLeft(' text-red-500 fill-red-800');
-        setSwipeRight(' text-emerald-400 fill-emerald-400 scale-100');
-        setSwipeUp(' bg-cyan-400 text-white scale-80');
+        setSwipeMove({
+          left: 'bg-red-500 text-white scale-100',
+          right: ' text-emerald-400 fill-emerald-400 scale-80',
+          up: ' text-cyan-300 fill-cyan-300 scale-100',
+          down: ' text-orange-300 '
+        });
         break;
       case 'restore':
-        setSwipeLeft(' text-red-500 fill-red-800 scale-100');
-        setSwipeRight(' text-emerald-400 fill-emerald-400 scale-100');
-        setSwipeUp(' text-cyan-300 fill-cyan-300 scale-100');
+        setSwipeMove({
+          left: ' text-red-500 fill-red-800',
+          right: ' text-emerald-400 fill-emerald-400 scale-100',
+          up: ' text-cyan-300 fill-cyan-300 scale-100',
+          down: ' text-orange-300 '
+        });
         break;
     }
   }
   function showProfile (){
     navigate(`/likes/${totalSwipes[totalSwipes.length-swipeCount.count-1-showSwipes()].id}/profile`)
   }
-  function SwipeUndo (direction){
+  function SwipeUndo (){
     totalSwipes[totalSwipes.length - showSwipes() - swipeCount.count].snapBack();
     swipeStore.setSwipe(showSwipes()-1);
     setSwipe(showSwipes()-1);
@@ -105,6 +133,8 @@ const MatchList: Component = () => {
     if((totalSwipes.length-swipeCount.count-1-showSwipes())<0){
      setSwipe(showSwipes()-totalSwipes.length);
     }
+    console.log(totalSwipes);
+    console.log(totalSwipes.length,swipeCount.count,1,showSwipes());
     totalSwipes[totalSwipes.length-swipeCount.count-1-showSwipes()].swipe(direction);
   }
   
@@ -120,17 +150,17 @@ const MatchList: Component = () => {
             {(char) => <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount} totalCount={chars.list.length} />}
           </For>
           <div class=" pl-1 md:pl-6 mx-auto m-[26em] mb-4 w-96 max-w-5xl md:w-[26rem] pb-2">
-                <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeLeft()} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
-                  <X size={40} class={`${colorSwipeLeft()} "  icon-button inline-block "`}/>
+                <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeMove().left} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
+                  <X size={40} class={`${colorSwipeMove().left} "  icon-button inline-block "`}/>
                 </button>
-                <button onclick={()=>showProfile()} class={`${colorSwipeUp()} " w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 border-cyan-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 align-bottom "`}>
-                  <AlignLeft size={30} class={`${colorSwipeUp()} " icon-button w-6 inline-block"`}/> 
+                <button onclick={()=>showProfile()} class={`${colorSwipeMove().up} " w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 border-cyan-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 align-bottom "`}>
+                  <AlignLeft size={30} class={`${colorSwipeMove().up} " icon-button w-6 inline-block"`}/> 
                 </button>
-                <button disabled={undoDisabled()} onclick={()=>SwipeUndo()} class={`${colorSwipeDown()} " w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 disabled:hover:scale-100 border-orange-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 align-bottom "`}>
-                  <Undo2 size={30} class={`${colorSwipeDown()} " icon-button w-6 inline-block"`}/> 
+                <button disabled={undoDisabled()} onclick={()=>SwipeUndo()} class={`${colorSwipeMove().down} " w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 disabled:hover:scale-100 border-orange-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 align-bottom "`}>
+                  <Undo2 size={30} class={`${colorSwipeMove().down} " icon-button w-6 inline-block"`}/> 
                 </button>
-                <button onclick={()=>buttonSwipe("right")} class={`${colorSwipeRight()} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-emerald-400 border-solid border-2 "`}> 
-                  <Heart size={40} class={`${colorSwipeRight()}  " icon-button inline-block fill-emerald-400 "`}/>
+                <button onclick={()=>buttonSwipe("right")} class={`${colorSwipeMove().right} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-emerald-400 border-solid border-2 "`}> 
+                  <Heart size={40} class={`${colorSwipeMove().right}  " icon-button inline-block fill-emerald-400 "`}/>
                 </button>
           </div>
         </div>

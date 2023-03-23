@@ -1,4 +1,3 @@
-
 import { AppSchema } from '../../srv/db/schema'
 import { createStore } from './create'
 import { data } from './data'
@@ -9,9 +8,8 @@ type swipeState = {
   count: int
   loaded: boolean
 }
-export const swipeStore = createStore<swipeState>('swipe', {
-  swipe: { count: 0, loaded:false },
-})((get, set) => {
+export const swipeStore = createStore<swipeState>('swipe',  { count: 0, loaded:false }
+)((get, set) => {
   return {
     getSwipe: async () => {
       const res = await data.swipe.getSwipe()

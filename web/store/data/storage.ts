@@ -55,6 +55,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
         "*A soft smile appears on my face as I see you enter the room* Hello! It's good to see you on AIVO.CHAT. Please have a seat! Have you considered getting a free membership?",
     },
   ],
+  swipe: 0,
   chats: [],
   presets: [],
   config: {
