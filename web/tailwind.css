@@ -412,8 +412,6 @@ body {
   .drawer > * > a.active {
     @apply bg-[var(--hl-900)];
   }
-
-
   @media (min-width: 450px) and (max-width: 767px) {
     
     .drawer--hide {
