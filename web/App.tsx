@@ -37,7 +37,7 @@ const App: Component = () => {
       <div class="flex w-full grow flex-row overflow-y-hidden">
         <Navigation />
         <div class="w-full overflow-y-auto ">
-          <div class={`mx-auto h-full w-full max-w-5xl px-2 pt-2 sm:px-3 sm:pt-4`}>
+          <div class={`mx-auto h-full w-full max-w-5xl pl-3 px-2 pt-2 sm:pl-16 sm:px-3 lg:pt-4`}>
             <Routes>
               <CharacterRoutes />
               <Show when={state.loggedIn}>

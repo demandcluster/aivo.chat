@@ -398,7 +398,7 @@ body {
   .drawer--hide {
     animation-fill-mode: forwards;
     animation: hideDrawer 0s ease 200ms;
-    @apply left-[-470px] lg:left-0 lg:opacity-100;
+    @apply left-[-600px] lg:left-0 lg:opacity-100;
   }
 
   .drawer__content {
@@ -415,12 +415,19 @@ body {
 
 
   @media (min-width: 450px) and (max-width: 767px) {
+    
+    .drawer--hide {
+      @apply sm:w-[55px] sm:left-[0px];
+    }
     .likes-middle{
       left: 10% !important;
       right: 10% !important;
     }
   }
   @media (min-width: 768px) and (max-width: 1023px) {
+    .drawer--hide {
+      @apply w-[55px] left-[0px];
+    }
     .likes-middle{
       right: calc(50% - 18.5rem) !important;
     }

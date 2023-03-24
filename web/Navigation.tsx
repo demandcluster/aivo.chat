@@ -39,7 +39,7 @@ const Navigation: Component = () => {
       data-menu=""
       class={`drawer flex flex-col gap-4 bg-[var(--bg-800)] pt-4 ${hide()} ${fullscreen()}`}
     >
-      <div class="drawer__content flex flex-col gap-2 px-4">
+      <div class="drawer__content flex flex-col gap-2 px-1 lg:px-4">
         <div class="hidden w-full items-center justify-center sm:flex">
           <A href="/">
           <img width="100px" class="px-4 ph-1 pt-2" src={logo}/>
@@ -50,7 +50,7 @@ const Navigation: Component = () => {
         </Show>
        
       </div>
-      <div class="flex h-16 w-full flex-col items-center justify-between border-t-2 border-[var(--bg-700)] px-4">
+      <div class="flex h-16 w-full flex-col items-center justify-between border-t-2 border-[var(--bg-700)] px-2">
         <div class="mt-2 flex w-full items-center justify-between">
           <div class="flex items-center gap-4">
             <AvatarIcon
@@ -58,7 +58,7 @@ const Navigation: Component = () => {
               format={{ corners: 'circle', size: 'md' }}
             />
             <div>{user.profile?.handle}</div>
-            <div id="credits" class="text-bold">{user.user?.credits}</div>
+            <div id="credits" class="text-bold pr-2">{user.user?.credits}</div>
           </div>
           <div onClick={logout} class="icon-button cursor-pointer ">
             <LogOut />
@@ -72,49 +72,49 @@ const Navigation: Component = () => {
 
 const UserNavigation: Component = () => {
   const user = userStore()
-
+  const navClass = ' sm:hidden  lg:block ';
   return (
     <>
       <Item href="/profile">
-        <User /> Profile
+        <User /> <div class={navClass}>Profile</div>
       </Item>
     <Show when={user.loggedIn}>
       <Item href="/likes/list">
-        <Users /> Likes
+        <Users />  <div class={navClass}>Likes</div>
       </Item>
     </Show>
       <Item href="/character/list">
-        <Bot /> Matches
+        <Bot />  <div class={navClass}>Matches</div>
       </Item>
       <Item href="/chats">
-        <MessageCircle /> Chats
+        <MessageCircle />  <div class={navClass}>Chats</div>
       </Item>
       <Item href="/memory">
-        <Book /> Memory
+        <Book />  <div class={navClass}>Memory</div>
       </Item>
       <Item href="/invites">
-        <MailPlus /> Invites <InviteBadge />
+        <MailPlus />  <div class={navClass}>Invites</div> <InviteBadge />
       </Item>
       <Item href="/settings">
-        <Settings /> Settings
+        <Settings />  <div class={navClass}>Settings</div>
       </Item>
 
     <Show when={user.user?.admin||user.user?.premium}>
       <Item href="/presets">
-        <Sliders /> Presets
+        <Sliders />  <div class={navClass}>Presets</div>
       </Item>
     </Show>
       <Show when={user.user?.admin}>
        <Item href="/admin/users">
-          <Eye /> Users
+          <Eye />  <div class={navClass}>Users</div>
         </Item> 
         
        <Item href="/admin/scenarios">
-          <Clapperboard /> Scenarios
+          <Clapperboard />  <div class={navClass}>Scenarios</div>
         </Item> 
       </Show>
       <Item href="/help">
-        <HelpCircle/> Help
+        <HelpCircle/> <div class={navClass}>Help</div>
       </Item>
     </>
   )
@@ -122,29 +122,29 @@ const UserNavigation: Component = () => {
 
 const GuestNavigation: Component = () => {
   const menu = settingStore((s) => ({ showMenu: s.showMenu, config: s.config }))
-
+  const navClass = ' hidden  lg:block ';
   return (
     <>
       <Show when={menu.config.canAuth}>
         <Item href="/login">
-          <LogIn /> Login
+          <LogIn /> <div class={navClass}>Login</div>
         </Item>
       </Show>
 
       <Item href="/profile">
-        <User /> Profile
+        <User /> <div class={navClass}>Profile</div>
       </Item>
      
       <Item href="/character/list">
-        <Bot /> Matches
+        <Bot /> <div class={navClass}>Matches</div>
       </Item>
 
       <Item href="/chats">
-        <MessageCircle /> Chats
+        <MessageCircle /> <div class={navClass}>Chats</div>
       </Item>
 
       <Item href="/settings">
-        <Settings /> Settings
+        <Settings /> <div class={navClass}>Settings</div>
       </Item>
 
     </>
