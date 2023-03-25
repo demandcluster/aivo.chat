@@ -8,7 +8,7 @@ export async function createCharacter(
   userId: string,
   char: Pick<
     AppSchema.Character,
-    'name' | 'avatar' | 'summary' | 'match' | 'xp' | 'premium' | 'persona' | 'sampleChat' | 'greeting' | 'scenario' | 'parent'
+    'name' | 'avatar' | 'match' | 'xp' | 'premium' | 'persona' |  'greeting' | 'scenario' | 'sampleChat'
   >
 ) {
   const newChar: AppSchema.Character = {
@@ -28,7 +28,7 @@ export async function updateCharacter(
   userId: string,
   char: Pick<
     AppSchema.Character,
-    'name' | 'avatar' | 'persona' | 'sampleChat' | 'greeting' | 'scenario' | 'match' | 'xp' | 'premium' 
+    'name' | 'avatar' | 'persona' | 'sampleChat' | 'greeting' | 'scenario' | 'match' | 'xp' | 'premium' | 'description'
   >
 ) {
   const edit = { ...char, updatedAt: now() }

@@ -13,7 +13,7 @@ const valid = {
   avatar: 'string?',
   scenario: 'string',
   greeting: 'string',
-  summary: 'string',
+  description: 'string',
   xp: 'string',
   match: 'string',
   premium: 'string',
@@ -36,8 +36,7 @@ const createScenario = handle(async (req) => {
   const char = await store.characters.createCharacter(req.user?.userId!, {
     name: body.name,
     persona,
-   // summary: body.summary,
-    summary: body.summary,
+  
     premium: body.premium.toString()==="true",
     xp: 0,
     match: false,
@@ -75,7 +74,7 @@ const editScenario = handle(async (req) => {
     xp: Number(body.xp),
     premium: body.premium.toString()==="true",
     match: body.match.toString()==="true",
-    summary: body.summary,
+  //  summary: body.summary,
     greeting: body.greeting,
     scenario: body.scenario,
     sampleChat: body.sampleChat,

@@ -16,7 +16,6 @@ export function toBot(name: string): AppSchema.Character {
         text: ['PERSONA'],
       },
     },
-    summary: '',
     match: false,
     premium: false,
     xp: 0,

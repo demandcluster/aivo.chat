@@ -63,7 +63,6 @@ const CreateCharacter: Component = () => {
       description: 'string?',
       greeting: 'string',
       scenario: 'string',
-      summary: 'string',
       xp: 'number',
       premium: 'string',
       match: 'string',
@@ -81,7 +80,6 @@ const CreateCharacter: Component = () => {
       description: body.description,
       scenario: body.scenario,
       avatar: avatar(),
-      summary: body.summary,
       xp: body.xp,
       match: body.match,
       premium: body.premium,
@@ -150,23 +148,7 @@ const CreateCharacter: Component = () => {
           />
         </div>
 
-        <TextInput 
-           fieldName="summary"
-           label="Summary"
-           helperText="A short summary of your character (for on the profile page)."
-           value={state.edit?.summary}
-           />
-            <FormLabel
-            label="Premium Status"
-            helperText={
-              <>
-                <p >
-                Setting this to premium will only allow premium users to match with this character.
-                </p>
-               
-              </>
-            }
-          />
+        
           <RadioGroup
             name="premium"
             horizontal

@@ -27,7 +27,6 @@ if (itemsToCheckout.length === 0) {
 }
 
 
-  console.log(payment.getCheckoutUrl())
 
 return itemsToCheckout;
 })

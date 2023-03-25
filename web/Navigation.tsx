@@ -95,7 +95,7 @@ const UserNavigation: Component = () => {
         <Book /> Memory
       </Item>
       <Item href="/invites">
-        <MailPlus /> <InviteBadge />
+        <MailPlus /> Invites <InviteBadge />
       </Item>
       <Item href="/settings">
         <Settings /> Settings

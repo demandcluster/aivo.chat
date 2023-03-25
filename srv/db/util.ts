@@ -40,7 +40,7 @@ export const STARTER_CHARACTER: AppSchema.Character = {
   createdAt: '',
   updatedAt: '',
   name: 'Aiva',
-  summary: 'AIVA is a chatbot assistant for AIVO Dating.',
+  description: 'AIVA is a chatbot assistant for AIVO Dating.',
   xp: 0,
   match: false,
   premium: false,
