@@ -408,6 +408,13 @@ body {
     transition: 250ms ease;
   }
 
+  .drawer > * > a, .drawer__content > a{
+    padding-right: 0px;
+    @apply sm:text-[0px] lg:text-[16px]
+  }
+  .drawer > * > a > svg, .drawer__content > a > svg{
+    @apply inline-block
+  }
   .drawer > * > a.active {
     @apply bg-[var(--hl-900)];
   }
