@@ -390,14 +390,15 @@ body {
     left: 0;
     transition: opacity 250ms ease;
     transition: left 250ms ease;
+    z-index: 10000000;
     @apply w-[calc(100vw-80px)] bg-[var(--bg-900)] sm:w-72  lg:relative lg:top-0 lg:clear-none lg:h-[calc(100vh)] lg:w-72;
-    @apply z-10 lg:z-0;
+    @apply lg:z-0;
   }
 
   .drawer--hide {
     animation-fill-mode: forwards;
     animation: hideDrawer 0s ease 200ms;
-    @apply left-[-470px] lg:left-0 lg:opacity-100;
+    @apply left-[-600px] lg:left-0 lg:opacity-100;
   }
 
   .drawer__content {
@@ -411,7 +412,32 @@ body {
   .drawer > * > a.active {
     @apply bg-[var(--hl-900)];
   }
-
+  @media (min-width: 450px) and (max-width: 767px) {
+    
+    .drawer--hide {
+      @apply sm:w-[55px] sm:left-[0px];
+    }
+    .likes-middle{
+      left: 10% !important;
+      right: 10% !important;
+    }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .drawer--hide {
+      @apply w-[55px] left-[0px];
+    }
+    .likes-middle{
+      right: calc(50% - 18.5rem) !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .likes-middle{
+      right: calc(50% - 24rem) !important;
+    }
+  }
+  .text-shadow {
+    text-shadow: 0 2px  5px rgba(0, 0, 0, 0.5);
+  }
   @keyframes hideDrawer {
     to {
       visibility: hidden;

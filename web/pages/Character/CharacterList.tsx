@@ -88,6 +88,7 @@ const Character: Component<{
   delete: () => void
   download: () => void
 }> = (props) => {
+  const iconSize = { size: 'lg', corners: 'circle' };
   return (
     <div class="flex w-full gap-2">
       <div class="flex h-12 w-full flex-row items-center gap-4 rounded-xl bg-[var(--bg-800)]">
@@ -95,7 +96,7 @@ const Character: Component<{
           class="ml-4 flex h-3/4 cursor-pointer items-center rounded-2xl  sm:w-9/12"
           href={`/character/${props.character._id}/chats`}
         >
-          <AvatarIcon avatarUrl={props.character.avatar} class="mx-4" />
+          <AvatarIcon avatarUrl={props.character.avatar} format={iconSize} class="mx-4" />
           <div class="text-lg font-bold">{props.character.name}</div>
         </A>
           <div><Gauge currentXP={props.character.xp} /></div>

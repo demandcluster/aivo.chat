@@ -36,7 +36,7 @@ const AvatarIcon: Component<Props> = (props) => {
           <img
             data-bot-image={props.bot}
             data-user-image={!props.bot}
-            class={`m-auto ${
+            class={` hover:scale-150 m-auto ${
               format().corners === 'circle' ? fmtSize() : 'max-h-full max-w-full'
             } ${fmtFit()} ${fmtCorners()}`}
             src={props.avatarUrl}

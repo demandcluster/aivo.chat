@@ -2,6 +2,7 @@ import { Component,For, Show } from 'solid-js'
 import { A } from '@solidjs/router'
 import { AppSchema } from '../../srv/db/schema'
 import { characterStore } from '../../store'
+import { PersonStanding, GraduationCap, Heart, Hash, User } from 'lucide-solid'
 
 
 const ProfileCard: Component<{ character: AppSchema.Character; href: string }> = (props) =>(
@@ -25,7 +26,7 @@ const ProfileCard: Component<{ character: AppSchema.Character; href: string }> =
        
        <div class="mb-4"><i class="text-italic">{props.character?.summary}</i></div>
       
-       <div class="flex-col flex gray max-w-md mx-4 bg-teal-800 text-yellow-100 border-teal-400 border-2 p-4 first-letter:capitalize">
+       <div class="flex-col flex gray max-w-md mx-4 bg-[var(--bg-700)] border-[var(--hl-900)] border-4 p-4 rounded-lg first-letter:capitalize">
        <div class="text-sm text-gray-100">Age:</div><div class="mx-4 text-xs">{props.character.persona?.attributes?.age}</div>
       <div class="flex flex-row">
         <div>
