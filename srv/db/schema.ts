@@ -236,6 +236,17 @@ export namespace AppSchema {
     kind: 'invitecode'
     count: number
   }
+
+  export interface ShopItem {
+    _id: string
+    kind: 'shop'
+    name: string
+    price: number
+    credits: number
+    premium: boolean
+    days: number
+    incart: false
+  }
 }
 
 export type Doc<T extends AllDoc['kind'] = AllDoc['kind']> = Extract<AllDoc, { kind: T }>
@@ -253,6 +264,7 @@ export type AllDoc =
   | AppSchema.Scenario 
   | AppSchema.InviteCode
   | AppSchema.MemoryBook
+  | AppSchema.ShopItem
 
 export const defaultGenPresets: AppSchema.GenSettings[] = []
 

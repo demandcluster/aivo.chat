@@ -15,6 +15,7 @@ export const KEYS = {
   presets: 'presets',
   lastChatId: 'guestLastChatId',
   memory: 'memory',
+  cartItems: 'cartItems',
 }
 
 type LocalStorage = {
@@ -26,6 +27,7 @@ type LocalStorage = {
   presets: AppSchema.UserGenPreset[]
   lastChatId: string
   memory: AppSchema.MemoryBook[]
+  cartItems: AppSchema.ShopItem[]
 }
 
 const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
@@ -77,6 +79,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
   lastChatId: '',
   messages: [],
   memory: [],
+  cartItems: [],
 }
 
 export function saveChars(state: AppSchema.Character[]) {
@@ -119,6 +122,10 @@ export function deleteChatMessages(chatId: string) {
   localStorage.removeItem(`messages-${chatId}`)
 }
 
+export function saveCartItem(state: AppSchema.ShopItem[]) {
+  localStorage.setItem(KEYS.cartItems, JSON.stringify(state))
+}
+
 export function loadItem<TKey extends keyof typeof KEYS>(key: TKey): LocalStorage[TKey] {
   const item = localStorage.getItem(KEYS[key])
   if (item) return JSON.parse(item)
@@ -127,6 +134,12 @@ export function loadItem<TKey extends keyof typeof KEYS>(key: TKey): LocalStorag
   localStorage.setItem(key, JSON.stringify(fallback))
 
   return fallback
+}
+
+export function loadCartItems<TKey extends keyof typeof KEYS>(key: TKey): LocalStorage[TKey] {
+  const item = localStorage.getItem(KEYS[key])
+  if (item) return JSON.parse(item)
+  return []
 }
 
 export function error(error: string) {
@@ -154,6 +167,8 @@ export const local = {
   deleteChatMessages,
   loadItem,
   getMessages,
+  saveCartItem,
+  loadCartItems,
   KEYS,
   ID,
   error,

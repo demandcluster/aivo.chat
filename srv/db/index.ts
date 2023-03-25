@@ -10,6 +10,7 @@ import * as invitecode from './invitecode'
 import * as presets from './presets'
 import * as msgs from './messages'
 import * as memory from './memory'
+import * as shop from './shop'
 
 export { db } from './client'
 
@@ -26,4 +27,5 @@ export const store = {
   presets,
   msgs,
   memory,
+  shop
 }

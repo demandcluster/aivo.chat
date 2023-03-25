@@ -2,11 +2,10 @@ import { A } from '@solidjs/router'
 import { Component } from 'solid-js'
 import PageHeader from '../../shared/PageHeader'
 import Divider from '../../shared/Divider'
-import { adaptersToOptions } from '../../shared/util'
-import { settingStore } from '../../store'
+
 import logo from '../../assets/logo.png'
 const HelpPage: Component = () => {
-  const cfg = settingStore((cfg) => ({ adapters: adaptersToOptions(cfg.config.adapters) }))
+ 
   return (
     <div class="container">
        <PageHeader title="Help" subtitle="Getting started" />

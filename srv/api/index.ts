@@ -11,6 +11,7 @@ import settings from './settings'
 import freeCredits from './freecredits'
 import scenario from './scenario'
 import memory from './memory'
+import cart from './cart'
 
 const router = Router()
 
@@ -26,5 +27,6 @@ router.use('/settings', settings)
 router.use('/freecredits', freeCredits)
 router.use('/scenarios',scenario)
 router.use('/memory', memory)
+router.use('/shop', cart)
 
 export default router

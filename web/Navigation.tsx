@@ -2,6 +2,7 @@ import { A, useNavigate } from '@solidjs/router'
 import {
   Book,
   Bot,
+  ShoppingCart,
   Eye,
   Github,
   LogIn,
@@ -113,6 +114,9 @@ const UserNavigation: Component = () => {
           <Clapperboard /> Scenarios
         </Item> 
       </Show>
+      <Item href="/shop">
+        <ShoppingCart /> Shop
+      </Item>
       <Item href="/help">
         <HelpCircle/> Help
       </Item>
