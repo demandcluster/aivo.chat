@@ -127,25 +127,24 @@ const UserNavigation: Component = () => {
 
 const GuestNavigation: Component = () => {
   const menu = settingStore((s) => ({ showMenu: s.showMenu, config: s.config }))
-  const navClass = ' hidden  lg:block ';
   return (
     <>
       <Show when={menu.config.canAuth}>
         <Item href="/login">
-          <LogIn /> <div class={navClass}>Login</div>
+          <LogIn /> Login
         </Item>
       </Show>
 
       <Item href="/profile">
-        <User /> <div class={navClass}>Profile</div>
+        <User /> Profile
       </Item>
      
       <Item href="/character/list">
-        <Bot /> <div class={navClass}>Matches</div>
+        <Bot /> Matches
       </Item>
 
       <Item href="/chats">
-        <MessageCircle /> <div class={navClass}>Chats</div>
+        <MessageCircle /> Chats
       </Item>
 
       <Item href="/memory">
@@ -153,7 +152,7 @@ const GuestNavigation: Component = () => {
       </Item>
 
       <Item href="/settings">
-        <Settings /> <div class={navClass}>Settings</div>
+        <Settings /> Settings
       </Item>
 
     </>

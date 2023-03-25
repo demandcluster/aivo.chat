@@ -53,7 +53,7 @@ const App: Component = () => {
               <Route path="/presets" component={PresetList} />
               <Route path="/profile" component={ProfilePage} />
               <Route path="/settings" component={Settings} />
-              <Route path="/help" component={HelpPage} />
+              {HelpPage}
               <Route path="/shop" component={PremiumOptions}/>
               <Route path="/memory" component={MemoryPage} />
               <Route path="/memory/:id" component={EditMemoryPage} />
