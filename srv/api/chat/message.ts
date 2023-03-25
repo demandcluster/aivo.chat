@@ -1,6 +1,6 @@
 import { assertValid } from 'frisker'
 import { store } from '../../db'
-import { createTextStream, createTextStreamV2, getResponseEntities } from '../../adapter/generate'
+import { createTextStreamV2, getResponseEntities } from '../../adapter/generate'
 import { post, PY_URL } from '../request'
 import { errors, handle } from '../wrap'
 import { sendOne, sendGuest, sendMany } from '../ws'
@@ -54,7 +54,9 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
 
   const guest = userId ? undefined : socketId
 
-  const lockId = await obtainLock(chatId)
+  if (userId) {
+    await obtainLock(chatId)
+  }
 
   const chat: AppSchema.Chat = guest ? body.chat : await store.chats.getChat(chatId)
   if (!chat) {
@@ -113,7 +115,6 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
     }
   }
 
-  await releaseLock(chatId)
   if (error) return
 
   const responseText = body.kind === 'continue' ? `${body.continuing.msg} ${generated}` : generated
@@ -129,6 +130,8 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
     })
     return
   }
+
+  await releaseLock(chatId)
 
   if (body.kind === 'send') {
     const msg = await store.msgs.createChatMessage({
@@ -197,163 +200,15 @@ function newMessage(
  */
 
 export const generateMessage = handle(async ({ userId, params, body, log }, res) => {
-  const id = params.id
-  assertValid({ message: 'string', ephemeral: 'boolean?', retry: 'boolean?' }, body)
-
-  const lockId = await obtainLock(id)
-
-  const chat = await store.chats.getChat(id)
-  if (!chat) {
-    throw errors.NotFound
-  }
-
-  const members = chat.memberIds.concat(chat.userId)
-  if (!members.includes(userId!)) {
-    throw errors.Forbidden
-  }
-
-  const lockProps = { chatId: id, lockId }
-
-  res.json({ success: true, message: 'Generating message' })
-  sendMany(members, { type: 'message-creating', chatId: chat._id })
-  await verifyLock(lockProps)
-
-
-
-  if (!body.retry) {
-    const userMsg = await store.msgs.createChatMessage({
-      chatId: id,
-      message: body.message,
-      senderId: userId!,
-    })
-    await store.chats.update(id, {})
-    sendMany(members, { type: 'message-created', msg: userMsg, chatId: id })
-  //  const credits = await store.credits.updateCredits(userId!, -10)
-   // sendOne(userId!, { type: 'credits-updated', credits })
-  }
-
-  const { stream, adapter } = await createTextStream({
-    senderId: userId!,
-    chatId: id,
-    message: body.message,
-    log,
-  })
-
-  log.setBindings({ adapter })
-
-  let generated = ''
-  let error = false
-  for await (const gen of stream) {
-    if (typeof gen === 'string') {
-      generated = gen
-      continue
-    }
-
-    if (gen.error) {
-      error = true
-      sendMany(members, { type: 'message-error', error: gen.error, adapter, chatId: id })
-      continue
-    }
-  }
-
-  await verifyLock(lockProps)
-
-  if (!error && generated) {
-    const msg = await store.msgs.createChatMessage(
-      { chatId: id, message: generated, characterId: chat.characterId, adapter },
-      body.ephemeral
-    )
-    
-    sendMany(members, { type: 'message-created', msg, chatId: id, adapter })
-    const credits = await store.credits.updateCredits(userId!, - 10)
-    await store.scenario.updateCharXp(chat.characterId!, + 1)
-    
-    sendOne(userId!, { type: 'credits-updated', credits })
-  }
-
-  await store.chats.update(id, {})
-  await releaseLock(id)
+  return res
+    .status(400)
+    .json({ message: 'Your browser is running on an old version. Please refresh.' })
 })
 
 export const retryMessage = handle(async ({ body, params, userId, log }, res) => {
-  const { id, messageId } = params
-
-  assertValid({ message: 'string', continue: 'string?', ephemeral: 'boolean?' }, body)
-
-  const lockId = await obtainLock(id)
-
-  const prev = await store.chats.getMessageAndChat(messageId)
-  if (!prev || !prev.chat || !prev.msg) throw errors.NotFound
-
-  // Only the chat owner can retry messages
-  if (userId !== prev.chat.userId) {
-    throw errors.Forbidden
-  }
-
-  const members = prev.chat.memberIds.concat(prev.chat.userId)
-  if (!members.includes(userId!)) throw errors.Forbidden
-
-  res.json({ success: true, message: 'Re-generating message' })
-
-  const props = { chatId: id, messageId }
-  sendMany(members, { type: 'message-retrying', ...props })
-
-  const credits = await store.credits.updateCredits(userId!, - 3)
-  //const charXp = await store.scenario.updateCharXp(userId!, - 3)
-  console.log('update for reroll')
-  sendOne(userId!, { type: 'credits-updated', credits })
-
-  await verifyLock({ chatId: id, lockId })
-
-  const { stream, adapter } = await createTextStream({
-    chatId: params.id,
-    message: body.message,
-    senderId: userId!,
-    log,
-    retry: prev.msg,
-    continue: body.continue,
-  })
-
-  log.setBindings({ adapter })
-
-  let generated = ''
-  let error = false
-
-  for await (const gen of stream) {
-    if (typeof gen === 'string') {
-      generated = gen
-      continue
-    }
-
-    if (gen.error) {
-      error = true
-      sendMany(members, { type: 'message-error', error: gen.error, adapter, ...props })
-      continue
-    }
-  }
-
-  const response = body.continue ? `${body.continue} ${generated}` : generated
-
-  if (!body.ephemeral) {
-    await verifyLock({ chatId: id, lockId })
-
-    if (!error && generated) {
-      await store.msgs.editMessage(messageId, response, adapter)
-    }
-
-    await store.chats.update(id, {})
-  }
-
-  sendMany(members, {
-    type: 'message-retry',
-    ...props,
-    message: response,
-    adapter,
-  })
-
-  await releaseLock(id)
-
-  res.end()
+  return res
+    .status(400)
+    .json({ message: 'Your browser is running on an old version. Please refresh.' })
 })
 
 export const summarizeChat = handle(async (req) => {

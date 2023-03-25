@@ -96,8 +96,11 @@ const Character: Component<{
           class="ml-4 flex h-3/4 cursor-pointer items-center rounded-2xl  sm:w-9/12"
           href={`/character/${props.character._id}/chats`}
         >
-          <AvatarIcon avatarUrl={props.character.avatar} format={iconSize} class="mx-4" />
-          <div class="text-lg font-bold">{props.character.name}</div>
+          <AvatarIcon avatarUrl={props.character.avatar} class="mx-4" />
+          <div class="text-lg">
+            <span class="font-bold">{props.character.name}</span>
+            <span class="ml-2">{props.character.description}</span>
+          </div>
         </A>
           <div><Gauge currentXP={props.character.xp} /></div>
       </div>

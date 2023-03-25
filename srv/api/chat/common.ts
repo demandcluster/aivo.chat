@@ -1,4 +1,10 @@
+import { customSettings } from '../../config'
 import { AppSchema } from '../../db/schema'
+
+export const personaValidator = {
+  kind: ['wpp', 'sbf', 'boostyle', 'text'],
+  attributes: 'any',
+} as const
 
 /**
  * A single response can contain multiple end tokens
@@ -77,7 +83,11 @@ export function getEndTokens(
   members: AppSchema.Profile[],
   endTokens: string[] = []
 ) {
-  const baseEndTokens = ['END_OF_DIALOG', '<END>', '\n\n'].concat(endTokens)
+  const baseEndTokens = ['END_OF_DIALOG', '<END>'].concat(endTokens)
+
+  if (customSettings.baseEndTokens) {
+    baseEndTokens.push(...customSettings.baseEndTokens)
+  }
 
   if (char) {
     baseEndTokens.push(`${char.name}:`, `${char.name} :`)
@@ -96,5 +106,5 @@ export function joinParts(parts: string[]) {
 }
 
 export function sanitise(generated: string) {
-  return generated.replace(/\s+/g, ' ').trim()
+  return generated.replace(/  +/g, ' ').trim()
 }

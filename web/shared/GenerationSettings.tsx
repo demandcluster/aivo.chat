@@ -1,4 +1,4 @@
-import { Component } from 'solid-js'
+import { Component, createSignal, Show } from 'solid-js'
 import RangeInput from './RangeInput'
 import TextInput from './TextInput'
 import Dropdown from './Dropdown'
@@ -6,13 +6,54 @@ import { AppSchema } from '../../srv/db/schema'
 import { defaultPresets } from '../../common/presets'
 import { OPENAI_MODELS } from '../../common/adapters'
 import Divider from './Divider'
+import { Toggle } from './Toggle'
+import Tabs from './Tabs'
 
-const GenerationSettings: Component<{
+type Props = {
   inherit?: Partial<AppSchema.GenSettings>
   disabled?: boolean
-}> = (props) => (
-  <>
-    <div class="flex flex-col gap-4">
+  showAll?: boolean
+}
+
+const GenerationSettings: Component<Props> = (props) => {
+  const tabs = ['General', 'Prompt', 'Generation'] as const
+  const [tab, setTab] = createSignal(0)
+
+  return (
+    <>
+      <Show when={!props.showAll}>
+        <Tabs tabs={tabs} select={setTab} selected={tab} />
+      </Show>
+
+      <div class="flex flex-col gap-4">
+        <Section show={props.showAll || tabs[tab()] === 'General'}>
+          <GeneralSettings disabled={props.disabled} inherit={props.inherit} />
+        </Section>
+
+        <Section show={props.showAll || tabs[tab()] === 'Prompt'}>
+          <PromptSettings disabled={props.disabled} inherit={props.inherit} />
+        </Section>
+
+        <Section show={props.showAll || tabs[tab()] === 'Generation'}>
+          <GeneSettings disabled={props.disabled} inherit={props.inherit} />
+        </Section>
+      </div>
+    </>
+  )
+}
+export default GenerationSettings
+
+type SectProps = { show: boolean; children: any }
+
+const Section: Component<SectProps> = (props) => (
+  <div class={`flex-col gap-4 ${props.show ? 'flex' : 'hidden'}`}>{props.children}</div>
+)
+
+const GeneralSettings: Component<Props> = (props) => {
+  return (
+    <>
+      <Divider />
+      <div class="text-xl font-bold">General Settings</div>
       <RangeInput
         fieldName="maxTokens"
         label="Max New Tokens"
@@ -23,27 +64,47 @@ const GenerationSettings: Component<{
         value={props.inherit?.maxTokens || defaultPresets.basic.maxTokens}
         disabled={props.disabled}
       />
+
       <RangeInput
         fieldName="maxContextLength"
         label="Max Context Length"
-        helperText="Maximum context length. Typically 2048 for most models. OpenAI supports up to 4K. Scale supports up to 8K. If you set this too high, you may get unexpected results or errors."
+        helperText={
+          <>
+            <p>
+              Maximum context length. Typically 2048 for most models. OpenAI supports up to 4K.
+              Scale supports up to 8K. If you set this too high, you may get unexpected results or
+              errors.
+            </p>
+            <p>
+              We don't have a GPT-4 tokenizer to correctly count tokens for GPT-4 services.
+              Therefore we can't precisely count tokens when generating a prompt. Keep this well
+              below 8K to ensure you don't exceed the limit.
+            </p>
+          </>
+        }
         min={16}
         max={8000}
         step={4}
         value={props.inherit?.maxContextLength || defaultPresets.basic.maxContextLength}
         disabled={props.disabled}
       />
-      <RangeInput
-        fieldName="temp"
-        label="Temperature"
-        helperText="Randomness of sampling. High values can increase creativity but may make text less sensible. Lower values will make text more predictable but can become repetitious."
-        min={0.1}
-        max={20}
-        step={0.01}
-        value={props.inherit?.temp || defaultPresets.basic.temp}
+      <Dropdown
+        fieldName="oaiModel"
+        label="OpenAI Model"
+        items={Object.entries(OPENAI_MODELS).map(([label, value]) => ({ label, value }))}
+        helperText="Which OpenAI model to use"
+        value={props.inherit?.oaiModel ?? defaultPresets.basic.oaiModel}
         disabled={props.disabled}
       />
+    </>
+  )
+}
 
+const PromptSettings: Component<Props> = (props) => {
+  return (
+    <>
+      <Divider />
+      <div class="text-xl font-bold">Prompt Settings</div>
       <RangeInput
         fieldName="memoryContextLimit"
         label="Memory: Context Limit"
@@ -64,6 +125,59 @@ const GenerationSettings: Component<{
         max={100}
         step={1}
         value={props.inherit?.memoryDepth || defaultPresets.basic.memoryDepth}
+        disabled={props.disabled}
+      />
+
+      <Toggle
+        fieldName="useGaslight"
+        label="Use Gaslight"
+        helperText={
+          <>
+            <p class="font-bold">
+              CAUTION: By using the gaslight, you assume full control of the prompt "pre-amble". If
+              you do not include the placeholders, they will not be included in the prompt at all.
+            </p>
+            If this option is enable, the Gaslight text will be included in the prompt sent to the
+            AI service. Particularly useful for Scale.
+          </>
+        }
+        value={props.inherit?.useGaslight ?? false}
+      />
+
+      <TextInput
+        fieldName="gaslight"
+        label="Gaslight Prompt (OpenAI / Scale)"
+        helperText={
+          <>
+            How the character definitions are sent to OpenAI. Placeholders:{' '}
+            <code>{'{{char}}'}</code> <code>{'{{user}}'}</code> <code>{'{{personality}}'}</code>{' '}
+            <code>{'{{memory}}'}</code> <code>{'{{example_dialogue}}'}</code>. If{' '}
+            <code>{'{{example_dialogue}}'}</code> is not present then example dialogues will be sent
+            as conversation.
+          </>
+        }
+        placeholder="Be sure to include "
+        isMultiline
+        value={props.inherit?.gaslight ?? defaultPresets.openai.gaslight}
+        disabled={props.disabled}
+      />
+    </>
+  )
+}
+
+const GeneSettings: Component<Props> = (props) => {
+  return (
+    <>
+      <Divider />
+      <div class="text-xl font-bold">Generation Settings</div>
+      <RangeInput
+        fieldName="temp"
+        label="Temperature"
+        helperText="Randomness of sampling. High values can increase creativity but may make text less sensible. Lower values will make text more predictable but can become repetitious."
+        min={0.1}
+        max={20}
+        step={0.01}
+        value={props.inherit?.temp || defaultPresets.basic.temp}
         disabled={props.disabled}
       />
 
@@ -147,8 +261,9 @@ const GenerationSettings: Component<{
         value={props.inherit?.repetitionPenaltySlope ?? defaultPresets.basic.repetitionPenaltySlope}
         disabled={props.disabled}
       />
+
       <Divider />
-      <div class="text-2xl"> OpenAI presets</div>
+      <div class="text-2xl"> OpenAI</div>
       <RangeInput
         fieldName="frequencyPenalty"
         label="Frequency Penalty"
@@ -169,25 +284,6 @@ const GenerationSettings: Component<{
         value={props.inherit?.presencePenalty ?? defaultPresets.openai.presencePenalty}
         disabled={props.disabled}
       />
-      <Dropdown
-        fieldName="oaiModel"
-        label="OpenAI Model"
-        items={Object.entries(OPENAI_MODELS).map(([label, value]) => ({ label, value }))}
-        helperText="Which OpenAI model to use"
-        value={props.inherit?.oaiModel}
-        disabled={props.disabled}
-      />
-      <TextInput
-        fieldName="gaslight"
-        label="Gaslight Prompt (OpenAI / Scale)"
-        helperText="How the character definitions are sent to OpenAI. Placeholders: {{char}} {{user}} {{personality}} {{example_dialogue}}. If {{example_dialogue}} is not present then example dialogues will be sent as conversation history."
-        placeholder="Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what {{user}} says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)\nAvoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.\n\nDescription of {{char}}:\n{{personality}}\nCircumstances and context of the dialogue: {{scenario}}\nThis is how {{char}} should talk\n{{example_dialogue}}"
-        isMultiline
-        value={props.inherit?.gaslight ?? defaultPresets.openai.gaslight}
-        disabled={props.disabled}
-      />
-    </div>
-  </>
-)
-
-export default GenerationSettings
+    </>
+  )
+}

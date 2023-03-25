@@ -1,5 +1,6 @@
 import { A, useNavigate } from '@solidjs/router'
 import {
+  Activity,
   Book,
   Bot,
   ShoppingCart,
@@ -65,7 +66,7 @@ const Navigation: Component = () => {
             <LogOut />
           </div>
         </div>
-        <div class="text-200 mb-1 text-[0.6rem] italic">{state.config.version}</div>
+        <div class="text-500 mb-1 text-[0.6rem] italic">{state.config.version}</div>
       </div>
     </div>
   )
@@ -73,52 +74,52 @@ const Navigation: Component = () => {
 
 const UserNavigation: Component = () => {
   const user = userStore()
-  const navClass = ' sm:hidden  lg:block ';
+ 
   return (
     <>
       <Item href="/profile">
-        <User /> <div class={navClass}>Profile</div>
+        <User /> Profile
       </Item>
     <Show when={user.loggedIn}>
       <Item href="/likes/list">
-        <Users />  <div class={navClass}>Likes</div>
+        <Users /> Likes
       </Item>
     </Show>
       <Item href="/character/list">
-        <Bot />  <div class={navClass}>Matches</div>
+        <Bot /> Matches
       </Item>
       <Item href="/chats">
-        <MessageCircle />  <div class={navClass}>Chats</div>
+        <MessageCircle /> Chats
       </Item>
       <Item href="/memory">
-        <Book />  <div class={navClass}>Memory</div>
+        <Book /> Memory
       </Item>
       <Item href="/invites">
-        <MailPlus />  <div class={navClass}>Invites</div> <InviteBadge />
+        <MailPlus /> <InviteBadge />
       </Item>
       <Item href="/settings">
-        <Settings />  <div class={navClass}>Settings</div>
+        <Settings /> Settings
       </Item>
 
     <Show when={user.user?.admin||user.user?.premium}>
       <Item href="/presets">
-        <Sliders />  <div class={navClass}>Presets</div>
+        <Sliders /> Presets
       </Item>
     </Show>
       <Show when={user.user?.admin}>
-       <Item href="/admin/users">
-          <Eye />  <div class={navClass}>Users</div>
+       <Item href="/admin/metrics">
+          <Activity /> Metrics
         </Item> 
         
        <Item href="/admin/scenarios">
-          <Clapperboard />  <div class={navClass}>Scenarios</div>
+          <Clapperboard /> Scenarios
         </Item> 
       </Show>
       <Item href="/shop">
         <ShoppingCart /> Shop
       </Item>
       <Item href="/help">
-        <HelpCircle/> <div class={navClass}>Help</div>
+        <HelpCircle/> Help
       </Item>
     </>
   )
@@ -145,6 +146,10 @@ const GuestNavigation: Component = () => {
 
       <Item href="/chats">
         <MessageCircle /> <div class={navClass}>Chats</div>
+      </Item>
+
+      <Item href="/memory">
+        <Book /> Memory
       </Item>
 
       <Item href="/settings">

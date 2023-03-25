@@ -14,11 +14,12 @@ type CharacterState = {
 
 export type NewCharacter = {
   name: string
+  description?: string
   greeting: string
   scenario: string
   sampleChat: string
   avatar?: File
-  persona: AppSchema.CharacterPersona
+  persona: AppSchema.Persona
 }
 
 export const characterStore = createStore<CharacterState>('character', {

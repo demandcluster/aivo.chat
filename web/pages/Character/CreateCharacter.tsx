@@ -60,6 +60,7 @@ const CreateCharacter: Component = () => {
     const body = getStrictForm(ev, {
       kind: PERSONA_FORMATS,
       name: 'string',
+      description: 'string?',
       greeting: 'string',
       scenario: 'string',
       summary: 'string',
@@ -77,6 +78,7 @@ const CreateCharacter: Component = () => {
     
     const payload = {
       name: body.name,
+      description: body.description,
       scenario: body.scenario,
       avatar: avatar(),
       summary: body.summary,
@@ -123,6 +125,14 @@ const CreateCharacter: Component = () => {
           helperText="The name of your character."
           placeholder=""
           value={state.edit?.name}
+        />
+
+        <TextInput
+          fieldName="description"
+          label="Description"
+          helperText="A description or label for your character. This is will not influence your character in any way."
+          placeholder=""
+          value={state.edit?.description}
         />
 
         <div class="flex w-full gap-2">

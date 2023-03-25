@@ -129,14 +129,14 @@ const ChatDetail: Component = () => {
       <Show when={chats.chat}>
         <div class="flex h-full flex-col justify-between sm:py-2">
           <div class="flex h-8 items-center justify-between ">
-            <A href={`/character/${chats.char?._id}/chats`}>
-              <div class="flex cursor-pointer flex-row items-center justify-between gap-4 text-lg font-bold">
-                <Show when={!cfg.fullscreen}>
+            <div class="flex cursor-pointer flex-row items-center justify-between gap-4 text-lg font-bold">
+              <Show when={!cfg.fullscreen}>
+                <A href={`/character/${chats.char?._id}/chats`}>
                   <ChevronLeft />
-                  {chats.char?.name}
-                </Show>
-              </div>
-            </A>
+                </A>
+                {chats.char?.name}
+              </Show>
+            </div>
 
             <div class="flex flex-row gap-3">
               <div class="hidden items-center text-xs italic text-[var(--text-500)] sm:flex">
@@ -160,12 +160,7 @@ const ChatDetail: Component = () => {
             <Show when={user.user?.admin||user.user?.premium}>
               <Show when={chats.chat?.userId === user.user?._id}>
                 <div class="icon-button">
-                  <Book
-                    onClick={() => {
-                      setShowMem(!showMem())
-                      console.log(memory.book, showMem())
-                    }}
-                  />
+                  <Book onClick={() => setShowMem(!showMem())} />
                 </div>
                 <div class="icon-button">
                   <Sliders onClick={() => setShowGen(true)} />

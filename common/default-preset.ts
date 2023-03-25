@@ -25,6 +25,7 @@ export const defaultPresets = {
     memoryDepth: 50,
     memoryContextLimit: 500,
     memoryReverseWeight: false,
+    useGaslight: false,
   },
   novel_20BC: {
     name: 'Novel 20BC+',
@@ -38,6 +39,7 @@ export const defaultPresets = {
     topK: 20,
     topP: 1,
     order: [0, 1, 2, 3],
+    useGaslight: false,
   },
   novel_blueLighter: {
     name: 'Novel Blue Lighter',
@@ -53,6 +55,7 @@ export const defaultPresets = {
     typicalP: 0.965,
     topA: 0.085,
     order: [3, 4, 5, 2, 0],
+    useGaslight: false,
   },
   openai: {
     name: 'OpenAI - Turbo',
@@ -62,8 +65,15 @@ export const defaultPresets = {
     maxContextLength: 4095,
     frequencyPenalty: 0.7,
     presencePenalty: 0.7,
-    gaslight:
-      "Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)\nAvoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.\n\nDescription of {{char}}:\n{{personality}}\nCircumstances and context of the dialogue: {{scenario}}\nThis is how {{char}} should talk\n{{example_dialogue}}",
+    gaslight: `Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)
+Avoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.
+      
+Description of {{char}}:
+{{personality}}
+Circumstances and context of the dialogue: {{scenario}}
+Facts: {{memory}}
+This is how {{char}} should talk
+{{example_dialogue}}`,
   },
   openaiAlt: {
     name: 'OpenAI - Turbo (#2)',
@@ -73,7 +83,13 @@ export const defaultPresets = {
     maxContextLength: 4095,
     frequencyPenalty: 0.7,
     presencePenalty: 0.7,
-    gaslight: `Write {{char}}'s next reply in a fictional chat between {{char}} and {{user}}. Write 1 reply only in internet RP style, italicize actions, and avoid quotation marks. Use markdown. Be proactive, creative, and drive the plot and conversation forward. Write at least 1 paragraph, up to 4. Always stay in character and avoid repetition.`,
+    gaslight: `Write {{char}}'s next reply in a fictional chat between {{char}} and {{user}}. Write 1 reply only in internet RP style, italicize actions, and avoid quotation marks. Use markdown. Be proactive, creative, and drive the plot and conversation forward. Write at least 1 paragraph, up to 4. Always stay in character and avoid repetition.
+Description of {{char}}:
+{{personality}}
+Circumstances and context of the dialogue: {{scenario}}
+Facts: {{memory}}
+This is how {{char}} should talk
+{{example_dialogue}}`,
   },
   openaiTurbo: {
     name: 'OpenAI - DaVinci',
@@ -83,8 +99,15 @@ export const defaultPresets = {
     maxContextLength: 4095,
     frequencyPenalty: 0.7,
     presencePenalty: 0.7,
-    gaslight:
-      "Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)\nAvoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.\n\nDescription of {{char}}:\n{{personality}}\nCircumstances and context of the dialogue: {{scenario}}\nThis is how {{char}} should talk\n{{example_dialogue}}",
+    gaslight: `Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)
+Avoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.
+
+Description of {{char}}:
+{{personality}}
+Circumstances and context of the dialogue: {{scenario}}
+Facts: {{memory}}
+This is how {{char}} should talk
+{{example_dialogue}}`,
   },
   scale: {
     name: 'scale',

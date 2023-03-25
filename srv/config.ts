@@ -1,8 +1,21 @@
 import dotenv from 'dotenv'
+import { assertValid } from 'frisker'
 import { readFileSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
 import { v4 } from 'uuid'
 import { AIAdapter } from '../common/adapters'
+
+export type CustomSettings = {
+  baseEndTokens?: string[]
+}
+
+const settingsValid = {
+  baseEndTokens: ['string?'],
+} as const
+
+export const customSettings = tryGetSettings()
+
+assertValid(settingsValid, customSettings)
 
 dotenv.config({ path: '.env' })
 
@@ -48,6 +61,10 @@ export const config = {
   kobold: {
     maxLength: +env('KOBOLD_MAX_LENGTH', '200'),
   },
+  limits: {
+    upload: +env('IMAGE_SIZE_LIMIT', '2'),
+    payload: +env('JSON_SIZE_LIMIT', '2'),
+  },
   noRequestLogs: env('DISABLE_REQUEST_LOGGING', 'false') === 'true',
   chai: {
     url: env('CHAI_URL', ''),
@@ -91,5 +108,14 @@ function readSecret() {
       const secret = readFileSync(loc, { encoding: 'utf8' })
       return secret
     } catch (ex) {}
+  }
+}
+
+function tryGetSettings(): CustomSettings {
+  try {
+    const settings = require('../settings.json')
+    return settings
+  } catch (ex) {
+    return {}
   }
 }

@@ -1,7 +1,7 @@
 import { GenerateRequestV2 } from '../srv/adapter/type'
 import type { AppSchema } from '../srv/db/schema'
 import { AIAdapter, OPENAI_MODELS } from './adapters'
-import { getMemoryPrompt, MemoryPrompt } from './memory'
+import { getMemoryPrompt, MemoryPrompt, MEMORY_PREFIX } from './memory'
 import { defaultPresets, getFallbackPreset, isDefaultPreset } from './presets'
 import { Encoder, getEncoder } from './tokenize'
 
@@ -120,24 +120,35 @@ type BuildPromptOpts = {
 
 export function buildPrompt(opts: BuildPromptOpts, parts: PromptParts, lines: string[]) {
   const { chat, char } = opts
-  const sender = opts.members.find((mem) => mem.userId === chat.userId)?.handle || 'You'
+  const user = opts.members.find((mem) => mem.userId === chat.userId)
+  const sender = user?.handle || 'You'
 
   const hasStart =
     parts.greeting?.includes(START_TEXT) ||
     chat.sampleChat?.includes(START_TEXT) ||
     chat.scenario?.includes(START_TEXT)
 
-  const pre: string[] = [`${char.name}'s Persona: ${parts.persona}`]
+  const pre: string[] = []
 
-  if (parts.scenario) pre.push(`Scenario: ${parts.scenario}`)
+  if (!opts.settings?.useGaslight) {
+    pre.push(`${char.name}'s Persona: ${parts.persona}`)
 
-  if (parts.memory?.prompt) {
-    pre.push(parts.memory.prompt)
+    if (parts.scenario) pre.push(`Scenario: ${parts.scenario}`)
+
+    if (parts.memory?.prompt) {
+      pre.push(`${MEMORY_PREFIX}${parts.memory.prompt}`)
+    }
+
+    if (hasStart) pre.slice(-1, pre.length)
+
+    if (!hasStart) pre.push('<START>')
+
+    if (parts.sampleChat) pre.push(...parts.sampleChat)
   }
 
-  if (!hasStart) pre.push('<START>')
-
-  if (parts.sampleChat) pre.push(...parts.sampleChat)
+  if (opts.settings?.useGaslight) {
+    pre.push(parts.gaslight)
+  }
 
   const post = [`${char.name}:`]
   if (opts.continue) {
@@ -234,11 +245,12 @@ export function getPromptParts(
   parts.gaslight = gaslight
     .replace(/\{\{example_dialogue\}\}/g, sampleChat)
     .replace(/\{\{scenario\}\}/g, parts.scenario || '')
+    .replace(/\{\{memory\}\}/g, parts.memory?.prompt || '')
     .replace(/\{\{name\}\}/g, char.name)
     .replace(/\<BOT\>/g, char.name)
+    .replace(/\{\{personality\}\}/g, formatCharacter(char.name, chat.overrides || char.persona))
     .replace(/\{\{char\}\}/g, char.name)
     .replace(/\{\{user\}\}/g, sender)
-    .replace(/\{\{personality\}\}/g, formatCharacter(char.name, chat.overrides || char.persona))
 
   /**
    * If the gaslight does not have a sample chat placeholder, but we do have sample chat
@@ -266,7 +278,7 @@ function placeholderReplace(value: string, charName: string, senderName: string)
   return value.replace(BOT_REPLACE, charName).replace(SELF_REPLACE, senderName)
 }
 
-export function formatCharacter(name: string, persona: AppSchema.CharacterPersona) {
+export function formatCharacter(name: string, persona: AppSchema.Persona) {
   switch (persona.kind) {
     case 'wpp': {
       const attrs = Object.entries(persona.attributes)

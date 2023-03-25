@@ -16,6 +16,7 @@ export namespace AppSchema {
     userId: string
     handle: string
     avatar?: string
+    persona?: Persona
   }
 
   export interface User {
@@ -68,7 +69,7 @@ export namespace AppSchema {
     greeting: string
     scenario: string
     sampleChat: string
-    overrides: CharacterPersona
+    overrides: Persona
 
     createdAt: string
     updatedAt: string
@@ -102,8 +103,8 @@ export namespace AppSchema {
     first?: boolean
   }
 
-  /** Description of the character */
-  export type CharacterPersona =
+  /** Description of the character or user */
+  export type Persona =
     | {
         kind: PersonaFormat
         attributes: { [key: string]: string[] }
@@ -115,8 +116,8 @@ export namespace AppSchema {
     kind: 'character'
     userId: string
     name: string
-    summary: string
-    persona: CharacterPersona
+    description?: string
+    persona: Persona
     greeting: string
     scenario: string
     sampleChat: string
@@ -178,9 +179,11 @@ export namespace AppSchema {
     tailFreeSampling: number
     order?: number[]
 
+    gaslight?: string
+    useGaslight?: boolean
+
     frequencyPenalty?: number
     presencePenalty?: number
-    gaslight?: string
     oaiModel?: string
 
     memoryDepth?: number
@@ -199,6 +202,7 @@ export namespace AppSchema {
     kind: 'memory'
     _id: string
     name: string
+    description?: string
     userId: string
     entries: MemoryEntry[]
   }

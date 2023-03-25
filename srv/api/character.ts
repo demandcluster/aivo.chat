@@ -10,6 +10,7 @@ const router = Router()
 
 const valid = {
   name: 'string',
+  description: 'string?',
   avatar: 'string?',
   scenario: 'string',
   greeting: 'string',
@@ -73,6 +74,7 @@ const editCharacter = handle(async (req) => {
     premium: body.premium.toString()==="true",
     match: body.match.toString()==="true",
     summary: body.summary,
+    description: body.description,
     greeting: body.greeting,
     scenario: body.scenario,
     sampleChat: body.sampleChat,
