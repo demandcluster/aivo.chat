@@ -146,7 +146,7 @@ const webHook = handle(async ({body}) => {
   const bodyObj = body
   console.log(bodyObj)
 
-  const paymentId = bodyObj.brq_transactions||false
+  const paymentId = bodyObj?.brq_transactions||false
   if(!paymentId)return {error:"Payment failed"}
   const orderId = bodyObj.brq_invoicenumber||false
   if(!orderId)return {error:"Payment failed"}
@@ -154,7 +154,7 @@ const webHook = handle(async ({body}) => {
   if(!order)return {error:"Order not found"}
   if(order.paymentId!==paymentId)return {error:"Invalid payment"}
 
-  if(bodyObj.brq_statuscode===190){
+  if(bodyObj?.brq_statuscode==='190'){
     if(order.status==="success"||order.status==="completed")return {error: "Order already completed"}
       order.status="success"
       order.updatedAt=now()
