@@ -145,10 +145,10 @@ const webHook = handle(async ({body}) => {
  
   const bodyObj = body
   console.log(bodyObj)
-  const {Transaction} = bodyObj
-  const paymentId = Transaction?.Key||false
+
+  const paymentId = bodyObj.brq_transactions||false
   if(!paymentId)return {error:"Payment failed"}
-  const orderId = Transaction?.Invoice||false
+  const orderId = bodyObj.brq_invoicenumber||false
   if(!orderId)return {error:"Payment failed"}
   const order = await store.shop.getShopOrder(orderId)
   if(!order)return {error:"Order not found"}
@@ -158,12 +158,12 @@ const webHook = handle(async ({body}) => {
     if(order.status==="success"||order.status==="completed")return {error: "Order already completed"}
       order.status="success"
       order.updatedAt=now()
-      order.name=Transaction?.CustomerName
+      order.name=bodyObj?.brq_customer_name
       await store.shop.updateShopOrder(order)
       giveOrder(order)
     }else{
       order.status="failed"
-      order.name=Transaction?.CustomerName
+      order.name=bodyObj?.brq_customer_name
       order.updatedAt=now()
       await store.shop.updateShopOrder(order)
     }
