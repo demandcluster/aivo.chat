@@ -154,7 +154,7 @@ const webHook = handle(async ({body}) => {
   if(!order)return {error:"Order not found"}
   if(order.paymentId!==paymentId)return {error:"Invalid payment"}
 
-  if(Transaction?.Status?.Code?.Code===190){
+  if(bodyObj.brw_statuscode===190){
     if(order.status==="success"||order.status==="completed")return {error: "Order already completed"}
       order.status="success"
       order.updatedAt=now()
