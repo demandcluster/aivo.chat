@@ -8,7 +8,7 @@ import { now } from '../db/util'
 import { v4 } from 'uuid'
 import {getAuthHeader} from '../../common/buckaroo'
 import needle from 'needle'
-import { sendOne} from 'ws'
+import { sendOne} from './ws'
 import {config} from '../config'
 
 const router = Router()
