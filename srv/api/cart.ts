@@ -144,6 +144,7 @@ const getItems = handle(async () => {
 const webHook = handle(async ({body}) => {
  
   const bodyObj = body
+  console.log(bodyObj)
   const {Transaction} = bodyObj
   const paymentId = Transaction?.Key||false
   if(!paymentId)return {error:"Payment failed"}
@@ -170,8 +171,8 @@ const webHook = handle(async ({body}) => {
   return {success:true}
 })
 
+router.post('/webhook',webHook)
 router.get('/', loggedIn, getItems)
 router.post('/checkout', loggedIn,checkOut)
-router.post('/webhook',webHook)
 
 export default router
