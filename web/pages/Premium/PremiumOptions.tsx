@@ -6,6 +6,12 @@ import { cartStore } from "../../store"
 import { CalendarHeart, Coins } from "lucide-solid"
 import logo from "../../assets/logo.png"
 import Modal from "../../shared/Modal"
+import iDeal from './PaymentProviders/iDeal.svg'
+import Visa from './PaymentProviders/Visa.svg'
+import Mastercard from './PaymentProviders/Mastercard.svg'
+import Maestro from './PaymentProviders/Maestro.svg'
+import Bancontact from './PaymentProviders/Bancontact.svg'
+import Apple from './PaymentProviders/Apple.svg'
 
 const PremiumOptions: Component = () => {
   const items = cartStore((state) => state.items)
@@ -40,7 +46,7 @@ const PremiumOptions: Component = () => {
   }, [cartItems])
   
   const checkoutCart = () => {
-    cartStore.checkoutCart().then(() => {
+    cartStore.checkoutCart(service).then(() => {
       const url = cartItems?.redirURL || "/"
       
       location.href = url
@@ -51,7 +57,7 @@ const PremiumOptions: Component = () => {
     <div class="container">
       <PageHeader title="Shop" subtitle="Premium & Credit Options" />
       <section>
-        <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+        <div class="grid grid-cols-1 columns-3 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
          <For each={items.list}>{(item)=>
             <Item
               item={item}
@@ -89,9 +95,32 @@ const PremiumOptions: Component = () => {
         <Divider />
       
         <div class="flex flex-row justify-end">
-            <button class="bg-teal-500 text-gray-100 px-4 py-2 rounded-md" onClick={checkoutCart}>Checkout</button>
+            <button class="bg-teal-600 text-white px-4 py-2 rounded-md font-bold" onClick={checkoutCart}>Checkout</button>
         </div>
     </Show>
+    <Divider/>
+    <section>
+        <h2 class="text-gray-400 text-xl mb-4">Payment Methods</h2>
+        <div class="flex flex-row gap-4">
+       <div>
+        <img src={iDeal} class="w-14" />
+       </div>
+       <div>
+        <img src={Visa} class="w-14" />
+       </div>
+       <div>
+        <img src={Mastercard} class="w-14" />
+       </div>
+       <div>
+        <img src={Maestro} class="w-14" />
+       </div>
+       <div>
+        <img src={Bancontact} class="w-14" />
+       </div><div>
+        <img src={Apple} class="w-14" />
+       </div>
+        </div>
+    </section>
      <Modal title="Transaction Pending" show={cartItems.showPending} close={false} >
             <h1>Redirecting to payment processor...</h1>
       </Modal>

@@ -33,6 +33,7 @@ interface BuckarooPayment{
  OriginalTransactionKey?: string
  StartRecurrent?: boolean
  ContinueOnIncomplete?: boolean
+ Services?: string
  ServicesSelectableByClient?: string
  ServicesExcludedForClient?: string
  PushURL?: string
@@ -73,7 +74,7 @@ const checkOut = handle(async ({ body,userId,user,ip }) => {
    
     const items = await store.shop.getItems()
     const cart =  JSON.parse(body.cart) || [];
-    
+    const service = body.service||null
     const itemsToCheckout:any = [];
     cart.forEach((itemId:string) => {
     const item = items.find((item) => item._id === itemId);
@@ -111,10 +112,10 @@ const newPayment:BuckarooPayment={
   ReturnURLError: "https://aivo.chat/shop/error",
   ReturnURLReject: "https://aivo.chat/shop/error",
   PushURL: "https://aivo.chat/api/shop/webhook",
- // ServicesSelectableByClient: "ideal,mastercard,visa",
+ 
   ContinueOnIncomplete: true
 }
-
+if(service)newPayment.Services=service
 
 const paymentJson = JSON.stringify(newPayment)
 const authHeader = getAuthHeader(buckarooUrl,buckarooKey,buckarooSecret,paymentJson,"POST")
@@ -155,7 +156,7 @@ const webHook = handle(async ({body}) => {
   if(order.paymentId!==paymentId)return {error:"Invalid payment"}
 
   if(bodyObj?.brq_statuscode==='190'){
-    if(order.status==="success"||order.status==="completed")return {error: "Order already completed"}
+    if(order.status==="success"||order.status==="completed"||order.status==="failed")return {error: "Order already completed"}
       order.status="success"
       order.updatedAt=now()
       order.name=bodyObj?.brq_customer_name
