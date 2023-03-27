@@ -8,6 +8,7 @@ import { now } from '../db/util'
 import { v4 } from 'uuid'
 import {getAuthHeader} from '../../common/buckaroo'
 import needle from 'needle'
+import { sendOne} from 'ws'
 import {config} from '../config'
 
 const router = Router()
@@ -63,11 +64,10 @@ const giveOrder= async (order:AppSchema.ShopOrder)=>{
   const newPremium = userPremium || totalDays > 0
   const newCredits = userCredits + totalCredits
   const newPremiumUntil = newPremium && totalDays>0 ? userPremiumUntil + totalDays * 24 * 60 * 60 * 1000 : userPremiumUntil
-  const updateUser = await store.users.updateUser(userId, {credits: newCredits, premium: newPremium, premiumUntil: newPremiumUntil})
-  if(!updateUser)return {error:"User not found"}
+  await store.users.updateUser(userId, {credits: newCredits, premium: newPremium, premiumUntil: newPremiumUntil})
   order.status='completed'
   const updateOrder = await store.shop.updateShopOrder(order)
-  
+  sendOne(userId, { type: 'credits-updated',newCredits })
 }
 const checkOut = handle(async ({ body,userId,user,ip }) => {
    

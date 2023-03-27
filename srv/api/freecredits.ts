@@ -3,7 +3,7 @@ import { loggedIn } from './auth'
 import { logger } from '../logger'
 import { isConnected } from '../db/client'
 
-logger.error('included')
+
  updateFreeCredits()
 
 setInterval(updateFreeCredits, 1000 * 60 );
