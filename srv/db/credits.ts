@@ -17,6 +17,7 @@ export async function updateCredits(userId: string, amount: number, nextCredits:
   await db('user').updateOne({ kind: 'user', _id: userId }, { $set: { credits, nextCredits: nc } }).catch((err) => {
     throw new StatusError("Database error", 500)
    })
+   sendOne(userId, { type: 'credits-updated',credits })
    return { credits }
 }
 

@@ -59,7 +59,7 @@ const Navigation: Component = () => {
               avatarUrl={user.profile?.avatar}
               format={{ corners: 'circle', size: 'md' }}
             />
-            <div>{user.profile?.handle}</div>
+            <div class={user.user?.premium ?"text-yellow-300":""}>{user.profile?.handle}</div>
             <div id="credits" class="text-bold pr-2">{user.user?.credits}</div>
           </div>
           <div onClick={logout} class="icon-button cursor-pointer ">
