@@ -6,20 +6,23 @@ import { toastStore } from './toasts'
 import {loadItem, local} from './data/storage'
 
 type CartStore = {
-  showCart: boolean
+  showPending: boolean
+  redirURL: string
   items: []
   cart: []
   loaded: boolean
 }
 
 
+
 export const cartStore = createStore<CartStore>('cart', {
-  showCart: false,
+  showPending: false,
+  redirURL: "",
   items: [],
   cartItems: [],
   loaded: false
 })((set) => ({
-    
+      
     async getItems() {
     const res = await api.get('/shop')
     if (res.error) toastStore.error('Failed to fetch store items')
@@ -30,22 +33,25 @@ export const cartStore = createStore<CartStore>('cart', {
     },
     async getCartItems() {
         const cItems = loadItem('cartItems')
-        console.log('cItems',cItems)
         if(cItems) return { cartItems: {list: cItems, loaded: true}}
         return cartItems
     },
     async removeFromCart(cartItems, item: any) {
         const existingItems = cartItems.cartItems?.list || [];
         const updatedItems = existingItems.filter((cartItem) => cartItem._id !== item._id);
-        await local.saveCartItem(updatedItems);
+        await local.saveCartItem(updatedItems)
         return { cartItems: { list: updatedItems, loaded: true } };
     },
     async checkoutCart() {
         const existingItems = loadItem('cartItems');
         const itemIds = existingItems.map((item) => item._id);
-        await api.post('/shop/checkout', {cart: JSON.stringify(itemIds)});
-        await local.saveCartItem([]);
-        return { cartItems: { list: [], loaded: true } };
+        const res = await api.post('/shop/checkout', {cart: JSON.stringify(itemIds)});
+        if (res.error) {
+          toastStore.error('Failed to checkout');
+          return cartItems;
+        } 
+        await local.saveCartItem([])
+        return { cartItems: { list: [], loaded: true, showPending: true, redirURL: res.result?.redirect } };
       },
       
 

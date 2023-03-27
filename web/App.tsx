@@ -20,6 +20,8 @@ import CharacterChats from './pages/Character/ChatList'
 import PresetList from './pages/GenerationPresets/PresetList'
 import HelpPage from './pages/Help'
 import PremiumOptions from './pages/Premium/PremiumOptions'
+import ThankYou from './pages/Premium/ThankYou'
+import Error from './pages/Premium/Error'
 
 import MemoryPage from './pages/Memory'
 import { EditMemoryPage } from './pages/Memory/EditMemory'
@@ -54,11 +56,14 @@ const App: Component = () => {
               <Route path="/profile" component={ProfilePage} />
               <Route path="/settings" component={Settings} />
               {HelpPage}
-              <Route path="/shop" component={PremiumOptions}/>
               <Route path="/memory" component={MemoryPage} />
               <Route path="/memory/:id" component={EditMemoryPage} />
               <Show when={state.loggedIn}>
                 <Route path="/invites" component={InvitesPage} />
+                <Route path="/shop" component={PremiumOptions}/>
+                <Route path="/thankyou" component={ThankYou}/>
+                <Route path="/shop/error" component={Error}/>
+                
                 <Show when={state.user?.admin}>
                   <Route path="/admin/metrics" component={MetricsPage} />
                   <Route path="/admin/users" component={UsersPage} />

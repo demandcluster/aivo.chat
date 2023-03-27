@@ -42,11 +42,13 @@ function getNonce(): string {
 }
 
 export function getAuthHeader(
+  
   requestUri: string,
   websiteKey: string,
   secretKey: string,
   content: string,
   httpMethod: string
+  
 ): string {
   const nonce = getNonce();
   const timeStamp = getTimeStamp();

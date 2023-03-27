@@ -225,6 +225,25 @@ export namespace AppSchema {
     enabled: boolean
   }
 
+  export interface ShopOrder{
+    _id: string
+    kind: 'order'
+    order?: number
+    items: ShopItem[]
+    total: number
+    userId: string
+    name?: string
+    createdAt: string
+    updatedAt?: string
+    status: 'pending' | 'failed' | 'cancelled' | 'success' | 'hold' | 'completed'
+    paymentId?: string
+  }
+
+  export interface OrderCount{
+    _id: string
+    kind: 'order-count'
+    sequence_value: number
+  }
   export interface Scenario{
     _id: string
     kind: 'scenario'
@@ -269,6 +288,8 @@ export type AllDoc =
   | AppSchema.InviteCode
   | AppSchema.MemoryBook
   | AppSchema.ShopItem
+  | AppSchema.ShopOrder
+  | AppSchema.OrderCount
 
 export const defaultGenPresets: AppSchema.GenSettings[] = []
 

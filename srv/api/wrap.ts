@@ -8,9 +8,26 @@ export function handle(handler: Handler): express.RequestHandler {
     const wrappedNext = (err?: any) => {
       nextCalled = true
       next(err)
-    }
-
+    } 
+   
     try {
+ 
+      let ip = '';
+      if (req.headers && req.headers['x-forwarded-for']) {
+        if (typeof req.headers['x-forwarded-for'] === 'string') {
+          ip = req.headers['x-forwarded-for'];
+        } else {
+          ip = req.headers['x-forwarded-for'][0];
+        }
+      } else if (req.connection.remoteAddress) {
+        ip = req.connection.remoteAddress;
+      }
+      const reqWithIp:AppRequest = {
+          ...req,
+          ip: ip
+        }
+
+
       const result = await handler(req as any, res, wrappedNext)
       if (!res.headersSent && !nextCalled && !!result) {
         res.json(result)
@@ -20,6 +37,7 @@ export function handle(handler: Handler): express.RequestHandler {
       if (!res.headersSent) next(ex)
     }
   }
+ 
   return wrapped as any as express.RequestHandler
 }
 
@@ -37,7 +55,8 @@ export type AppRequest = Omit<express.Request, 'log'> & {
   user?: AppSchema.Token
   userId?: string
   log: AppLog
-  socketId: string
+  socketId: string  
+  ip?: string
 }
 
 export const errors = {

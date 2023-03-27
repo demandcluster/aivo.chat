@@ -5,6 +5,7 @@ import Divider from "../../shared/Divider"
 import { cartStore } from "../../store"
 import { CalendarHeart, Coins } from "lucide-solid"
 import logo from "../../assets/logo.png"
+import Modal from "../../shared/Modal"
 
 const PremiumOptions: Component = () => {
   const items = cartStore((state) => state.items)
@@ -40,8 +41,9 @@ const PremiumOptions: Component = () => {
   
   const checkoutCart = () => {
     cartStore.checkoutCart().then(() => {
-        cartStore.getCartItems()
-        setCartSignal(cartItems)
+      const url = cartItems?.redirURL || "/"
+      
+      location.href = url
        })
     }
 
@@ -90,7 +92,9 @@ const PremiumOptions: Component = () => {
             <button class="bg-teal-500 text-gray-100 px-4 py-2 rounded-md" onClick={checkoutCart}>Checkout</button>
         </div>
     </Show>
-        
+     <Modal title="Transaction Pending" show={cartItems.showPending} close={false} >
+            <h1>Redirecting to payment processor...</h1>
+      </Modal>
 
     </div>
   )
