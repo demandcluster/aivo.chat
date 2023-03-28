@@ -45,6 +45,7 @@ const Navigation: Component = () => {
         <div class="hidden w-full items-center justify-center sm:flex">
           <A href="/">
           <img width="100px" class="px-4 ph-1 pt-2" src={logo}/>
+          by Demandcluster
           </A>
         </div>
         <Show when={user.loggedIn} fallback={<GuestNavigation />}>

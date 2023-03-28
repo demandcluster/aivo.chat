@@ -430,13 +430,13 @@ body {
     transition: 250ms ease;
   }
 
+  .drawer>*>a.active {
+    @apply bg-[var(--hl-900)];
+  }
 
-  @apply bg-[var(--hl-900)];
-}
-
-
-@keyframes hideDrawer {
-  to {
-    visibility: hidden;
+  @keyframes hideDrawer {
+    to {
+      visibility: hidden;
+    }
   }
 }
