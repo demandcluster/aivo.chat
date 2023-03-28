@@ -42,10 +42,10 @@ export const cartStore = createStore<CartStore>('cart', {
         await local.saveCartItem(updatedItems)
         return { cartItems: { list: updatedItems, loaded: true } };
     },
-    async checkoutCart() {
+    async checkoutCart(service:string="") {
         const existingItems = loadItem('cartItems');
         const itemIds = existingItems.map((item) => item._id);
-        const res = await api.post('/shop/checkout', {cart: JSON.stringify(itemIds)});
+        const res = await api.post('/shop/checkout', {cart: JSON.stringify(itemIds), service: service?service:false});
         if (res.error) {
           toastStore.error('Failed to checkout');
           return cartItems;
