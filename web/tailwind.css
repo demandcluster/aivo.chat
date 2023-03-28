@@ -113,7 +113,7 @@
   --highlight: rgb(14 165 233);
 }
 
-*>code {
+* > code {
   @apply rounded-md bg-[var(--bg-600)] p-1 text-[var(--text-900)];
 }
 
@@ -182,7 +182,7 @@ body {
 }
 
 .link {
-  @apply text-[var(--hl-500)] hover: text-[var(--hl-300)];
+  @apply text-[var(--hl-500)] hover:text-[var(--hl-300)];
 }
 
 @layer base {
@@ -193,15 +193,12 @@ body {
   ::-webkit-scrollbar {
     @apply h-1 w-1;
   }
-
   ::-webkit-scrollbar-track {
     @apply bg-white/10;
   }
-
   ::-webkit-scrollbar-thumb {
     @apply bg-[var(--bg-600)];
   }
-
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-[var(--bg-500)];
   }
@@ -215,15 +212,15 @@ body {
 
   .focusable-field {
     @apply _focusable-base;
-    @apply bg-[var(--bg-800)] hover: bg-[var(--bg-700)] active:bg-white/20;
-    @apply placeholder: text-[var(--text-600)];
+    @apply bg-[var(--bg-800)] hover:bg-[var(--bg-700)] active:bg-white/20;
+    @apply placeholder:text-[var(--text-600)];
     @apply border-[var(--bg-700)];
   }
 
   .focusable-icon-button,
   .icon-button {
     @apply _focusable-base cursor-pointer;
-    @apply text-500 hover: text-[var(--text-900)] focus:text-[var(--text-900)];
+    @apply text-500 hover:text-[var(--text-900)] focus:text-[var(--text-900)];
   }
 
   /** Integrates with solid-router - highlights current selection. */
@@ -243,29 +240,29 @@ body {
 
   .btn-primary {
     @apply btn-base;
-    @apply bg-[var(--hl-700)] enabled: hover:bg-[var(--hl-500)] enabled:active:bg-[var(--hl-400)];
-    @apply disabled: cursor-not-allowed disabled:bg-[var(--hl-900)] disabled:text-[var(--text-700)];
+    @apply bg-[var(--hl-700)] enabled:hover:bg-[var(--hl-500)] enabled:active:bg-[var(--hl-400)];
+    @apply disabled:cursor-not-allowed disabled:bg-[var(--hl-900)] disabled:text-[var(--text-700)];
   }
 
   .btn-secondary {
     @apply btn-base;
-    @apply bg-[var(--bg-600)] hover: bg-[var(--bg-500)] active:bg-[var(--bg-400)];
+    @apply bg-[var(--bg-600)] hover:bg-[var(--bg-500)] active:bg-[var(--bg-400)];
   }
 
   .btn-red {
-    @apply btn-base bg-red-700 active: bg-red-300 enabled:hover:bg-red-400;
-    @apply text-[var(--black-900)] disabled: bg-red-900 disabled:text-[var(--text-600)];
+    @apply btn-base bg-red-700 active:bg-red-300 enabled:hover:bg-red-400;
+    @apply text-[var(--black-900)] disabled:bg-red-900 disabled:text-[var(--text-600)];
   }
 
   .btn-green {
-    @apply btn-base bg-green-700 active: bg-green-300 enabled:hover:bg-green-400;
-    @apply disabled: bg-green-900 disabled:text-[var(--text-600)];
+    @apply btn-base bg-green-700 active:bg-green-300 enabled:hover:bg-green-400;
+    @apply disabled:bg-green-900 disabled:text-[var(--text-600)];
   }
 
   .btn-yellow,
   .btn-orange {
-    @apply btn-base bg-yellow-700 active: bg-yellow-500 enabled:hover:bg-yellow-600;
-    @apply disabled: bg-orange-900 disabled:text-[var(--text-600)];
+    @apply btn-base bg-yellow-700 active:bg-yellow-500 enabled:hover:bg-yellow-600;
+    @apply disabled:bg-orange-900 disabled:text-[var(--text-600)];
   }
 
   .btn-clear {
@@ -280,7 +277,7 @@ body {
     @apply _focusable-base;
     @apply max-h-96 max-w-[10rem];
     @apply rounded-md shadow-md;
-    @apply bg-background-lighter hover: bg-zinc-900 active:bg-zinc-800;
+    @apply bg-background-lighter hover:bg-zinc-900 active:bg-zinc-800;
   }
 
   /**
@@ -361,8 +358,7 @@ body {
     width: 0;
     height: 0;
   }
-
-  .toggle-pill-color input[type='checkbox']+label {
+  .toggle-pill-color input[type='checkbox'] + label {
     display: block;
     position: relative;
     width: 3em;
@@ -379,8 +375,7 @@ body {
     transition: background 0.1s ease-in-out;
     @apply bg-[var(--bg-700)];
   }
-
-  .toggle-pill-color input[type='checkbox']+label:before {
+  .toggle-pill-color input[type='checkbox'] + label:before {
     content: '';
     display: block;
     width: 1.2em;
@@ -394,13 +389,11 @@ body {
     -webkit-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
   }
-
-  .toggle-pill-color input[type='checkbox']:checked+label {
+  .toggle-pill-color input[type='checkbox']:checked + label {
     @apply bg-[var(--hl-700)];
     /* background: #47cf73; */
   }
-
-  .toggle-pill-color input[type='checkbox']:checked+label:before {
+  .toggle-pill-color input[type='checkbox']:checked + label:before {
     box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
     left: 1.6em;
   }
@@ -412,14 +405,14 @@ body {
     left: 0;
     transition: opacity 250ms ease;
     transition: left 250ms ease;
-    @apply w-[calc(100vw-40px)] max-w-[320px] bg-[var(--bg-900)] sm: relative sm:top-0 sm:clear-none sm:h-[100vh] sm:w-72;
-    @apply z-10 sm: z-0;
+    @apply w-[calc(100vw-40px)] max-w-[320px] bg-[var(--bg-900)] sm:relative  sm:top-0 sm:clear-none sm:h-[100vh] sm:w-72;
+    @apply z-10 sm:z-0;
   }
 
   .drawer--hide {
     animation-fill-mode: forwards;
     animation: hideDrawer 0s ease 200ms;
-    @apply left-[-100vw] sm: left-0 sm:opacity-100;
+    @apply left-[-100vw] sm:left-0 sm:opacity-100;
   }
 
   .drawer__content {
@@ -430,7 +423,7 @@ body {
     transition: 250ms ease;
   }
 
-  .drawer>*>a.active {
+  .drawer > * > a.active {
     @apply bg-[var(--hl-900)];
   }
 
