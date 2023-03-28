@@ -6,6 +6,8 @@ module.exports = {
       fontFamily: {
         'body': ['Bai Jamjuree', 'sans-serif'],
         'sans': ['Bai Jamjuree', 'sans-serif'],
+      screens: {
+        sm: '1024px',
       },
       colors: {
         background: '#090b10',

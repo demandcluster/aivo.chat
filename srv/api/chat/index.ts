@@ -1,19 +1,13 @@
 import { Router } from 'express'
 import { loggedIn } from '../auth'
-import { createChat } from './create'
+import { createChat, importChat } from './create'
 import { updateChat, updateChatGenPreset, updateChatGenSettings, updateMessage } from './edit'
 
 import { getAllChats, getCharacterChats, getChatDetail } from './get'
 import { guestGenerateMsg } from './guest-msg'
 import { createImage } from './image'
 import { createInvite, acceptInvite, rejectInvite, getInvites } from './invite'
-import {
-  generateMessage,
-  generateMessageV2,
-  getMessages,
-  retryMessage,
-  summarizeChat,
-} from './message'
+import { generateMessage, generateMessageV2, getMessages, retryMessage } from './message'
 import { deleteChat, deleteMessages } from './remove'
 
 const router = Router()
@@ -23,14 +17,15 @@ router.post('/:id/guest-message', guestGenerateMsg)
 router.use(loggedIn)
 router.get('/', getAllChats)
 router.get('/invites', getInvites)
-router.get('/:id/summary', summarizeChat)
 router.get('/:id/messages', getMessages)
-router.post('/', createChat)
 router.get('/:id', getChatDetail)
+
 router.put('/:id', updateChat)
 router.put('/:id/generation', updateChatGenSettings)
 router.put('/:id/preset', updateChatGenPreset)
 
+router.post('/', createChat)
+router.post('/import', importChat)
 router.post('/:id/invite', createInvite)
 router.post('/:inviteId/accept', acceptInvite)
 router.post('/:inviteId/reject', rejectInvite)
