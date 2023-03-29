@@ -10,13 +10,17 @@ import {getAuthHeader} from '../../common/buckaroo'
 import needle from 'needle'
 import { sendOne} from './ws'
 import {config} from '../config'
+import paypal from "paypal-rest-sdk"
 
 const router = Router()
 
 const {paypalID,paypalSecret} = config
-
-
-import { CheckoutNodeJssdk,WebhookEvent,verifySignature } from '@paypal/checkout-server-sdk';
+ 
+paypal.configure({
+  mode: 'sandbox', //sandbox or live
+  client_id: paypalID,
+  client_secret: paypalSecret,
+})
 
 interface PaypalItem {
   name: string;
@@ -27,16 +31,8 @@ interface PaypalItem {
 }
 
 const createPaypalOrder = async (orderId: string,orderAmount: number, items: AppSchema.ShopItem[]): Promise<string | null> => {
-  try {
-    const client = new CheckoutNodeJssdk({
-      clientId: paypalID || '',
-      clientSecret: paypalSecret,
-      environment: process.env?.PAYPAL_ENVIRONMENT || 'sandbox',
-    });
-
-    const request = new client.orders.OrdersCreateRequest();
-    request.prefer('return=representation');
-    request.requestBody({
+  
+    const orderData={
       intent: 'CAPTURE',
       purchase_units: [
         {
@@ -71,21 +67,17 @@ const createPaypalOrder = async (orderId: string,orderAmount: number, items: App
         landing_page: 'BILLING',
         user_action: 'PAY_NOW',
       },
-    });
-
-    const response = await client.execute(request);
-
-    if (response.statusCode !== 201) {
-      console.error(response);
-      return "";
+    }
+    try {
+      const response = await paypal.orders.create(orderData)
+      console.log(response)
+      return {orderId: response.result.id}
+    } catch (error) {
+      console.error(error)
+      throw new Error("Failed to create order")
     }
 
-    return response.result.id;
-  } catch (err) {
-    console.error(err);
-    return "";
-  }
-};
+}
 
 
 

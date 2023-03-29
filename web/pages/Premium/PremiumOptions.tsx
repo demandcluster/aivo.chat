@@ -149,7 +149,7 @@ const PremiumOptions: Component = () => {
         </div>
         {orderId && (
          
-  <div id="paypal-button-container"></div>y
+  <div id="paypal-button-container"></div>
  
     )}
 

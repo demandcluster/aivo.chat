@@ -33,6 +33,9 @@ const HomePage: Component = () => {
           </div>
       </div>
     </div>
+      <div class="flex flex-col gap-4  flex-shrink" >
+        <span class="text-lg text-italic">Why 18+? The topic of this simulation is dating, anything can happen. We feel that any such chat is for adults only. </span>
+      </div>
       <div>
         <p class="text-lg text-center lg:text-2xl text-gray-500">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
       </div>
