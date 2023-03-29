@@ -16,7 +16,7 @@ const router = Router()
 const {paypalID,paypalSecret} = config
 
 
-import { CheckoutNodeJssd0,WebhookEvent,verifySignature } from '@paypal/checkout-server-sdk';
+import { CheckoutNodeJssdk,WebhookEvent,verifySignature } from '@paypal/checkout-server-sdk';
 
 interface PaypalItem {
   name: string;

@@ -1,5 +1,7 @@
 {
-  "presets": ["solid"],
+  "presets": [
+    "solid"
+  ],
   "env": {
     "development": {
       "plugins": []
