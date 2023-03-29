@@ -164,6 +164,7 @@ const webHook = handle(async ({headers,body,res}) => {
  
   const bodyObj = JSON.parse(body)
 
+  if(!res) return {error:'No res'}
   const webhookTransmissionId = headers['paypal-transmission-id'];
   const webhookTransmissionSig = headers['paypal-transmission-sig'];
   const webhookCertUrl = headers['paypal-cert-url'];
@@ -181,7 +182,7 @@ const webHook = handle(async ({headers,body,res}) => {
   const webhookEvent = new Webhook();
   if(webhookEvent.event_type === 'CHECKOUT.ORDER.COMPLETED'){
 
-     console.log(webookEvent)
+     console.log(webHookEvent)
 
   const paymentId = bodyObj?.id||false
   if(!paymentId)return  res.sendStatus(400)
