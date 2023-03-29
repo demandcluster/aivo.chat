@@ -427,9 +427,21 @@ body {
     @apply bg-[var(--hl-900)];
   }
 
-  @media (min-width: 768px) {
+  
+  @media (min-width: 450px) and (max-width: 767px) {
     .likes-middle{
-      right: calc(50% - 20rem) !important;
+      left: 10% !important;
+      right: 10% !important;
+    }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .likes-middle{
+      right: calc(50% - 18.5rem) !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .likes-middle{
+      right: calc(50% - 24rem) !important;
     }
   }
   .text-shadow {
