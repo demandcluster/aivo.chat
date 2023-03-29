@@ -76,9 +76,8 @@ export const config = {
     username: env('INITIAL_USER', 'admin'),
     password: env('INITIAL_PASSWORD', v4()),
   },
-  buckarooUrl: env('BUCKAROO_URL', 'testcheckout.buckaroo.nl/json/Transaction'),
-  buckarooKey: env('BUCKAROO_KEY', ''),
-  buckarooSecret: env('BUCKAROO_SECRET', ''),
+  paypalID: env('PAYPAL_ID', ''),
+  paypalSecret: env('PAYPAL_KEY', ''),
   adapters: env('ADAPTERS', 'novel,horde,kobold,chai,luminai,openai,scale')
     .split(',')
     .filter((i) => !!i) as AIAdapter[],

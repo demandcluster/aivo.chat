@@ -41,6 +41,7 @@ const Help: Component = () => {
           <div>Artificial Intelligence Virtual Other</div>
           <div>Our app is based on <A href="https://github.com/luminai-companion/agn-ai">AgnAIstic</A>.</div>
           <div>We are busy improving the site and this page. Please be patient.</div>
+          <div>AIVO.CHAT is created by Demandcluster B.V. in the Netherlands, we are a small team of developers and designers.</div>
           </section>
           <Divider/>
           <section class="flex flex-col gap-4  flex-shrink" >

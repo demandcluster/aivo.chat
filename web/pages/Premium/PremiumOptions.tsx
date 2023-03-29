@@ -12,16 +12,43 @@ import Mastercard from './PaymentProviders/Mastercard.svg'
 import Maestro from './PaymentProviders/Maestro.svg'
 import Bancontact from './PaymentProviders/Bancontact.svg'
 import Apple from './PaymentProviders/Apple.svg'
+import { loadScript } from "@paypal/paypal-js";
 
 const PremiumOptions: Component = () => {
   const items = cartStore((state) => state.items)
   const cartItems = cartStore((state) => state.cartItems)
   const [cartSignal, setCartSignal] = createSignal(cartItems)
+  const [orderId, setOrderId] = createSignal(null)
   const navigate = useNavigate()
+  const [paypal, setPaypal] = createSignal(null)
 
+  let paypalButtonsContainer;
+
+  renderButtons((id) => {
+   
+      paypal.Buttons({
+        createOrder: function(data, actions) {
+          // Set up the transaction details
+          return id
+        },
+        onApprove: function(data, actions) {
+          // Capture the payment
+          return actions.order.capture().then(function(details) {
+            // Show a success message to the buyer
+            console.log(details)
+           // alert('Transaction completed by ' + details.payer.name.given_name + '!');
+          });
+        }
+      }).render(paypalButtonsContainer);
+  
+  });
+  
   createEffect(() => {
     cartStore.getItems()
     cartStore.getCartItems()
+    loadScript({ "client-id": "AQlrOxbkPYGnPnoYLjOq4M5Ub_JhzVbpxzM8uv9AlY8RzVH7pXRLqFHKV0jTS5-gB7V_kurLSMsBcIjL" }).then((paypalObject) => {
+      setPaypal(paypalObject)
+    })
   }, { on: cartItems })
 
   const addToCart = (item) => {
@@ -47,9 +74,9 @@ const PremiumOptions: Component = () => {
   
   const checkoutCart = () => {
     cartStore.checkoutCart(service).then(() => {
-      const url = cartItems?.redirURL || "/"
-      
-      location.href = url
+      const id = cartItems?.orderId || ""
+      setOrderId(id)
+      renderButtons(orderId())
        })
     }
 
@@ -120,10 +147,14 @@ const PremiumOptions: Component = () => {
         <img src={Apple} class="w-14" />
        </div>
         </div>
+        {orderId && (
+         
+  <div id="paypal-button-container"></div>y
+ 
+    )}
+
     </section>
-     <Modal title="Transaction Pending" show={cartItems.showPending} close={false} >
-            <h1>Redirecting to payment processor...</h1>
-      </Modal>
+    
 
     </div>
   )

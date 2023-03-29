@@ -17,7 +17,7 @@ type CartStore = {
 
 export const cartStore = createStore<CartStore>('cart', {
   showPending: false,
-  redirURL: "",
+  orderId: "",
   items: [],
   cartItems: [],
   loaded: false
@@ -51,7 +51,7 @@ export const cartStore = createStore<CartStore>('cart', {
           return cartItems;
         } 
         await local.saveCartItem([])
-        return { cartItems: { list: [], loaded: true, showPending: true, redirURL: res.result?.redirect } };
+        return { cartItems: { list: [], loaded: true, showPending: true, orderId: res.result?.orderId } };
       },
       
 

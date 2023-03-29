@@ -13,34 +13,81 @@ import {config} from '../config'
 
 const router = Router()
 
-const {buckarooUrl, buckarooKey, buckarooSecret} = config
+const {paypalID,paypalSecret} = config
 
 
-interface BuckarooPayment{
- Currency: "EUR"
- AmountDebit: number
- AmountCredit?: number
- Invoice?: string
- Description?: string,
- ClientIP?: {
-   Type: 0
-   Address: string
-  }
- ReturnURL?: string
- ReturnURLCancel?: string
- ReturnURLError?: string
- ReturnURLReject?: string
- OriginalTransactionKey?: string
- StartRecurrent?: boolean
- ContinueOnIncomplete?: boolean
- Services?: string
- ServicesSelectableByClient?: string
- ServicesExcludedForClient?: string
- PushURL?: string
- PushURLFailure?: string
- ClientUserAgent?: string
- OriginalTransactionReference?: null
+import { CheckoutNodeJssd0,WebhookEvent,verifySignature } from '@paypal/checkout-server-sdk';
+
+interface PaypalItem {
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  category?: 'DIGITAL_GOODS' | 'PHYSICAL_GOODS';
 }
+
+const createPaypalOrder = async (orderId: string,orderAmount: number, items: AppSchema.ShopItem[]): Promise<string | null> => {
+  try {
+    const client = new CheckoutNodeJssdk({
+      clientId: paypalID || '',
+      clientSecret: paypalSecret,
+      environment: process.env?.PAYPAL_ENVIRONMENT || 'sandbox',
+    });
+
+    const request = new client.orders.OrdersCreateRequest();
+    request.prefer('return=representation');
+    request.requestBody({
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          amount: {
+            currency_code: 'EUR',
+            value: orderAmount.toFixed(2),
+            breakdown: {
+              item_total: {
+                currency_code: 'EUR',
+                value: orderAmount.toFixed(2),
+              },
+            },
+          },
+          custom_id: orderId,
+          items: items.map((item) => {
+
+            return {
+              name: "AIVO.CHAT",
+              description: item.name,
+              unit_amount: {
+                currency_code: 'EUR',
+                value: item.price.toFixed(2),
+              },
+              quantity: 1,
+              category: 'DIGITAL_GOODS',
+            };
+          }),
+        },
+      ],
+      application_context: {
+        brand_name: 'AIVO.CHAT',
+        landing_page: 'BILLING',
+        user_action: 'PAY_NOW',
+      },
+    });
+
+    const response = await client.execute(request);
+
+    if (response.statusCode !== 201) {
+      console.error(response);
+      return "";
+    }
+
+    return response.result.id;
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+};
+
+
 
 const cartTotal = (cartItems: AppSchema.ShopItem[]): number => {
   if (!cartItems || cartItems.length < 1) {
@@ -98,43 +145,14 @@ const newOrder:AppSchema.ShopOrder={
   createdAt: now(),
   updatedAt: now(),
   }
-const newPayment:BuckarooPayment={
-  Currency: "EUR",
-  AmountDebit: newOrder.total,
-  Invoice: newOrder._id,
-  Description: "AIVO.CHAT Order for " + user?.username,
-  ClientIP: {
-    Type: 0,
-    Address: ip
-  },
-  ReturnURL: "https://aivo.chat/thankyou",
-  ReturnURLCancel: "https://aivo.chat/shop/error",
-  ReturnURLError: "https://aivo.chat/shop/error",
-  ReturnURLReject: "https://aivo.chat/shop/error",
-  PushURL: "https://aivo.chat/api/shop/webhook",
- 
-  ContinueOnIncomplete: true
-}
-if(service)newPayment.Services=service
+  
+const orderId=await createPaypalOrder(newOrder._id,newOrder.total,itemsToCheckout)
 
-const paymentJson = JSON.stringify(newPayment)
-const authHeader = getAuthHeader(buckarooUrl,buckarooKey,buckarooSecret,paymentJson,"POST")
 
-const res = await needle('post', "https://"+buckarooUrl, paymentJson, {
-  json: true,
-  headers: {
-    'Authorization': authHeader
-  }
-})
-
-const redirURL=res.body?.RequiredAction?.RedirectURL||""
-const key = res.body?.Key||false
-if(!key)return {error:"Payment failed"}
-if(!redirURL)return {error:"Payment failed"}
-newOrder.paymentId=key
+newOrder.paymentId=orderId
 await store.shop.addShopOrder(newOrder)
 
-return {redirect: redirURL}
+return {orderId: orderId}
 })
 
 const getItems = handle(async () => {
@@ -142,35 +160,51 @@ const getItems = handle(async () => {
   return items
 })
 
-const webHook = handle(async ({body}) => {
+const webHook = handle(async ({headers,body,res}) => {
  
-  const bodyObj = body
-  console.log(bodyObj)
+  const bodyObj = JSON.parse(body)
 
-  const paymentId = bodyObj?.brq_transactions||false
-  if(!paymentId)return {error:"Payment failed"}
-  const orderId = bodyObj.brq_invoicenumber||false
-  if(!orderId)return {error:"Payment failed"}
+  const webhookTransmissionId = headers['paypal-transmission-id'];
+  const webhookTransmissionSig = headers['paypal-transmission-sig'];
+  const webhookCertUrl = headers['paypal-cert-url'];
+
+  // verify the webhook signature
+  try {
+    await verifySignature(webhookTransmissionId, webhookTransmissionSig, webhookCertUrl, webhookEvent);
+  } catch (error) {
+    console.error('Error verifying webhook signature:', error);
+    res.sendStatus(400);
+    return;
+  }
+
+  // process the webhook event
+  const webhookEvent = new Webhook();
+  if(webhookEvent.event_type === 'CHECKOUT.ORDER.COMPLETED'){
+
+     console.log(webookEvent)
+
+  const paymentId = bodyObj?.id||false
+  if(!paymentId)return  res.sendStatus(400)
+  const orderId = bodyObj.purchase_units[0].custom_id||false
+  if(!orderId)return  res.sendStatus(400);
   const order = await store.shop.getShopOrder(orderId)
-  if(!order)return {error:"Order not found"}
+  if(!order)return  res.sendStatus(400);
   if(order.paymentId!==paymentId)return {error:"Invalid payment"}
 
-  if(bodyObj?.brq_statuscode==='190'){
-    if(order.status==="success"||order.status==="completed"||order.status==="failed")return {error: "Order already completed"}
+    if(order.status==="success"||order.status==="completed"||order.status==="failed")return res.sendStatus(400)
       order.status="success"
       order.updatedAt=now()
-      order.name=bodyObj?.brq_customer_name
+      order.name=bodyObj?.purchase_units[0].payee.email_address
       await store.shop.updateShopOrder(order)
       giveOrder(order)
-    }else{
-      order.status="failed"
-      order.name=bodyObj?.brq_customer_name
-      order.updatedAt=now()
-      await store.shop.updateShopOrder(order)
-    }
+   
 
-  return {success:true}
-})
+  }
+
+  res.sendStatus(400);
+});
+
+
 
 router.post('/webhook',webHook)
 router.get('/', loggedIn, getItems)
