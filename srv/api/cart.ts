@@ -226,15 +226,15 @@ if (parts && parts.length === 4) {
   const [transmissionId, timeStamp, webhookId, crc32] = parts;
   const checksum = CRC32.str(`${transmissionId}|${timeStamp}|${webhookId}`).toString(16);
   if (checksum === crc32) {
-    console.log('Header is valid');
+    console.log('Header is valid')
   } else {
-    console.log('Header is invalid');
+    console.log('Header is invalid - invalid CRC32',checksum,crc32)
   }
   // Do something with the variables here
 } else {
   // Handle the case where the header is not valid
-  console.log('Header is invalid')
-  return {error:'Header not valid'}
+  console.log('Header is invalid - parts missing')
+  return {error:'Header not valid - parts missing'}
 }
   
   
