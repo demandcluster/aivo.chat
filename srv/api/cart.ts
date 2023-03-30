@@ -233,7 +233,7 @@ if (parts && parts.length === 4) {
   // Do something with the variables here
 } else {
   // Handle the case where the header is not valid
-  console.log('Header is invalid - parts missing')
+  console.log('Header is invalid - parts missing',parts,headers)
   return {error:'Header not valid - parts missing'}
 }
   
