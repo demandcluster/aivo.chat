@@ -12,7 +12,7 @@ import { sendOne} from './ws'
 import {config} from '../config'
 import paypal from "paypal-rest-sdk"
 import https from 'https'
-import CRC32 from 'crc-32'
+import CryptoJS from 'crypto-js'
 const router = Router()
 
 
@@ -221,22 +221,22 @@ const getItems = handle(async () => {
 })
 
 const webHook = handle(async ({headers,body,res}) => {
-  const parts = headers.toString().split('|');
-if (parts && parts.length === 4) {
-  const [transmissionId, timeStamp, webhookId, crc32] = parts;
-  const checksum = CRC32.str(`${transmissionId}|${timeStamp}|${webhookId}`).toString(16);
-  if (checksum === crc32) {
-    console.log('Header is valid')
-  } else {
-    console.log('Header is invalid - invalid CRC32',checksum,crc32)
-  }
-  // Do something with the variables here
-} else {
-  // Handle the case where the header is not valid
-  console.log('Header is invalid - parts missing',parts,headers)
-  return {error:'Header not valid - parts missing'}
+ 
+  // Extract the header properties
+const transmissionId = headers['paypal-transmission-id']||""
+const timeStamp = headers['paypal-transmission-time']||""
+const crc32 = headers['paypal-transmission-sig']||""
+
+// Validate the CRC32 checksum
+const payload = transmissionId + timeStamp;
+const hash = CryptoJS.SHA256(payload);
+const computedCrc32 = parseInt(hash.toString(CryptoJS.enc.Hex).slice(0, 8), 16);
+if (computedCrc32 !== parseInt(crc32, 16)) {
+  throw new Error('Invalid CRC32 checksum');
+}else{
+  console.log('wiiii')
 }
-  
+
   
   const bodyObj = JSON.parse(body)
 
