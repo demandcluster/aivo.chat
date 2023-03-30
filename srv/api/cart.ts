@@ -228,10 +228,12 @@ const timeStamp = headers['paypal-transmission-time']||""
 const crc32 = headers['paypal-transmission-sig']||""
 
 // Validate the CRC32 checksum
-const payload = transmissionId + timeStamp;
+const payload = [transmissionId, timeStamp, webhookId, crc32].map(String).join('|');
+
 const hash = CryptoJS.SHA256(payload);
 const computedCrc32 = parseInt(hash.toString(CryptoJS.enc.Hex).slice(0, 8), 16);
-if (computedCrc32 !== parseInt(crc32, 16)) {
+
+if (computedCrc32 === Array.isArray(crc32Header) ? crc32Header[0] : crc32Header) {
   throw new Error('Invalid CRC32 checksum');
 }else{
   console.log('wiiii')
