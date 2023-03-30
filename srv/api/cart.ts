@@ -233,7 +233,7 @@ if (parts && parts.length === 4) {
   // Do something with the variables here
 } else {
   // Handle the case where the header is not valid
-  console.log('Header is invalid');
+  console.log('Header is invalid')
   return {error:'Header not valid'}
 }
   
@@ -260,7 +260,7 @@ if (parts && parts.length === 4) {
 
   //    console.log(webHookEvent)
 
-  // const paymentId = bodyObj?.id||false
+   const paymentId = bodyObj?.id||false
   // if(!paymentId)return  res.sendStatus(400)
   // const orderId = bodyObj.purchase_units[0].custom_id||false
   // if(!orderId)return  res.sendStatus(400)
@@ -277,7 +277,7 @@ if (parts && parts.length === 4) {
    
 
   // }
-  console.log(bodyObj)
+  console.log('paymentid',paymentId, 'bodyObj',bodyObj)
 
   if(res)res.sendStatus(400)
 })
