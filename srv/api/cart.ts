@@ -69,9 +69,9 @@ const createPaypalOrder = async (orderId: string,orderAmount: number, items: App
       },
     }
     try {
-      const response = await paypal.orders.create(orderData)
+      const response = await paypal.order.create(orderData)
       console.log(response)
-      return {orderId: response.result.id}
+      return {orderId: response?.result?.id||""}
     } catch (error) {
       console.error(error)
       throw new Error("Failed to create order")
@@ -156,43 +156,43 @@ const webHook = handle(async ({headers,body,res}) => {
  
   const bodyObj = JSON.parse(body)
 
-  if(!res) return {error:'No res'}
-  const webhookTransmissionId = headers['paypal-transmission-id'];
-  const webhookTransmissionSig = headers['paypal-transmission-sig'];
-  const webhookCertUrl = headers['paypal-cert-url'];
+  // if(!res) return {error:'No res'}
+  // const webhookTransmissionId = headers['paypal-transmission-id'];
+  // const webhookTransmissionSig = headers['paypal-transmission-sig'];
+  // const webhookCertUrl = headers['paypal-cert-url'];
 
-  // verify the webhook signature
-  try {
-    await verifySignature(webhookTransmissionId, webhookTransmissionSig, webhookCertUrl, webhookEvent);
-  } catch (error) {
-    console.error('Error verifying webhook signature:', error);
-    res.sendStatus(400);
-    return;
-  }
+  // // verify the webhook signature
+  // try {
+  //   await verifySignature(webhookTransmissionId, webhookTransmissionSig, webhookCertUrl, webhookEvent);
+  // } catch (error) {
+  //   console.error('Error verifying webhook signature:', error);
+  //   res.sendStatus(400);
+  //   return;
+  // }
 
-  // process the webhook event
-  const webhookEvent = new Webhook();
-  if(webhookEvent.event_type === 'CHECKOUT.ORDER.COMPLETED'){
+  // // process the webhook event
+  // const webhookEvent = new Webhook();
+  // if(webhookEvent.event_type === 'CHECKOUT.ORDER.COMPLETED'){
 
-     console.log(webHookEvent)
+  //    console.log(webHookEvent)
 
-  const paymentId = bodyObj?.id||false
-  if(!paymentId)return  res.sendStatus(400)
-  const orderId = bodyObj.purchase_units[0].custom_id||false
-  if(!orderId)return  res.sendStatus(400);
-  const order = await store.shop.getShopOrder(orderId)
-  if(!order)return  res.sendStatus(400);
-  if(order.paymentId!==paymentId)return {error:"Invalid payment"}
+  // const paymentId = bodyObj?.id||false
+  // if(!paymentId)return  res.sendStatus(400)
+  // const orderId = bodyObj.purchase_units[0].custom_id||false
+  // if(!orderId)return  res.sendStatus(400);
+  // const order = await store.shop.getShopOrder(orderId)
+  // if(!order)return  res.sendStatus(400);
+  // if(order.paymentId!==paymentId)return {error:"Invalid payment"}
 
-    if(order.status==="success"||order.status==="completed"||order.status==="failed")return res.sendStatus(400)
-      order.status="success"
-      order.updatedAt=now()
-      order.name=bodyObj?.purchase_units[0].payee.email_address
-      await store.shop.updateShopOrder(order)
-      giveOrder(order)
+  //   if(order.status==="success"||order.status==="completed"||order.status==="failed")return res.sendStatus(400)
+  //     order.status="success"
+  //     order.updatedAt=now()
+  //     order.name=bodyObj?.purchase_units[0].payee.email_address
+  //     await store.shop.updateShopOrder(order)
+  //     giveOrder(order)
    
 
-  }
+  // }
 
   res.sendStatus(400);
 });
