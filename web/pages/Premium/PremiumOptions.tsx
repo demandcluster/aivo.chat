@@ -3,15 +3,10 @@ import { A, useNavigate } from "@solidjs/router"
 import PageHeader from "../../shared/PageHeader"
 import Divider from "../../shared/Divider"
 import { cartStore } from "../../store"
-import { CalendarHeart, Coins } from "lucide-solid"
+import { CalendarHeart, Coins, ShoppingCart } from "lucide-solid"
 import logo from "../../assets/logo.png"
 import Modal from "../../shared/Modal"
-import iDeal from './PaymentProviders/iDeal.svg'
-import Visa from './PaymentProviders/Visa.svg'
-import Mastercard from './PaymentProviders/Mastercard.svg'
-import Maestro from './PaymentProviders/Maestro.svg'
-import Bancontact from './PaymentProviders/Bancontact.svg'
-import Apple from './PaymentProviders/Apple.svg'
+
 import { loadScript } from "@paypal/paypal-js";
 
 const PremiumOptions: Component = () => {
@@ -22,11 +17,11 @@ const PremiumOptions: Component = () => {
   const navigate = useNavigate()
   const [paypal, setPaypal] = createSignal(null)
 
-  let paypalButtonsContainer;
+  let paypalButtons
 
-  renderButtons((id) => {
+  const renderButtons = (id) => {
    
-      paypal.Buttons({
+      paypal().Buttons({
         createOrder: function(data, actions) {
           // Set up the transaction details
           return id
@@ -35,18 +30,19 @@ const PremiumOptions: Component = () => {
           // Capture the payment
           return actions.order.capture().then(function(details) {
             // Show a success message to the buyer
-            console.log(details)
+            setOrderId(null)
+            navigate('/thankyou')
            // alert('Transaction completed by ' + details.payer.name.given_name + '!');
           });
         }
-      }).render(paypalButtonsContainer);
+      }).render(paypalButtons);
   
-  });
+  }
   
   createEffect(() => {
     cartStore.getItems()
     cartStore.getCartItems()
-    loadScript({ "client-id": "AQlrOxbkPYGnPnoYLjOq4M5Ub_JhzVbpxzM8uv9AlY8RzVH7pXRLqFHKV0jTS5-gB7V_kurLSMsBcIjL" }).then((paypalObject) => {
+    loadScript({ "client-id": "AQlrOxbkPYGnPnoYLjOq4M5Ub_JhzVbpxzM8uv9AlY8RzVH7pXRLqFHKV0jTS5-gB7V_kurLSMsBcIjL","currency":"EUR" }).then((paypalObject) => {
       setPaypal(paypalObject)
     })
   }, { on: cartItems })
@@ -72,10 +68,11 @@ const PremiumOptions: Component = () => {
     }, 0).toFixed(2)
   }, [cartItems])
   
-  const checkoutCart = () => {
-    cartStore.checkoutCart(service).then(() => {
+  const checkoutCart = (id) => {
+    cartStore.checkoutCart().then(() => {
       const id = cartItems?.orderId || ""
       setOrderId(id)
+      console.log(id)
       renderButtons(orderId())
        })
     }
@@ -84,7 +81,8 @@ const PremiumOptions: Component = () => {
     <div class="container">
       <PageHeader title="Shop" subtitle="Premium & Credit Options" />
       <section>
-        <div class="grid grid-cols-1 columns-3 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+       <Show when={!orderId()}>
+        <div class="shadow grid grid-cols-1 columns-3 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
          <For each={items.list}>{(item)=>
             <Item
               item={item}
@@ -96,9 +94,12 @@ const PremiumOptions: Component = () => {
          }
           </For>
         </div>
+        </Show>
       </section>
       <Divider />
-      <Show when={cartSignal()?.list?.length > 0}>
+
+    
+        <Show when={cartSignal()?.list?.length > 0  }>
         <h2 class="text-gray-400 text-xl mb-4">Cart</h2>
     
        <section class="flex flex-col gap-4">
@@ -120,40 +121,21 @@ const PremiumOptions: Component = () => {
            
         </section>
         <Divider />
-      
-        <div class="flex flex-row justify-end">
-            <button class="bg-teal-600 text-white px-4 py-2 rounded-md font-bold" onClick={checkoutCart}>Checkout</button>
+        <div class="flex flex-row">
+            <button class="bg-teal-600 text-white px-4 py-2 rounded-md font-bold" onClick={checkoutCart}><ShoppingCart /> Checkout</button>
         </div>
     </Show>
     <Divider/>
+        {orderId() && (
     <section>
-        <h2 class="text-gray-400 text-xl mb-4">Payment Methods</h2>
-        <div class="flex flex-row gap-4">
-       <div>
-        <img src={iDeal} class="w-14" />
-       </div>
-       <div>
-        <img src={Visa} class="w-14" />
-       </div>
-       <div>
-        <img src={Mastercard} class="w-14" />
-       </div>
-       <div>
-        <img src={Maestro} class="w-14" />
-       </div>
-       <div>
-        <img src={Bancontact} class="w-14" />
-       </div><div>
-        <img src={Apple} class="w-14" />
-       </div>
-        </div>
-        {orderId && (
+        <h2 class="text-gray-400 text-xl mb-4">Checkout</h2>
+        
          
-  <div id="paypal-button-container"></div>
+  <div id="paypal-buttons-container" ref={paypalButtons}></div>
  
-    )}
 
     </section>
+    )}
     
 
     </div>

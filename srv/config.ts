@@ -76,8 +76,8 @@ export const config = {
     username: env('INITIAL_USER', 'admin'),
     password: env('INITIAL_PASSWORD', v4()),
   },
-  paypalID: env('PAYPAL_ID', ''),
-  paypalSecret: env('PAYPAL_KEY', ''),
+  paypalID: env('PAYPAL_ID', 'AQlrOxbkPYGnPnoYLjOq4M5Ub_JhzVbpxzM8uv9AlY8RzVH7pXRLqFHKV0jTS5-gB7V_kurLSMsBcIjL'),
+  paypalSecret: env('PAYPAL_KEY', 'EKjgEUtbWVRmOH3niP3_U0MfmgYt3_I7ydj0rvyIs1ZJUwz2jpr8AQdl9durICFpV6xMRG7RrR8UQ3nP'),
   adapters: env('ADAPTERS', 'novel,horde,kobold,chai,luminai,openai,scale')
     .split(',')
     .filter((i) => !!i) as AIAdapter[],
