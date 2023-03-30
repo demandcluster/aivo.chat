@@ -279,7 +279,7 @@ if (parts && parts.length === 4) {
   // }
   console.log('paymentid',paymentId, 'bodyObj',bodyObj)
 
-  if(res)res.sendStatus(400)
+  if(res)res.sendStatus(400) 
 })
 
 
