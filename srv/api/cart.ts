@@ -241,9 +241,9 @@ if (computedCrc32.toString() === (Array.isArray(crc32) ? crc32[0] : crc32)) {
   const bodyObj = body||{}
 
    const paymentId = bodyObj?.id||false
- 
+ console.log(bodyObj)
   if(!paymentId)return  res?.sendStatus(400)||""
-  const orderId = bodyObj.purchase_units[0]?.custom_id||false
+  const orderId = bodyObj?.purchase_units[0]?.custom_id||false
   if(!orderId)return  res?.sendStatus(400)||""
   const order = await store.shop.getShopOrder(orderId)
   if(!order)return  res?.sendStatus(400)||""
