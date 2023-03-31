@@ -241,18 +241,18 @@ if (computedCrc32.toString() === (Array.isArray(crc32) ? crc32[0] : crc32)) {
   const bodyObj = body||{}
 
    const paymentId = bodyObj?.id||false
-  if(!res)return {error:"No response"}
-  if(!paymentId)return  res.sendStatus(400)
-  const orderId = bodyObj.purchase_units[0].custom_id||false
-  if(!orderId)return  res.sendStatus(400)
+ 
+  if(!paymentId)return  res.sendStatus(400)||""
+  const orderId = bodyObj.purchase_units[0]?.custom_id||false
+  if(!orderId)return  res.sendStatus(400)||""
   const order = await store.shop.getShopOrder(orderId)
-  if(!order)return  res.sendStatus(400)
+  if(!order)return  res.sendStatus(400)||""
   if(order.paymentId!==paymentId)return {error:"Invalid payment"}
 
-    if(order.status==="success"||order.status==="completed"||order.status==="failed")return res.sendStatus(400)
+    if(order.status==="success"||order.status==="completed"||order.status==="failed")return res.sendStatus(400)||""
       order.status="success"
       order.updatedAt=now()
-      order.name=bodyObj?.purchase_units[0].payee.email_address
+      order.name=bodyObj?.purchase_units[0]?.payee.email_address||""
       await store.shop.updateShopOrder(order)
       giveOrder(order)
    
