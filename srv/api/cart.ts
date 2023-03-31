@@ -240,24 +240,8 @@ if (computedCrc32.toString() === (Array.isArray(crc32) ? crc32[0] : crc32)) {
   
   const bodyObj = JSON.parse(body)
 
-  if(!res) return {error:'No res'}
-  const webhookTransmissionId = headers['paypal-transmission-id']
-  const webhookTransmissionSig = headers['paypal-transmission-sig']
-  const webhookCertUrl = headers['paypal-cert-url']
-
-  // verify the webhook signature
-  try {
-    await verifySignature(webhookTransmissionId, webhookTransmissionSig, webhookCertUrl, webhookEvent)
-  } catch (error) {
-    console.error('Error verifying webhook signature:', error)
-    res.sendStatus(400)
-    return
-  }
-
-
-
-
    const paymentId = bodyObj?.id||false
+
   if(!paymentId)return  res.sendStatus(400)
   const orderId = bodyObj.purchase_units[0].custom_id||false
   if(!orderId)return  res.sendStatus(400)
