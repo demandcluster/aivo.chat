@@ -235,50 +235,45 @@ const computedCrc32 = parseInt(hash.toString(CryptoJS.enc.Hex).slice(0, 8), 16);
 
 if (computedCrc32.toString() === (Array.isArray(crc32) ? crc32[0] : crc32)) {
   throw new Error('Invalid CRC32 checksum');
-}else{
-  console.log('wiiii')
 }
 
   
   const bodyObj = JSON.parse(body)
 
-  // if(!res) return {error:'No res'}
-  // const webhookTransmissionId = headers['paypal-transmission-id']
-  // const webhookTransmissionSig = headers['paypal-transmission-sig']
-  // const webhookCertUrl = headers['paypal-cert-url']
+  if(!res) return {error:'No res'}
+  const webhookTransmissionId = headers['paypal-transmission-id']
+  const webhookTransmissionSig = headers['paypal-transmission-sig']
+  const webhookCertUrl = headers['paypal-cert-url']
 
-  // // verify the webhook signature
-  // try {
-  //   await verifySignature(webhookTransmissionId, webhookTransmissionSig, webhookCertUrl, webhookEvent)
-  // } catch (error) {
-  //   console.error('Error verifying webhook signature:', error)
-  //   res.sendStatus(400)
-  //   return
-  // }
+  // verify the webhook signature
+  try {
+    await verifySignature(webhookTransmissionId, webhookTransmissionSig, webhookCertUrl, webhookEvent)
+  } catch (error) {
+    console.error('Error verifying webhook signature:', error)
+    res.sendStatus(400)
+    return
+  }
 
-  // // process the webhook event
-  // const webhookEvent = new Webhook()
-  // if(webhookEvent.event_type === 'CHECKOUT.ORDER.COMPLETED'){
 
-  //    console.log(webHookEvent)
+
 
    const paymentId = bodyObj?.id||false
-  // if(!paymentId)return  res.sendStatus(400)
-  // const orderId = bodyObj.purchase_units[0].custom_id||false
-  // if(!orderId)return  res.sendStatus(400)
-  // const order = await store.shop.getShopOrder(orderId)
-  // if(!order)return  res.sendStatus(400)
-  // if(order.paymentId!==paymentId)return {error:"Invalid payment"}
+  if(!paymentId)return  res.sendStatus(400)
+  const orderId = bodyObj.purchase_units[0].custom_id||false
+  if(!orderId)return  res.sendStatus(400)
+  const order = await store.shop.getShopOrder(orderId)
+  if(!order)return  res.sendStatus(400)
+  if(order.paymentId!==paymentId)return {error:"Invalid payment"}
 
-  //   if(order.status==="success"||order.status==="completed"||order.status==="failed")return res.sendStatus(400)
-  //     order.status="success"
-  //     order.updatedAt=now()
-  //     order.name=bodyObj?.purchase_units[0].payee.email_address
-  //     await store.shop.updateShopOrder(order)
-  //     giveOrder(order)
+    if(order.status==="success"||order.status==="completed"||order.status==="failed")return res.sendStatus(400)
+      order.status="success"
+      order.updatedAt=now()
+      order.name=bodyObj?.purchase_units[0].payee.email_address
+      await store.shop.updateShopOrder(order)
+      giveOrder(order)
    
 
-  // }
+  
   console.log('paymentid',paymentId, 'bodyObj',bodyObj)
 
   if(res)res.sendStatus(400) 
