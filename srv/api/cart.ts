@@ -238,7 +238,7 @@ if (computedCrc32.toString() === (Array.isArray(crc32) ? crc32[0] : crc32)) {
 }
 
   
-  const bodyObj = JSON.parse(body)
+  const bodyObj = body||{}
 
    const paymentId = bodyObj?.id||false
   if(!res)return {error:"No response"}
