@@ -40,7 +40,7 @@ const paypalLogin = () => {
 
     const options = {
       method: 'POST',
-      hostname: 'api-m.sandbox.paypal.com',
+      hostname: 'api-m.paypal.com',
       path: '/v1/oauth2/token',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

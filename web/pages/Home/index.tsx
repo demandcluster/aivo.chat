@@ -4,14 +4,17 @@ import PageHeader from '../../shared/PageHeader'
 import { adaptersToOptions } from '../../shared/util'
 import { settingStore } from '../../store'
 import logo from '../../assets/logo.png'
+import logoDark from '../../assets/logoDark.png'
+
 const HomePage: Component = () => {
   const cfg = settingStore((cfg) => ({ adapters: adaptersToOptions(cfg.config.adapters) }))
+  
   return (
     <div>
       <PageHeader
         title={
           <>
-            Welcome to <img src={logo} alt="logo" class="w-1/4 mx-10" />
+            Welcome to <img src={logoDark} alt="logo" class="w-1/4 mx-10" />
           </>
         }
       />
@@ -33,12 +36,19 @@ const HomePage: Component = () => {
           </div>
       </div>
     </div>
-      <div class="flex flex-col gap-4  flex-shrink" >
-        <span class="text-lg text-italic">Why 18+? The topic of this simulation is dating, anything can happen. We feel that any such chat is for adults only. </span>
-      </div>
+      <div class="flex flex-col gap-2 flex-grow " >
+       <div class="text-lg text-italic">
+        Why 18+?
+        </div>
+        <div class="text-md text-gray-400">
+         The topic of this simulation is dating, anything can happen. We have no control over what the AI will say exactly. 
+         We feel that both the topic and the possible AI responses are not suitable for children.
+        </div>
+        </div>
       <div>
-        <p class="text-lg text-center lg:text-2xl text-gray-500">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
+        <p class="text-lg text-center gap-4 mt-4 lg:text-2xl text-gray-500">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
       </div>
+
     </div>
   )
 }

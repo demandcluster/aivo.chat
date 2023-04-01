@@ -22,7 +22,7 @@ import { Component, createMemo, JSX, Show } from 'solid-js'
 import AvatarIcon from './shared/AvatarIcon'
 import { inviteStore, settingStore, userStore } from './store'
 import logo from './assets/logo.png'
-
+import logoDark from './assets/logoDark.png'
 
 const Navigation: Component = () => {
   const state = settingStore()
@@ -35,7 +35,7 @@ const Navigation: Component = () => {
 
   const hide = createMemo(() => (state.showMenu ? '' : 'drawer--hide'))
   const fullscreen = createMemo(() => (state.fullscreen ? 'hidden' : ''))
-
+console.log(user.ui)
   return (
     <div
       data-menu=""
@@ -44,7 +44,7 @@ const Navigation: Component = () => {
       <div class="drawer__content flex flex-col gap-2 px-1 lg:px-4">
         <div class="hidden w-full items-center justify-center sm:flex">
           <A href="/">
-          <img width="100px" class="px-4 ph-1 pt-2" src={logo}/>
+          <img width="100px" class="px-4 ph-1 pt-2" src={user.ui?.mode==="light"?logoDark:logo}/>
           <span class="text-xs ml-4 text-gray-400">by Demandcluster</span>
           </A>
         </div>
@@ -60,7 +60,7 @@ const Navigation: Component = () => {
               avatarUrl={user.profile?.avatar}
               format={{ corners: 'circle', size: 'md' }}
             />
-            <div class={user.user?.premium ?"text-yellow-300":""}>{user.profile?.handle}</div>
+            <div class={user.user?.premium ?"text-yellow-500 font-bold":"font-bold"}>{user.profile?.handle}</div>
             <div id="credits" class="text-bold pr-2">{user.user?.credits}</div>
           </div>
           <div onClick={logout} class="icon-button cursor-pointer ">
