@@ -17,9 +17,8 @@ const router = Router()
 
 
 
-//const {paypalID,paypalSecret} = config
- const paypalID = "AQlrOxbkPYGnPnoYLjOq4M5Ub_JhzVbpxzM8uv9AlY8RzVH7pXRLqFHKV0jTS5-gB7V_kurLSMsBcIjL"
- const paypalSecret = "EKjgEUtbWVRmOH3niP3_U0MfmgYt3_I7ydj0rvyIs1ZJUwz2jpr8AQdl9durICFpV6xMRG7RrR8UQ3nP"
+const {paypalID,paypalSecret,paypalWebhook} = config
+
 paypal.configure({
   mode: 'sandbox', //sandbox or live
   client_id: paypalID,
@@ -226,7 +225,7 @@ const webHook = handle(async ({headers,body,res}) => {
 const transmissionId = headers['paypal-transmission-id']||""
 const timeStamp = headers['paypal-transmission-time']||""
 const crc32 = headers['paypal-transmission-sig']||""
-const webhookId = "9SF17706MF194245E"
+const webhookId = paypalWebhook
 // Validate the CRC32 checksum
 const payload = [transmissionId, timeStamp, webhookId, crc32].map(String).join('|');
 
@@ -241,7 +240,7 @@ if (computedCrc32.toString() === (Array.isArray(crc32) ? crc32[0] : crc32)) {
   const bodyObj = body||{}
 
    const paymentId = bodyObj?.resource?.id||false
- console.log(bodyObj)
+ 
   if(!paymentId)return  res?.sendStatus(400)||""
   const orderId = bodyObj?.resource?.purchase_units[0]?.custom_id||false
   if(bodyObj?.resource?.status!=="COMPLETED")return  res?.sendStatus(400)||""
@@ -258,11 +257,7 @@ if (computedCrc32.toString() === (Array.isArray(crc32) ? crc32[0] : crc32)) {
       await store.shop.updateShopOrder(order)
       giveOrder(order)
    
-
-  
-  console.log('paymentid',paymentId, 'bodyObj',bodyObj)
-
-  if(res)res.sendStatus(400) 
+  if(res)res.sendStatus(200) 
 })
 
 

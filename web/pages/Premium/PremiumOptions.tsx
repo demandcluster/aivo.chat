@@ -99,7 +99,7 @@ const PremiumOptions: Component = () => {
       <Divider />
 
     
-        <Show when={cartSignal()?.list?.length > 0  }>
+        <Show when={cartSignal()?.list?.length > 0 && orderId()  }>
         <h2 class="text-gray-400 text-xl mb-4">Cart</h2>
     
        <section class="flex flex-col gap-4">
