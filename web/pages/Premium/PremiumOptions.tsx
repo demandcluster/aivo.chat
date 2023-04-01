@@ -121,6 +121,8 @@ const PremiumOptions: Component = () => {
            
         </section>
         <Divider />
+        </Show>
+        <Show when={cartSignal()?.list?.length > 0}>
         <div class="flex flex-row">
             <button class="bg-teal-600 text-white px-4 py-2 rounded-md font-bold" onClick={checkoutCart}><ShoppingCart /> Checkout</button>
         </div>
@@ -129,8 +131,7 @@ const PremiumOptions: Component = () => {
         {orderId() && (
     <section>
         <h2 class="text-gray-400 text-xl mb-4">Checkout</h2>
-        
-         
+   
   <div id="paypal-buttons-container" ref={paypalButtons}></div>
  
 

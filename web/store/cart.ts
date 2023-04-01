@@ -50,8 +50,8 @@ export const cartStore = createStore<CartStore>('cart', {
           toastStore.error('Failed to checkout');
           return cartItems;
         } 
-        await local.saveCartItem([])
-        return { cartItems: { list: [], loaded: true, showPending: true, orderId: res.result?.orderId } };
+      //  await local.saveCartItem([])
+        return { cartItems: { list: existingItems, loaded: true, showPending: true, orderId: res.result?.orderId } };
       },
       
 
