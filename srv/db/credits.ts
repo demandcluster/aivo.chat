@@ -17,6 +17,7 @@ export async function updateCredits(userId: string, amount: number, nextCredits:
   await db('user').updateOne({ kind: 'user', _id: userId }, { $set: { credits, nextCredits: nc } }).catch((err) => {
     throw new StatusError("Database error", 500)
    })
+   
    sendOne(userId, { type: 'credits-updated',credits })
    return { credits }
 }
@@ -27,7 +28,8 @@ export async function getFreeCredits() {
     const nextTime:number = Number(now) + 60000
     const users = await db('user').find({ kind: 'user', nextCredits: { $lte: now } ,premium: false, credits: { $lt: 200 } }).toArray();
     const premiumUsers = await db('user').find({ kind: 'user', nextCredits: { $lte: now } , credits: { $lt: 1000 }, premium: true }).toArray();
-   
+    const expiredPremium = await db('user').find({ kind: 'user', premiumUntil: { $lte: now } , premium: true }).toArray();
+
     for (const usr of users) {
       const lastCredits = usr.nextCredits||now;
       const diff = now - lastCredits;
@@ -52,4 +54,12 @@ export async function getFreeCredits() {
 
       }
     }
+    for (const usr of expiredPremium) {
+         // set premiumstatus to false
+         await db('user').updateOne({ kind: 'user', _id: usr._id }, { $set: { premium: false } }).catch((err) => {
+         throw new StatusError("Database error", 500)
+         }
+       )      
+      }
+
 }

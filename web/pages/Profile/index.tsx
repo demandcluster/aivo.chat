@@ -1,5 +1,5 @@
 import { Save, X } from 'lucide-solid'
-import { Component, createEffect, createSignal } from 'solid-js'
+import { Component, createEffect, createSignal,Show } from 'solid-js'
 import AvatarIcon from '../../shared/AvatarIcon'
 import Button from '../../shared/Button'
 import FileInput, { FileInputResult } from '../../shared/FileInput'
@@ -8,6 +8,26 @@ import PageHeader from '../../shared/PageHeader'
 import TextInput from '../../shared/TextInput'
 import { getStrictForm } from '../../shared/util'
 import { toastStore, userStore } from '../../store'
+
+
+function timeStamp(timestamp:string){
+const date = new Date(timestamp); // Create a new Date object with the timestamp
+
+// Get the month name (e.g. "April") using the toLocaleString() method
+const monthName = date.toLocaleString('default', { month: 'long' });
+
+const year = date.getFullYear(); // Get the year (e.g. 2021)
+const month = date.getMonth() + 1; // Get the month (0-11), add 1 to make it 1-12
+const day = date.getDate(); // Get the day of the month (1-31)
+const hours = date.getHours(); // Get the hours (0-23)
+const minutes = date.getMinutes(); // Get the minutes (0-59)
+const seconds = date.getSeconds(); // Get the seconds (0-59)
+
+// Create a human-readable date string in the format "YYYY-MM-DD HH:MM:SS"
+const dateString = `${monthName} ${day}, ${year} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+return dateString
+}
 
 const ProfilePage: Component = () => {
   const state = userStore()
@@ -43,7 +63,16 @@ const ProfilePage: Component = () => {
               <div class="flex items-center">{state.profile?.handle}</div>
             </div>
           </div>
+      <Show when={state.user?.premium}>
+       <TextInput
+            label="Premium"
+            helperText="You are a premium user till"
+            
+            value={timeStamp(state.user?.premiumUntil)}
+            disabled
+          />
 
+        </Show>
           <TextInput
             label="ID"
             helperText="Your user ID. This is used by others to send you chat invitations."
