@@ -126,7 +126,7 @@ const PremiumOptions: Component = () => {
         <div class="flex flex-row">
             <button class="bg-teal-600 text-white px-4 py-2 rounded-md font-bold" onClick={checkoutCart}><ShoppingCart /> Checkout</button>
         </div>
-    </Show>
+      </Show>
     <Divider/>
         {orderId() && (
     <section>

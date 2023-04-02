@@ -9,6 +9,14 @@ export async function checkInviteCode(
   return char?.kind?true:false
 }
 
+export async function getInviteCode(){
+const char = await db('invitecode').findOne({ kind: 'invitecode', public: true, count: { $gt: 0 } })
+
+return char?._id||null
+}
+
+
+
 export async function takeInviteCode( id: string) {
   // convert id to uppercase
   const uppercaseId = id.toUpperCase()

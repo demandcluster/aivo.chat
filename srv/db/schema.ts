@@ -260,6 +260,7 @@ export namespace AppSchema {
     _id: string
     kind: 'invitecode'
     count: number
+    private: boolean
   }
 
   export interface ShopItem {

@@ -79,6 +79,8 @@ export const config = {
   paypalID: env('PAYPAL_ID', ''),
   paypalSecret: env('PAYPAL_KEY', ''),
   paypalWebhook: env("PAYPAL_WEBHOOK",""),
+  discordToken: env('DISCORD_TOKEN', ''),
+  discordId: env('DISCORD_ID', ''),
   adapters: env('ADAPTERS', 'novel,horde,kobold,chai,luminai,openai,scale')
     .split(',')
     .filter((i) => !!i) as AIAdapter[],

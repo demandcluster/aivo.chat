@@ -49,6 +49,11 @@ export async function getCharacters(userId: string) {
   return list
 }
 
+export async function getPublicCharacter(name: string) {
+  const char = await db('character').findOne({ kind: 'character', name: name, match: true })
+  return char
+}
+
 export async function deleteCharacter(opts: { charId: string; userId: string }) {
   await db('character').deleteOne({ _id: opts.charId, userId: opts.userId, kind: 'character' }, {})
   const chats = await db('chat').find({ characterId: opts.charId, userId: opts.userId }).toArray()
