@@ -3,6 +3,9 @@ import { AppSchema } from '../srv/db/schema'
 export const defaultChars = {
   Robot: {
     name: 'Robot',
+    match: false,
+    xp: 0,
+    premium: false,
     persona: {
       kind: 'boostyle',
       attributes: {
