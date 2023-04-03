@@ -16,6 +16,9 @@ export function toChar(name: string): AppSchema.Character {
         text: ['PERSONA'],
       },
     },
+    match: false,
+    xp: 0,
+    premium: false,
     updatedAt: '',
     userId: '',
   }
