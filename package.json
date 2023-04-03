@@ -19,7 +19,7 @@
     "init": "cp -r web/assets/* dist/assets/",
     "model": "python -m flask --app model/app.py run --host 0.0.0.0 -p 5001",
     "model:watch": "nodemon -e py --watch model --exec \"python -m flask --app model/app.py run --host 0.0.0.0 -p 5001\"",
-    "server": "node srv/start.js",
+    "server": "concurrently -c auto -n aivo,discord \"node srv/start.js\" \"npm run start:bot\"",
     "server:watch": "nodemon -e js --delay 1 --watch srv --watch common --exec \"node --inspect srv/start.js\" --watch \".env\"",
     "start:all": "concurrently -c auto -n web,api,tsc \"parcel web/index.html\" \"npm run server:watch\" \"npm run build:server:watch\"",
     "start:web": "parcel web/index.html",
