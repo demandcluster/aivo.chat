@@ -17,7 +17,7 @@ import IsVisible from '../../shared/IsVisible'
 import Modal from '../../shared/Modal'
 import TextInput from '../../shared/TextInput'
 import { getRootRgb, getStrictForm } from '../../shared/util'
-import { chatStore, settingStore, userStore } from '../../store'
+import { chatStore, settingStore, UISettings as UI, userStore } from '../../store'
 import { msgStore } from '../../store'
 import { ChatGenSettingsModal } from './ChatGenSettings'
 import ChatSettingsModal from './ChatSettings'
@@ -31,13 +31,16 @@ import { DropMenu } from '../../shared/DropMenu'
 import UISettings from '../Settings/UISettings'
 import { devCycleAvatarSettings, isDevCommand } from './dev-util'
 import ChatOptions, { ChatModal } from './ChatOptions'
+import MemberModal from './MemberModal'
 
 const EDITING_KEY = 'chat-detail-settings'
 
 const ChatDetail: Component = () => {
+  const params = useParams()
+  const nav = useNavigate()
   const user = userStore()
   const cfg = settingStore()
-  const chats = chatStore((s) => ({ ...s.active, lastId: s.lastChatId }))
+  const chats = chatStore((s) => ({ ...s.active, lastId: s.lastChatId, members: s.activeMembers }))
   const msgs = msgStore((s) => ({
     msgs: s.msgs,
     partial: s.partial,
@@ -59,8 +62,16 @@ const ChatDetail: Component = () => {
   const [showOpts, setShowOpts] = createSignal(false)
   const [modal, setModal] = createSignal<ChatModal>()
   const [editing, setEditing] = createSignal(getEditingState().editing ?? false)
-  const { id } = useParams()
-  const nav = useNavigate()
+
+  const isOwner = createMemo(() => chats.chat?.userId === user.profile?.userId)
+  const headerBg = createMemo(() => getHeaderBg(user.ui.mode))
+  const chatWidth = createMemo(() => getChatWidth(user.ui.chatWidth))
+
+  const isSelfRemoved = createMemo(() => {
+    if (!user.profile) return false
+    const isMember = chats.members.some((mem) => mem.userId === user.profile?.userId)
+    return !isMember
+  })
 
   function toggleEditing() {
     const next = !editing()
@@ -94,12 +105,12 @@ const ChatDetail: Component = () => {
   })
 
   createEffect(() => {
-    if (!id) {
+    if (!params.id) {
       if (!chats.lastId) return nav('/character/list')
       return nav(`/chat/${chats.lastId}`)
     }
 
-    chatStore.getChat(id)
+    chatStore.getChat(params.id)
   })
 
   const sendMessage = (message: string, onSuccess?: () => void) => {
@@ -116,26 +127,13 @@ const ChatDetail: Component = () => {
     }
   }
 
-  const moreMessage = () => {
-    msgStore.continuation(chats.chat?._id!)
-  }
+  const moreMessage = () => msgStore.continuation(chats.chat?._id!)
 
-  const cancelSwipe = () => {
-    setSwipe(0)
-  }
+  const cancelSwipe = () => setSwipe(0)
 
   const confirmSwipe = (msgId: string) => {
     msgStore.confirmSwipe(msgId, swipe(), () => setSwipe(0))
   }
-
-  const headerBg = createMemo(() => {
-    const rgb = getRootRgb('bg-900')
-    user.ui.mode // This 'unused' ref is needed to ensure this memo re-evaluated with the mode changes
-    const styles: JSX.CSSProperties = {
-      background: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.7)`,
-    }
-    return styles
-  })
 
   return (
     <>
@@ -145,7 +143,7 @@ const ChatDetail: Component = () => {
         </div>
       </Show>
       <Show when={chats.chat}>
-        <div class="mx-auto flex h-full max-w-3xl flex-col justify-between sm:py-2">
+        <div class={`mx-auto flex h-full ${chatWidth()} flex-col justify-between sm:py-2`}>
           <div class="flex h-8 items-center justify-between rounded-md" style={headerBg()}>
             <div class="flex cursor-pointer flex-row items-center justify-between gap-4 text-lg font-bold">
               <Show when={!cfg.fullscreen}>
@@ -162,9 +160,11 @@ const ChatDetail: Component = () => {
             </div>
 
             <div class="flex flex-row gap-3">
-              <div class="hidden items-center text-xs italic text-[var(--text-500)] sm:flex">
-                {adapter()}
-              </div>
+              <Show when={isOwner()}>
+                <div class="hidden items-center text-xs italic text-[var(--text-500)] sm:flex">
+                  {adapter()}
+                </div>
+              </Show>
 
               <div class="" onClick={() => setShowOpts(true)}>
                 <Menu class="icon-button" />
@@ -198,7 +198,7 @@ const ChatDetail: Component = () => {
               send={sendMessage}
               more={moreMessage}
             />
-            <Show when={chats.chat?.userId === user.user?._id}>
+            <Show when={isOwner()}>
               <SwipeMessage
                 chatId={chats.chat?._id!}
                 pos={swipe()}
@@ -206,6 +206,11 @@ const ChatDetail: Component = () => {
                 next={clickSwipe(1)}
                 list={retries()?.list || []}
               />
+            </Show>
+            <Show when={isSelfRemoved()}>
+              <div class="flex w-full justify-center">
+                You have been removed from the conversation
+              </div>
             </Show>
             <div class="flex flex-col-reverse gap-4 overflow-y-scroll pr-2 sm:pr-4">
               <div class="flex flex-col gap-2">
@@ -260,6 +265,10 @@ const ChatDetail: Component = () => {
 
       <Show when={!!removeId()}>
         <DeleteMsgModal show={!!removeId()} messageId={removeId()} close={() => setRemoveId('')} />
+      </Show>
+
+      <Show when={modal() === 'members'}>
+        <MemberModal show={true} close={setModal} />
       </Show>
 
       <PromptModal />
@@ -378,4 +387,24 @@ function getEditingState() {
   const prev = localStorage.getItem(EDITING_KEY) || '{}'
   const body = JSON.parse(prev) as DetailSettings
   return body
+}
+
+function getChatWidth(setting: UI['chatWidth']) {
+  switch (setting) {
+    case 'narrow':
+      return 'max-w-3xl'
+
+    case 'full':
+    default:
+      return 'w-full'
+  }
+}
+
+function getHeaderBg(mode: UI['mode']) {
+  mode
+  const rgb = getRootRgb('bg-900')
+  const styles: JSX.CSSProperties = {
+    background: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.7)`,
+  }
+  return styles
 }

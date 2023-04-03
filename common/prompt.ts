@@ -89,22 +89,10 @@ export function createPromptWithParts(
   const encoder = getEncoder(adapter, model)
   const { pre, post } = buildPrompt(opts, parts, lines)
 
-  const maxContext =
-    opts.settings?.maxContextLength || getFallbackPreset(adapter)?.maxContextLength!
-  const history: string[] = []
+  const maxContext = getContextLimit(opts.settings, adapter, model)
+  const history = fillPromptWithLines(encoder, maxContext, pre + '\n' + post, lines)
 
-  let tokens = encoder(pre + '\n' + post)
-
-  for (const text of lines) {
-    const size = encoder(text + '\n')
-
-    if (size + tokens > maxContext) break
-
-    history.push(text)
-    tokens += size
-  }
-
-  const prompt = [pre, ...history.reverse(), post].filter(removeEmpty).join('\n')
+  const prompt = [pre, ...history, post].filter(removeEmpty).join('\n')
   return { lines, prompt, parts, pre, post }
 }
 
@@ -157,20 +145,9 @@ export function buildPrompt(opts: BuildPromptOpts, parts: PromptParts, lines: st
   const { adapter, model } = getAdapter(opts.chat, opts.user, opts.settings)
   const encoder = getEncoder(adapter, model)
 
-  const maxContext =
-    opts.settings?.maxContextLength || getFallbackPreset(adapter)?.maxContextLength!
-  const history: string[] = []
+  const maxContext = getContextLimit(opts.settings, adapter, model)
 
-  let tokens = encoder(pre + '\n' + post)
-
-  for (const text of lines) {
-    const size = encoder(text + '\n')
-
-    if (size + tokens > maxContext) break
-
-    history.push(text)
-    tokens += size
-  }
+  const history = fillPromptWithLines(encoder, maxContext, pre + '\n' + post, lines)
 
   /**
    * TODO: This is doubling up on memory a fair bit
@@ -180,7 +157,7 @@ export function buildPrompt(opts: BuildPromptOpts, parts: PromptParts, lines: st
 
   const preamble = pre.join('\n').replace(BOT_REPLACE, char.name).replace(SELF_REPLACE, sender)
   const postamble = parts.post.join('\n')
-  const prompt = [preamble, ...history.reverse(), postamble].filter(removeEmpty).join('\n')
+  const prompt = [preamble, ...history, postamble].filter(removeEmpty).join('\n')
 
   return {
     pre: preamble,
@@ -355,36 +332,52 @@ function removeEmpty(value?: string) {
  *
  * In `createPrompt()`, we trim this down to fit into the context with all of the chat and character context
  */
-export function getLinesForPrompt(
-  { settings, char, members, messages, continue: cont, book, ...opts }: PromptOpts,
-  lines: string[] = []
-) {
+function getLinesForPrompt({
+  settings,
+  char,
+  members,
+  messages,
+  continue: cont,
+  book,
+  ...opts
+}: PromptOpts) {
   const { adapter, model } = getAdapter(opts.chat, opts.user, settings)
-  const maxContext = getContextLimit(
-    adapter,
-    model,
-    settings?.maxContextLength || DEFAULT_MAX_TOKENS
-  )
+  const maxContext = getContextLimit(settings, adapter, model)
 
   const encoder = getEncoder(adapter, model)
-  let tokens = 0
 
-  const sender = members.find((mem) => opts.chat.userId === mem.userId)?.handle || 'You'
-
-  const formatMsg = (chat: AppSchema.ChatMessage) =>
-    fillPlaceholders(chat, char.name, sender).trim()
-
-  const base = cont ? messages : messages
-  const history = base.map(formatMsg)
-
-  for (const hist of history) {
-    const nextTokens = encoder(hist)
-    if (nextTokens + tokens > maxContext) break
-    tokens += nextTokens
-    lines.push(hist)
+  const profiles = new Map<string, AppSchema.Profile>()
+  for (const member of members) {
+    profiles.set(member.userId, member)
   }
 
-  return lines
+  const formatMsg = (chat: AppSchema.ChatMessage) =>
+    fillPlaceholders(chat, char.name, profiles.get(chat.userId!)?.handle || 'You').trim()
+
+  const base = cont ? messages : messages
+  const history = base.slice().sort(sortMessagesDesc).map(formatMsg)
+
+  const lines = fillPromptWithLines(encoder, maxContext, '', history)
+  return lines.reverse()
+}
+
+function fillPromptWithLines(encoder: Encoder, tokenLimit: number, amble: string, lines: string[]) {
+  let estimated = amble
+
+  let count = encoder(amble)
+  const adding: string[] = []
+
+  for (const line of lines) {
+    const tokens = encoder(line + '\n')
+    if (tokens + count > tokenLimit) {
+      return adding
+    }
+
+    count += tokens
+    adding.push(line)
+  }
+
+  return adding
 }
 
 function fillPlaceholders(chat: AppSchema.ChatMessage, char: string, user: string) {
@@ -428,11 +421,7 @@ export function getAdapter(
     }
   }
 
-  const contextLimit = getContextLimit(
-    adapter,
-    model,
-    preset?.maxContextLength ?? defaultPresets.basic.maxContextLength
-  )
+  const contextLimit = getContextLimit(preset, adapter, model)
 
   return { adapter, model, preset: presetName, contextLimit }
 }
@@ -440,27 +429,34 @@ export function getAdapter(
 /**
  * When we know the maximum context limit for a particular LLM, ensure that the context limit we use does not exceed it.
  */
-function getContextLimit(adapter: AIAdapter, model: string, limit: number): number {
+function getContextLimit(
+  gen: Partial<AppSchema.GenSettings> | undefined,
+  adapter: AIAdapter,
+  model: string
+): number {
+  const configuredMax = gen?.maxContextLength || getFallbackPreset(adapter).maxContextLength
+  const genAmount = gen?.maxTokens || getFallbackPreset(adapter).maxTokens
+
   switch (adapter) {
     case 'chai':
-      return Math.min(2048, limit)
+      return Math.min(2048, configuredMax) - genAmount
 
     // Any LLM could be used here so don't max any assumptions
     case 'kobold':
     case 'luminai':
     case 'horde':
     case 'ooba':
-      return limit
+      return configuredMax - genAmount
 
     case 'novel':
-      return Math.min(2048, limit)
+      return Math.min(2048, configuredMax) - genAmount
 
     case 'openai': {
       if (!model || model === OPENAI_MODELS.Turbo || model === OPENAI_MODELS.DaVinci) return 4096
-      return limit
+      return configuredMax - genAmount
     }
 
     case 'scale':
-      return limit
+      return configuredMax - genAmount
   }
 }

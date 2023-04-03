@@ -15,7 +15,6 @@ const REQUIRED_SAMPLERS = defaultPresets.basic.order
 const baseUrl = 'https://horde.aivo.chat/api/v2'
 
 const base = { n: 1 }
-const defaultModel = 'PygmalionAI/pygmalion-2.7b'
 
 export const handleHorde: ModelAdapter = async function* ({
   char,
@@ -34,9 +33,13 @@ export const handleHorde: ModelAdapter = async function* ({
 
   const body = {
     // An empty models array will use any model
-    models: [user.hordeModel || defaultModel].filter((m) => !!m),
+    models: [] as string[],
     prompt,
     workers: [] as string[],
+  }
+
+  if (user.hordeModel && user.hordeModel !== 'any') {
+    body.models.push(user.hordeModel)
   }
 
   const availableWorkers = getHordeWorkers()
@@ -149,7 +152,16 @@ export const handleHorde: ModelAdapter = async function* ({
     }
 
     if (check.body.generations.length) {
-      text = check.body.generations[0].text
+      const [gen] = check.body.generations
+      text = gen.text
+      const payload = {
+        type: 'horde-response',
+        model: gen.model,
+        worker: gen.worker_name,
+        worker_id: gen.worker_id,
+      }
+      if (guest) sendGuest(guest, payload)
+      else sendOne(sender.userId, payload)
       break
     }
   }
