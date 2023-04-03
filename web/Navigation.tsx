@@ -92,9 +92,11 @@ const UserNavigation: Component = () => {
       <Item href="/chats">
         <MessageCircle /> Chats
       </Item>
+      <Show when={user.user?.admin}>
       <Item href="/memory">
         <Book /> Memory
       </Item>
+      </Show>
       <Item href="/invites">
         <MailPlus /> Invites <InviteBadge />
       </Item>
@@ -102,7 +104,7 @@ const UserNavigation: Component = () => {
         <Settings /> Settings
       </Item>
 
-    <Show when={user.user?.admin||user.user?.premium}>
+    <Show when={user.user?.Admin}>
       <Item href="/presets">
         <Sliders /> Presets
       </Item>
@@ -148,14 +150,13 @@ const GuestNavigation: Component = () => {
         <MessageCircle /> Chats
       </Item>
 
-      <Item href="/memory">
-        <Book /> Memory
-      </Item>
-
       <Item href="/settings">
         <Settings /> Settings
       </Item>
 
+      <Item href="/help">
+        <HelpCircle/> Help
+      </Item>
     </>
   )
 }

@@ -8,7 +8,7 @@ import Select from '../../shared/Select'
 import { toDropdownItems } from '../../shared/util'
 import { AVATAR_CORNERS, AVATAR_SIZES, UI_INPUT_TYPE, UI_THEME, userStore } from '../../store'
 import Message from '../Chat/components/Message'
-
+import {AlertTriangle} from 'lucide-solid'
 const themeOptions = UI_THEME.map((color) => ({ label: color, value: color }))
 
 const UISettings: Component = () => {
@@ -127,6 +127,14 @@ const UISettings: Component = () => {
           />
         </Show>
       </div>
+        <Show when={!state.loggedIn}>
+              <div class="mt-8 mb-4 flex w-full flex-col items-center justify-center">
+                <div>This cannot be undone!</div>
+                <Button class="bg-red-600" onClick={userStore.clearGuestState}>
+                  <AlertTriangle /> Delete Guest State <AlertTriangle />
+                </Button>
+              </div>
+            </Show>
     </>
   )
 }
