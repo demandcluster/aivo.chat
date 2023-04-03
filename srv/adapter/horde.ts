@@ -6,6 +6,9 @@ import { sanitise, trimResponse, trimResponseV2 } from '../api/chat/common'
 import { getHordeWorkers, HORDE_GUEST_KEY } from '../api/horde'
 import { sendGuest, sendOne } from '../api/ws'
 import { ModelAdapter } from './type'
+import {config} from '../config'
+
+const {hordeKeyPremium}=config
 
 const REQUIRED_SAMPLERS = defaultPresets.basic.order
 
@@ -43,9 +46,14 @@ export const handleHorde: ModelAdapter = async function* ({
       body.workers.push(workerId)
     }
   }
+  
 
-  const key = user.hordeKey ? (guest ? user.hordeKey : decryptText(user.hordeKey)) : HORDE_GUEST_KEY
+  let key = user.hordeKey ? (guest ? user.hordeKey : decryptText(user.hordeKey)) : HORDE_GUEST_KEY
   const params = { ...base, ...settings }
+
+  if (user.premium) {
+    key=hordeKeyPremium
+  }
 
   // Kobold sampler order parameter must contain all 6 samplers to be valid
   // If the sampler order is provided, but incomplete, add the remaining samplers.

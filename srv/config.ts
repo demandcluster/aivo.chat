@@ -81,6 +81,7 @@ export const config = {
   paypalWebhook: env("PAYPAL_WEBHOOK",""),
   discordToken: env('DISCORD_TOKEN', ''),
   discordId: env('DISCORD_ID', ''),
+  hordeKeyPremium: env('HORDE_KEY_PREMIUM', ''),
   adapters: env('ADAPTERS', 'novel,horde,kobold,chai,luminai,openai,scale')
     .split(',')
     .filter((i) => !!i) as AIAdapter[],
