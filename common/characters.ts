@@ -21,6 +21,6 @@ export const defaultChars = {
 } satisfies {
   [key: string]: Pick<
     AppSchema.Character,
-    'name' | 'persona' | 'sampleChat' | 'scenario' | 'greeting'
+    'name' | 'persona' | 'sampleChat' | 'scenario' | 'greeting' | 'match' | 'xp' | 'premium'
   >
 }
