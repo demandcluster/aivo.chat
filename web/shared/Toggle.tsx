@@ -1,5 +1,6 @@
 import { Component, JSX, Show } from 'solid-js'
 import { FormLabel } from './FormLabel'
+import './toggle.css'
 
 export const Toggle: Component<{
   fieldName: string
@@ -8,26 +9,30 @@ export const Toggle: Component<{
   helperText?: string | JSX.Element
   class?: string
   onChange?: (value: boolean) => void
+  disabled?: boolean
 }> = (props) => {
   const onChange = (ev: Event & { currentTarget: HTMLInputElement }) => {
+    if (props.disabled) return
     props.onChange?.(ev.currentTarget.checked)
   }
 
   return (
-    <div class={`toggle-pill-color ${props.class || ''}`}>
+    <div>
       <Show when={props.label}>
         <FormLabel label={props.label} helperText={props.helperText} />
       </Show>
-
-      <input
-        type="checkbox"
-        class="form-field"
-        id={props.fieldName}
-        name={props.fieldName}
-        checked={props.value}
-        onChange={onChange}
-      />
-      <label for={props.fieldName}></label>
+      <label class={`toggle ${props.disabled ? 'toggle-disabled' : ''}`}>
+        <input
+          type="checkbox"
+          class="toggle-checkbox"
+          id={props.fieldName}
+          name={props.fieldName}
+          checked={props.value}
+          onChange={onChange}
+          disabled={props.disabled}
+        />
+        <div class={`toggle-switch ${props.disabled ? 'toggle-disabled' : ''}`}></div>
+      </label>
     </div>
   )
 }

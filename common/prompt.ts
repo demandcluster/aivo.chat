@@ -105,7 +105,6 @@ export function createPromptWithParts(
   }
 
   const prompt = [pre, ...history.reverse(), post].filter(removeEmpty).join('\n')
-  const finalContext = encoder(prompt)
   return { lines, prompt, parts, pre, post }
 }
 
@@ -130,7 +129,8 @@ export function buildPrompt(opts: BuildPromptOpts, parts: PromptParts, lines: st
 
   const pre: string[] = []
 
-  if (!opts.settings?.useGaslight) {
+  // If the gaslight is empty or useGaslight is disabled, proceed without it
+  if (!opts.settings?.useGaslight || !opts.settings.gaslight || !parts.gaslight) {
     pre.push(`${char.name}'s Persona: ${parts.persona}`)
 
     if (parts.scenario) pre.push(`Scenario: ${parts.scenario}`)
@@ -139,14 +139,15 @@ export function buildPrompt(opts: BuildPromptOpts, parts: PromptParts, lines: st
       pre.push(`${MEMORY_PREFIX}${parts.memory.prompt}`)
     }
 
-    if (hasStart) pre.slice(-1, pre.length)
-
     if (!hasStart) pre.push('<START>')
 
     if (parts.sampleChat) pre.push(...parts.sampleChat)
   }
 
-  if (opts.settings?.useGaslight || opts.chat?.genSettings?.useGaslight) pre.push(parts.gaslight)
+  // Only use the gaslight if specifically configured to and when it exists.
+  if (opts.settings?.useGaslight && opts.settings?.gaslight && parts.gaslight) {
+    pre.push(parts.gaslight)
+  }
 
   const post = [`${char.name}:`]
   if (opts.continue) {
@@ -236,8 +237,7 @@ export function getPromptParts(
 
   parts.memory = getMemoryPrompt({ ...opts, lines })
 
-  const gaslight =
-    opts.chat.genSettings?.gaslight || opts.settings?.gaslight || defaultPresets.openai.gaslight
+  const gaslight = opts.settings?.gaslight || defaultPresets.openai.gaslight
 
   const sampleChat = parts.sampleChat?.join('\n') || ''
   parts.gaslight = gaslight
@@ -262,7 +262,7 @@ export function getPromptParts(
   if (
     gaslight.includes('{{example_dialogue}}') &&
     adapter === 'openai' &&
-    model === OPENAI_MODELS.Turbo
+    model === (OPENAI_MODELS.Turbo || model === OPENAI_MODELS.GPT4)
   ) {
     parts.sampleChat = undefined
   }
@@ -359,8 +359,13 @@ export function getLinesForPrompt(
   { settings, char, members, messages, continue: cont, book, ...opts }: PromptOpts,
   lines: string[] = []
 ) {
-  const maxContext = settings?.maxContextLength || DEFAULT_MAX_TOKENS
   const { adapter, model } = getAdapter(opts.chat, opts.user, settings)
+  const maxContext = getContextLimit(
+    adapter,
+    model,
+    settings?.maxContextLength || DEFAULT_MAX_TOKENS
+  )
+
   const encoder = getEncoder(adapter, model)
   let tokens = 0
 

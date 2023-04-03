@@ -9,7 +9,7 @@ import { characterStore, NewCharacter } from '../../store'
 import ImportCharacterModal from './ImportCharacter'
 import DeleteCharacterModal from './DeleteCharacter'
 import Modal from '../../shared/Modal'
-import Dropdown from '../../shared/Dropdown'
+import Select from '../../shared/Select'
 import { exportCharacter } from '../../../common/prompt'
 import {userStore, scenarioStore} from '../../store'
 
@@ -168,7 +168,7 @@ const DownloadModal: Component<{ show: boolean; close: () => void; char?: AppSch
       }
     >
       <form ref={ref} class="flex flex-col gap-4">
-        <Dropdown
+        <Select
           label="Output Format"
           fieldName="app"
           value={format()}
@@ -180,7 +180,7 @@ const DownloadModal: Component<{ show: boolean; close: () => void; char?: AppSch
           onChange={(item) => setFormat(item.value)}
         />
         <div class="flex">
-          <Dropdown
+          <Select
             label="Persona Format"
             helperText="If exporting to Agnaistic format, this does not matter"
             fieldName="format"

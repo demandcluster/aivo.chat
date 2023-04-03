@@ -1,5 +1,6 @@
 import { v4 } from 'uuid'
 import { NOVEL_MODELS } from '../../../common/adapters'
+import { defaultChars } from '../../../common/characters'
 import { AppSchema } from '../../../srv/db/schema'
 
 type StorageKey = keyof typeof KEYS
@@ -38,23 +39,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
       updatedAt: new Date().toISOString(),
       kind: 'character',
       userId: 'anonymous',
-      avatar: '/assets/aiva.png',
-      name: 'Aiva',
-      persona: {
-        kind: 'wpp',
-        attributes: {
-          species: ['robot'],
-          mind: ['kind', 'compassionate', 'caring', 'tender', 'forgiving'],
-          personality: ['kind', 'compassionate', 'caring', 'tender', 'forgiving'],
-          job: ['Sales and helpdesk for AIVO.CHAT'],
-        },
-      },
-      sampleChat:
-        '{{user}}: Hi there what is this place?\r\n{{char}}: *I appear genuinely interested* This is AIVO (Artificial Virtual Other), the place to be for humans and chatbots alike!\r\n{{user}}: What can I do here?\r\n{{char}}: You can start by becoming a lifetime free member!',
-      scenario:
-        "Aiva is in their office. You knock on the door and Aiva beckons you inside. You open the door and enter Aiva's office.",
-      greeting:
-        "*A soft smile appears on my face as I see you enter the room* Hello! It's good to see you on AIVO.CHAT. Please have a seat! Have you considered getting a free membership?",
+      ...defaultChars.Robot,
     },
   ],
   swipe: 0,

@@ -40,6 +40,7 @@ const createCharacter = handle(async (req) => {
     xp: 0,
     match: false,
     sampleChat: body.sampleChat,
+    description: body.description,
     scenario: body.scenario,
     avatar,
     greeting: body.greeting,

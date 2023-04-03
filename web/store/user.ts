@@ -1,4 +1,5 @@
 import { AppSchema } from '../../srv/db/schema'
+import { FileInputResult } from '../shared/FileInput'
 import { api, clearAuth, getAuth, setAuth } from './api'
 import { createStore } from './create'
 import { data } from './data'
@@ -9,22 +10,31 @@ import { settingStore } from './settings'
 import { toastStore } from './toasts'
 
 const UI_KEY = 'ui-settings'
+const BACKGROUND_KEY = 'ui-bg'
 
-const defaultUIsettings: State['ui'] = {
-  theme: 'teal',
+const defaultUIsettings: UserState['ui'] = {
+  theme: 'teal', 
   mode: 'dark',
   avatarSize: 'md',
   avatarCorners: 'circle',
   input: 'single',
+  font: 'default',
+  msgOpacity: 0.8,
+}
+
+const fontFaces: { [key in FontSetting]: string } = {
+  lato: 'Lato, sans-serif',
+  default: 'unset',
 }
 
 export const AVATAR_SIZES = ['sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
 export const AVATAR_CORNERS = ['sm', 'md', 'lg', 'circle', 'none'] as const
 export const UI_MODE = ['light', 'dark'] as const
-export const UI_THEME = ['blue', 'sky', 'teal', 'orange'] as const
+export const UI_THEME = ['blue', 'sky', 'teal', 'orange', 'rose', 'pink'] as const
 export const UI_INPUT_TYPE = ['single', 'multi'] as const
+export const UI_FONT = ['default', 'lato'] as const
 
-type State = {
+export type UserState = {
   loading: boolean
   error?: string
   loggedIn: boolean
@@ -37,7 +47,12 @@ type State = {
     avatarSize: AvatarSize
     avatarCorners: AvatarCornerRadius
     input: ChatInputType
+    font: FontSetting
+
+    /** 0 -> 1. 0 = transparent. 1 = opaque */
+    msgOpacity: number
   }
+  background?: string
 }
 
 export type ThemeColor = (typeof UI_THEME)[number]
@@ -45,8 +60,9 @@ export type ThemeMode = (typeof UI_MODE)[number]
 export type AvatarSize = (typeof AVATAR_SIZES)[number]
 export type AvatarCornerRadius = (typeof AVATAR_CORNERS)[number]
 export type ChatInputType = (typeof UI_INPUT_TYPE)[number]
+export type FontSetting = (typeof UI_FONT)[number]
 
-export const userStore = createStore<State>(
+export const userStore = createStore<UserState>(
   'user',
   init()
 )((get, set) => {
@@ -156,10 +172,19 @@ export const userStore = createStore<State>(
       return { jwt: '', profile: undefined, user: undefined, loggedIn: false }
     },
 
-    updateUI({ ui }, update: Partial<State['ui']>) {
+    updateUI({ ui }, update: Partial<UserState['ui']>) {
       const next = { ...ui, ...update }
       updateTheme(next)
       return { ui: next }
+    },
+
+    setBackground(_, file: FileInputResult | null) {
+      if (!file) {
+        return { background: undefined }
+      }
+
+      setBackground(file.content)
+      return { background: file.content }
     },
 
     async deleteKey({ user }, kind: 'novel' | 'horde' | 'openai' | 'scale') {
@@ -193,9 +218,11 @@ export const userStore = createStore<State>(
   }
 })
 
-function init(): State {
+function init(): UserState {
   const existing = getAuth()
   const ui = getUIsettings()
+  const background = localStorage.getItem(BACKGROUND_KEY) || undefined
+
   updateTheme(ui)
 
   if (!existing) {
@@ -204,6 +231,7 @@ function init(): State {
       jwt: '',
       loggedIn: false,
       ui,
+      background,
     }
   }
 
@@ -212,10 +240,11 @@ function init(): State {
     loading: false,
     jwt: existing,
     ui,
+    background,
   }
 }
 
-function updateTheme(ui: State['ui']) {
+function updateTheme(ui: UserState['ui']) {
   localStorage.setItem(UI_KEY, JSON.stringify(ui))
   const root = document.documentElement
   for (let shade = 100; shade <= 900; shade += 100) {
@@ -227,16 +256,17 @@ function updateTheme(ui: State['ui']) {
     const bg = getComputedStyle(root).getPropertyValue(`--dark-${num}`)
     root.style.setProperty(`--bg-${shade}`, bg)
 
-    const text = getComputedStyle(root).getPropertyValue(`--black-${num}`)
+    const text = getComputedStyle(root).getPropertyValue(`--dark-${900 - (num - 100)}`)
     root.style.setProperty(`--text-${shade}`, text)
   }
+
+  root.style.setProperty(`--sitewide-font`, fontFaces[ui.font])
 }
 
 function getUIsettings() {
-  const settings: State['ui'] = JSON.parse(
-    localStorage.getItem(UI_KEY) || JSON.stringify(defaultUIsettings)
-  )
-  const theme = (localStorage.getItem('theme') || 'teal') as ThemeColor
+  const json = localStorage.getItem(UI_KEY) || JSON.stringify(defaultUIsettings)
+  const settings: UserState['ui'] = JSON.parse(json)
+  const theme = (localStorage.getItem('theme') || settings.theme) as ThemeColor
   localStorage.removeItem('theme')
 
   if (theme && UI_THEME.includes(theme)) {
@@ -249,3 +279,13 @@ function getUIsettings() {
 subscribe('credits-updated', { credits: 'any' }, (body) => {
   userStore.setState({ user: { ...userStore.getState().user, credits: body.credits.credits } })
 })
+
+
+function setBackground(content: any) {
+  if (content === null) {
+    localStorage.removeItem(BACKGROUND_KEY)
+    return
+  }
+
+  localStorage.setItem(BACKGROUND_KEY, content)
+}

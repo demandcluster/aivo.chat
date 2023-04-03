@@ -183,6 +183,8 @@ export namespace AppSchema {
 
     gaslight?: string
     useGaslight?: boolean
+    ultimeJailbreak?: string
+    antiBond?: boolean
 
     frequencyPenalty?: number
     presencePenalty?: number

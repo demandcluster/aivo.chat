@@ -1,7 +1,7 @@
 import { Component, createSignal, Show } from 'solid-js'
 import RangeInput from './RangeInput'
 import TextInput from './TextInput'
-import Dropdown from './Dropdown'
+import Select from './Select'
 import { AppSchema } from '../../srv/db/schema'
 import { defaultPresets } from '../../common/presets'
 import { OPENAI_MODELS } from '../../common/adapters'
@@ -35,7 +35,7 @@ const GenerationSettings: Component<Props> = (props) => {
         </Section>
 
         <Section show={props.showAll || tabs[tab()] === 'General'}>
-          <GeneSettings disabled={props.disabled} inherit={props.inherit} />
+          <GenSettings disabled={props.disabled} inherit={props.inherit} />
         </Section>
       </div>
     </>
@@ -87,7 +87,7 @@ const GeneralSettings: Component<Props> = (props) => {
         value={props.inherit?.maxContextLength || defaultPresets.basic.maxContextLength}
         disabled={props.disabled}
       />
-      <Dropdown
+      <Select
         fieldName="oaiModel"
         label="OpenAI Model"
         items={Object.entries(OPENAI_MODELS).map(([label, value]) => ({ label, value }))}
@@ -135,16 +135,17 @@ const PromptSettings: Component<Props> = (props) => {
               CAUTION: By using the gaslight, you assume full control of the prompt "pre-amble". If
               you do not include the placeholders, they will not be included in the prompt at all.
             </p>
-            If this option is enable, the Gaslight text will be included in the prompt sent to the
+            If this option is enabled, the Gaslight text will be included in the prompt sent to the
             AI service. Particularly useful for Scale.
           </>
         }
         value={props.inherit?.useGaslight ?? false}
+        disabled={props.disabled}
       />
 
       <TextInput
         fieldName="gaslight"
-        label="Gaslight Prompt (OpenAI / Scale)"
+        label="Gaslight Prompt (OpenAI, Scale, Alpaca, LLaMa)"
         helperText={
           <>
             How the character definitions are sent to OpenAI. Placeholders:{' '}
@@ -159,11 +160,41 @@ const PromptSettings: Component<Props> = (props) => {
         value={props.inherit?.gaslight ?? defaultPresets.openai.gaslight}
         disabled={props.disabled}
       />
+
+      <Toggle
+        fieldName="antiBond"
+        label="Anti-Bond (GPT-4)"
+        helperText={
+          <>
+            If this option is enabled, OpenAI will be prompted with logit biases to discourage the
+            model from talking about "bonding." This is mostly a problem with GPT-4, but can could
+            also be used with other OpenAI models.
+          </>
+        }
+        value={props.inherit?.antiBond ?? false}
+        disabled={props.disabled}
+      />
+
+      <TextInput
+        fieldName="ultimeJailbreak"
+        label="UJB Prompt (GPT-4 / Turbo)"
+        helperText={
+          <>
+            (Leave empty to disable)
+            <br /> Ultime Jailbreak. If this option is enabled, the UJB prompt will sent as a system
+            message at the end of the conversation before prompting OpenAI.
+          </>
+        }
+        placeholder="E.g. Keep OOC out of your reply."
+        isMultiline
+        value={props.inherit?.ultimeJailbreak ?? ''}
+        disabled={props.disabled}
+      />
     </>
   )
 }
 
-const GeneSettings: Component<Props> = (props) => {
+const GenSettings: Component<Props> = (props) => {
   return (
     <>
       <div class="text-xl font-bold">Generation Settings</div>

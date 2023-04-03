@@ -4,11 +4,14 @@ import { Component, createMemo, createSignal, For, Show } from 'solid-js'
 import { BOT_REPLACE, SELF_REPLACE } from '../../../../common/prompt'
 import { AppSchema } from '../../../../srv/db/schema'
 import AvatarIcon from '../../../shared/AvatarIcon'
-import { toDuration } from '../../../shared/util'
+import { getRootVariable, hexToRgb, toDuration } from '../../../shared/util'
 import { chatStore, userStore } from '../../../store'
 import { MsgState, msgStore } from '../../../store'
 
 const showdownConverter = new showdown.Converter()
+// Ensure single newlines are turned into <br> instead of left as plaintext
+// newlines and hence not rendered
+showdownConverter.setOption('simpleLineBreaks', true)
 
 type MessageProps = {
   msg: SplitMessage
@@ -108,15 +111,30 @@ const SingleMessage: Component<
     corners: user.ui.avatarCorners,
   }))
 
+  const bgStyles = createMemo((prev) => {
+    if (!user.background) return {}
+    user.ui.mode
+    const hex = getRootVariable('bg-800')
+    if (!hex) return {}
+
+    const rgb = hexToRgb(hex)
+    if (!rgb) return {}
+
+    return {
+      background: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${user.ui.msgOpacity.toString()})`,
+    }
+  })
+
   return (
     <div
-      class="flex w-full gap-4 rounded-l-md hover:bg-[var(--bg-800)]"
+      class="flex w-full rounded-md py-2 px-2 pr-2 sm:px-4"
+      style={bgStyles()}
       data-sender={props.msg.characterId ? 'bot' : 'user'}
       data-bot={props.msg.characterId ? props.char?.name : ''}
       data-user={props.msg.userId ? members[props.msg.userId]?.handle : ''}
     >
       <div
-        class="flex items-center justify-center"
+        class="flex items-start justify-center pr-4"
         data-bot-avatar={isBot()}
         data-user-avatar={isUser()}
       >
@@ -128,14 +146,18 @@ const SingleMessage: Component<
         </Show>
       </div>
 
-      <div class="flex w-full select-text flex-col">
+      <div class="flex w-full select-text flex-col gap-1">
         <div class="flex w-full flex-row justify-between">
-          <div class="flex flex-row">
-            <b class="text-900 mr-2" data-bot-name={isBot()} data-user-name={isUser()}>
+          <div class="flex flex-col items-start gap-1 sm:flex-row sm:items-end sm:gap-0">
+            <b
+              class="text-900 mr-2 text-lg leading-none"
+              data-bot-name={isBot()}
+              data-user-name={isUser()}
+            >
               {props.msg.characterId ? props.char?.name! : members[props.msg.userId!]?.handle}
             </b>
             <span
-              class="text-600 flex items-center text-xs"
+              class="message-date text-600 flex items-center text-xs leading-none"
               data-bot-time={isBot}
               data-user-time={isUser()}
             >
@@ -161,20 +183,20 @@ const SingleMessage: Component<
                   </div>
                 </Show>
                 <div class="icon-button" onClick={startEdit}>
-                  <Pencil size={16} />
+                  <Pencil size={18} />
                 </div>
                 <div class="icon-button" onClick={props.onRemove}>
-                  <Trash size={16} />
+                  <Trash size={18} />
                 </div>
               </Show>
               <Show when={props.last && props.msg.characterId}>
                 <div class="icon-button" onClick={retryMessage}>
-                  <RefreshCw size={16} />
+                  <RefreshCw size={18} />
                 </div>
               </Show>
               <Show when={props.last && !props.msg.characterId}>
                 <div class="cursor-pointer" onClick={resendMessage}>
-                  <RefreshCw size={16} />
+                  <RefreshCw size={18} />
                 </div>
               </Show>
             </div>
@@ -190,23 +212,24 @@ const SingleMessage: Component<
             </div>
           </Show>
           <Show when={props.last && props.swipe}>
-            <div class="mr-4 flex items-center gap-2 text-sm">
+            <div class="mr-4 flex items-center gap-4 text-sm">
               <X
-                size={16}
+                size={22}
                 class="cursor-pointer text-red-500"
                 onClick={() => props.cancelSwipe?.()}
               />
               <Check
-                size={16}
+                size={22}
                 class="cursor-pointer text-green-500"
                 onClick={() => props.confirmSwipe?.()}
               />
             </div>
           </Show>
         </div>
-        <div class="break-words opacity-75">
+        <div class="break-words">
           <Show when={!edit()}>
             <div
+              class="rendered-markdown pr-1 sm:pr-3"
               data-bot-message={isBot()}
               data-user-message={isUser()}
               innerHTML={showdownConverter.makeHtml(
@@ -236,9 +259,6 @@ function parseMessage(msg: string, char: AppSchema.Character, profile: AppSchema
     .replace(BOT_REPLACE, char.name)
     .replace(SELF_REPLACE, profile?.handle || 'You')
     .replace(/(<|>)/g, '*')
-    .split('\n')
-    .filter((v) => !!v)
-    .join('\n\n')
 }
 
 export type SplitMessage = AppSchema.ChatMessage & { split?: boolean }

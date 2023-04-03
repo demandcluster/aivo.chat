@@ -2,27 +2,21 @@ import { A, useNavigate, useParams } from '@solidjs/router'
 import {
   ArrowDownLeft,
   ArrowUpRight,
-  Book,
   ChevronLeft,
   ChevronRight,
-  Download,
   MailPlus,
   Menu,
-  Settings,
-  Sliders,
   X,
 } from 'lucide-solid'
 import ChatExport from './ChatExport'
-import { Component, createEffect, createMemo, createSignal, For, Show } from 'solid-js'
+import { Component, createEffect, createMemo, createSignal, For, JSX, Show } from 'solid-js'
 import { ADAPTER_LABELS } from '../../../common/adapters'
 import { getAdapter } from '../../../common/prompt'
 import Button from '../../shared/Button'
 import IsVisible from '../../shared/IsVisible'
 import Modal from '../../shared/Modal'
-import SideDrawer from '../../shared/SideDrawer'
 import TextInput from '../../shared/TextInput'
-import { Toggle } from '../../shared/Toggle'
-import { getStrictForm } from '../../shared/util'
+import { getRootRgb, getStrictForm } from '../../shared/util'
 import { chatStore, settingStore, userStore } from '../../store'
 import { msgStore } from '../../store'
 import { ChatGenSettingsModal } from './ChatGenSettings'
@@ -33,6 +27,10 @@ import Message from './components/Message'
 import PromptModal from './components/PromptModal'
 import DeleteMsgModal from './DeleteMsgModal'
 import './chat-detail.css'
+import { DropMenu } from '../../shared/DropMenu'
+import UISettings from '../Settings/UISettings'
+import { devCycleAvatarSettings, isDevCommand } from './dev-util'
+import ChatOptions, { ChatModal } from './ChatOptions'
 
 const EDITING_KEY = 'chat-detail-settings'
 
@@ -58,15 +56,22 @@ const ChatDetail: Component = () => {
 
   const [swipe, setSwipe] = createSignal(0)
   const [removeId, setRemoveId] = createSignal('')
-  const [showMem, setShowMem] = createSignal(false)
   const [showOpts, setShowOpts] = createSignal(false)
-  const [showGen, setShowGen] = createSignal(false)
-  const [showConfig, setShowConfig] = createSignal(false)
-  const [showInvite, setShowInvite] = createSignal(false)
-  const [showExport, setShowExport] = createSignal(false)
+  const [modal, setModal] = createSignal<ChatModal>()
   const [editing, setEditing] = createSignal(getEditingState().editing ?? false)
   const { id } = useParams()
   const nav = useNavigate()
+
+  function toggleEditing() {
+    const next = !editing()
+    setEditing(next)
+    saveEditingState(next)
+  }
+
+  const showModal = (modal: ChatModal) => {
+    setModal(modal)
+    setShowOpts(false)
+  }
 
   const clickSwipe = (dir: -1 | 1) => () => {
     const ret = retries()
@@ -98,11 +103,20 @@ const ChatDetail: Component = () => {
   })
 
   const sendMessage = (message: string, onSuccess?: () => void) => {
-    setSwipe(0)
-    msgStore.send(chats.chat?._id!, message, false, onSuccess)
+    if (!isDevCommand(message)) {
+      setSwipe(0)
+      msgStore.send(chats.chat?._id!, message, false, onSuccess)
+      return
+    }
+
+    switch (message) {
+      case '/devCycleAvatarSettings':
+        devCycleAvatarSettings(user)
+        return
+    }
   }
 
-  const moreMessage = (message: string) => {
+  const moreMessage = () => {
     msgStore.continuation(chats.chat?._id!)
   }
 
@@ -114,11 +128,14 @@ const ChatDetail: Component = () => {
     msgStore.confirmSwipe(msgId, swipe(), () => setSwipe(0))
   }
 
-  function toggleEditing() {
-    const next = !editing()
-    setEditing(next)
-    saveEditingState(next)
-  }
+  const headerBg = createMemo(() => {
+    const rgb = getRootRgb('bg-900')
+    user.ui.mode // This 'unused' ref is needed to ensure this memo re-evaluated with the mode changes
+    const styles: JSX.CSSProperties = {
+      background: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.7)`,
+    }
+    return styles
+  })
 
   return (
     <>
@@ -128,14 +145,19 @@ const ChatDetail: Component = () => {
         </div>
       </Show>
       <Show when={chats.chat}>
-        <div class="flex h-full flex-col justify-between sm:py-2">
-          <div class="flex h-8 items-center justify-between ">
+        <div class="mx-auto flex h-full max-w-3xl flex-col justify-between sm:py-2">
+          <div class="flex h-8 items-center justify-between rounded-md" style={headerBg()}>
             <div class="flex cursor-pointer flex-row items-center justify-between gap-4 text-lg font-bold">
               <Show when={!cfg.fullscreen}>
                 <A href={`/character/${chats.char?._id}/chats`}>
                   <ChevronLeft />
                 </A>
                 {chats.char?.name}
+                <Show when={chats.chat?.name}>
+                  <div class="flex flex-row items-center justify-between gap-4 text-sm">
+                    {chats.chat?.name}
+                  </div>
+                </Show>
               </Show>
             </div>
 
@@ -143,26 +165,33 @@ const ChatDetail: Component = () => {
               <div class="hidden items-center text-xs italic text-[var(--text-500)] sm:flex">
                 {adapter()}
               </div>
-              <Show when={chats.chat?.userId === user.user?._id}>
-                <div class="icon-button" onClick={() => setShowOpts(!showOpts())}>
-                  <Menu />
-                </div>
-             
-              <Show when={!cfg.fullscreen}>
-                  <div class="icon-button" onClick={() => settingStore.fullscreen(true)}>
-                    <ArrowUpRight />
-                  </div>
-                </Show>
 
-                <Show when={cfg.fullscreen}>
-                  <div class="icon-button" onClick={() => settingStore.fullscreen(false)}>
-                    <ArrowDownLeft />
-                  </div>
-                </Show>
-                </Show>
+              <div class="" onClick={() => setShowOpts(true)}>
+                <Menu class="icon-button" />
+                <DropMenu
+                  show={showOpts()}
+                  close={() => setShowOpts(false)}
+                  horz="left"
+                  vert="down"
+                >
+                  <ChatOptions show={showModal} editing={editing()} toggleEditing={toggleEditing} />
+                </DropMenu>
+              </div>
+
+              <Show when={!cfg.fullscreen}>
+                <div class="icon-button" onClick={() => settingStore.fullscreen(true)}>
+                  <ArrowUpRight />
+                </div>
+              </Show>
+
+              <Show when={cfg.fullscreen}>
+                <div class="icon-button" onClick={() => settingStore.fullscreen(false)}>
+                  <ArrowDownLeft />
+                </div>
+              </Show>
             </div>
           </div>
-          <div class="flex h-[calc(100%-32px)] flex-col-reverse">
+          <div class="flex h-[calc(100%-32px)] flex-col-reverse gap-1">
             <InputBar
               chat={chats.chat!}
               swiped={swipe() !== 0}
@@ -178,7 +207,7 @@ const ChatDetail: Component = () => {
                 list={retries()?.list || []}
               />
             </Show>
-            <div class="flex flex-col-reverse gap-4 overflow-y-scroll">
+            <div class="flex flex-col-reverse gap-4 overflow-y-scroll pr-2 sm:pr-4">
               <div class="flex flex-col gap-2">
                 <For each={msgs.msgs}>
                   {(msg, i) => (
@@ -198,7 +227,7 @@ const ChatDetail: Component = () => {
                   )}
                 </For>
                 <Show when={msgs.waiting}>
-                  <div class="flex justify-center">
+                  <div class="mt-3 flex justify-center">
                     <div class="dot-flashing bg-[var(--hl-700)]"></div>
                   </div>
                 </Show>
@@ -209,106 +238,40 @@ const ChatDetail: Component = () => {
         </div>
       </Show>
 
+      <Show when={modal() === 'settings'}>
+        <ChatSettingsModal show={true} close={setModal} />
+      </Show>
+
+      <Show when={modal() === 'gen'}>
+        <ChatGenSettingsModal show={true} close={setModal} chat={chats.chat!} />
+      </Show>
+
+      <Show when={modal() === 'invite'}>
+        <InviteModal show={true} close={setModal} chatId={chats.chat?._id!} />
+      </Show>
+
+      <Show when={modal() === 'memory'}>
+        <ChatMemoryModal chat={chats.chat!} show={!!chats.chat} close={setModal} />
+      </Show>
+
+      <Show when={modal() === 'export'}>
+        <ChatExport show={true} close={setModal} />
+      </Show>
+
       <Show when={!!removeId()}>
         <DeleteMsgModal show={!!removeId()} messageId={removeId()} close={() => setRemoveId('')} />
       </Show>
 
-      <Show when={showConfig()}>
-        <ChatSettingsModal show={showConfig()} close={() => setShowConfig(false)} />
-      </Show>
-
-      <Show when={showGen()}>
-        <ChatGenSettingsModal show={showGen()} close={() => setShowGen(false)} chat={chats.chat!} />
-      </Show>
-
-      <Show when={showInvite()}>
-        <InviteModal
-          show={showInvite()}
-          close={() => setShowInvite(false)}
-          chatId={chats.chat?._id!}
-        />
-      </Show>
-
       <PromptModal />
-
-      <Modal
-        show={showOpts()}
-        close={() => setShowOpts(false)}
-        title="Chat Options"
-        footer={
-          <>
-            <Button schema="secondary" onClick={() => setShowOpts(false)}>
-              Close
-            </Button>
-          </>
-        }
-      >
-        <div class="flex flex-col gap-2">
-          <Option onClick={() => setEditing(!editing())}>
-            <div class="flex w-full items-center justify-between">
-              <div>Enable Chat Editing</div>
-              <Toggle
-                class="flex items-center"
-                fieldName="editChat"
-                value={editing()}
-                onChange={() => setEditing(!editing())}
-              />
-            </div>
-          </Option>
-
-          <Option
-            onClick={() => setShowInvite(true)}
-            close={() => setShowOpts(false)}
-            class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
-          >
-            <MailPlus /> Invite User
-          </Option>
-
-          <Option
-            onClick={() => setShowMem(true)}
-            close={() => setShowOpts(false)}
-            class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
-          >
-            <Book />
-            Edit Chat Memory
-          </Option>
-
-          <Option
-            onClick={() => setShowGen(true)}
-            close={() => setShowOpts(false)}
-            class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
-          >
-            <Sliders /> Generation Settings
-          </Option>
-
-          <Option
-            onClick={() => setShowConfig(true)}
-            close={() => setShowOpts(false)}
-            class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
-          >
-            <Settings /> Chat Settings
-          </Option>
-
-          <Option
-            onClick={() => setShowExport(true)}
-            close={() => setShowOpts(false)}
-            class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
-          >
-            <Download /> Export Chat
-          </Option>
-        </div>
-      </Modal>
-
-      <Show when={showMem()}>
-        <ChatMemoryModal
-          chat={chats.chat!}
-          show={!!chats.chat && showMem()}
-          close={() => setShowMem(false)}
-        />
-      </Show>
-
-      <Show when={showExport()}>
-        <ChatExport show={showExport()} close={() => setShowExport(false)} />
+      <Show when={modal() === 'ui'}>
+        <Modal
+          show={true}
+          close={setModal}
+          title="UI Settings"
+          footer={<Button onClick={setModal}>Close</Button>}
+        >
+          <UISettings />
+        </Modal>
       </Show>
     </>
   )
@@ -352,28 +315,6 @@ const InviteModal: Component<{ chatId: string; show: boolean; close: () => void 
   )
 }
 
-const Option: Component<{
-  children: any
-  class?: string
-  onClick: () => void
-  close?: () => void
-}> = (props) => {
-  const onClick = () => {
-    props.onClick()
-    props.close?.()
-  }
-  return (
-    <div
-      class={`flex w-full cursor-pointer select-none rounded-md bg-[var(--hl-900)] py-2 px-4 hover:bg-[var(--hl-800)] ${
-        props.class || ''
-      }`}
-      onClick={onClick}
-    >
-      {props.children}
-    </div>
-  )
-}
-
 const SwipeMessage: Component<{
   chatId: string
   list: string[]
@@ -382,22 +323,26 @@ const SwipeMessage: Component<{
   pos: number
 }> = (props) => {
   return (
-    <div class="flex h-6 w-full items-center justify-between text-[var(--text-800)]">
-      <Show when={props.list.length > 1}>
-        <div class="cursor:pointer hover:text-[var(--text-900)]">
-          <Button schema="clear" onClick={props.prev}>
-            <ChevronLeft />
-          </Button>
-        </div>
-        <div class="text-[var(--text-800)]">
-          {props.pos + 1} / {props.list.length}
-        </div>
-        <div class="cursor:pointer hover:text-[var(--text-800)]">
-          <Button schema="clear" onClick={props.next}>
-            <ChevronRight />
-          </Button>
-        </div>
-      </Show>
+    <div class="swipe">
+      <div></div>
+      <div class="swipe__content">
+        <Show when={props.list.length > 1}>
+          <div class="cursor:pointer hover:text-[var(--text-900)]">
+            <Button schema="clear" class="p-0" onClick={props.prev}>
+              <ChevronLeft />
+            </Button>
+          </div>
+          <div class="text-[var(--text-800)]">
+            {props.pos + 1} / {props.list.length}
+          </div>
+          <div class="cursor:pointer hover:text-[var(--text-800)]">
+            <Button schema="clear" class="p-0" onClick={props.next}>
+              <ChevronRight />
+            </Button>
+          </div>
+        </Show>
+      </div>
+      <div></div>
     </div>
   )
 }

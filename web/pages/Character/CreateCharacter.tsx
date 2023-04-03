@@ -29,9 +29,10 @@ const matchoptions = [
 ]
 
 const CreateCharacter: Component = () => {
-  const { editId, duplicateId } = useParams()
-  const srcId = editId || duplicateId || ''
+  const params = useParams<{ editId?: string; duplicateId?: string }>()
+  const srcId = params.editId || params.duplicateId || ''
   const state = characterStore((s) => ({
+    creating: s.creating,
     edit: s.characters.list.find((ch) => ch._id === srcId),
   }))
 
@@ -87,11 +88,9 @@ const CreateCharacter: Component = () => {
       sampleChat: body.sampleChat,
       persona,
     }
-   
-    
-    if (editId) {
-     
-      characterStore.editCharacter(editId, payload, () => nav('/character/list'))
+
+    if (params.editId) {
+      characterStore.editCharacter(params.editId, payload, () => nav('/character/list'))
     } else {
       characterStore.createCharacter(payload, () => nav('/character/list'))
     }
@@ -100,7 +99,7 @@ const CreateCharacter: Component = () => {
   return (
     <div>
       <PageHeader
-        title={`${editId ? 'Edit' : duplicateId ? 'Copy' : 'Create'} a Character`}
+        title={`${params.editId ? 'Edit' : params.duplicateId ? 'Copy' : 'Create'} a Character`}
         subtitle={
           <span>
             For character information tips and information visit{' '}
@@ -223,11 +222,11 @@ const CreateCharacter: Component = () => {
           />
         </div>
 
-        <Show when={!editId && !duplicateId}>
+        <Show when={!params.editId && !params.duplicateId}>
           <PersonaAttributes plainText={schema() === 'text'} />
         </Show>
 
-        <Show when={(editId || duplicateId) && state.edit}>
+        <Show when={(params.editId || params.duplicateId) && state.edit}>
           <PersonaAttributes
             value={state.edit?.persona.attributes}
             plainText={schema() === 'text'}
@@ -253,9 +252,9 @@ const CreateCharacter: Component = () => {
             <X />
             Cancel
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={state.creating}>
             <Save />
-            {editId ? 'Update' : 'Create'}
+            {params.editId ? 'Update' : 'Create'}
           </Button>
         </div>
       </form>
