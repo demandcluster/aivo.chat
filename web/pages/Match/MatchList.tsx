@@ -117,7 +117,7 @@ const MatchList: Component = () => {
           <For each={chars.list}>
             {(char) => <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount} totalCount={chars.list.length} />}
           </For>
-          <div class=" pl-1 md:pl-6 mx-auto m-[26em] mb-4 w-96 max-w-5xl md:w-[26rem] pb-2">
+          <div class=" sm:mt-[36em] pl-6 md:pl-1 mx-auto m-[26em] mb-4 w-96 max-w-5xl md:w-[26rem] pb-2">
                 <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeLeft()} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
                   <X size={40} class={`${colorSwipeLeft()} "  icon-button inline-block "`}/>
                 </button>
@@ -155,9 +155,9 @@ const DSwipeCard: Component<{ character: AppSchema.Character;match: Any  }> = (p
   const age = (props.character.persona.attributes.age) ? props.character.persona.attributes.age[0].split(" ")[0] : '';
   return (
     <div class="absolute w-full max-w-5xl">
-    <SwipeCard zindex={zindex} class=" right-6 likes-middle fixed w-96 h-96 m-auto shadow-lg max-w-[90%] max-h-[90%] border-white border-solid border-[10px] md:border-[20px] rounded-lg"
+    <SwipeCard zindex={zindex} class=" bg-[var(--bg-800)] fixed w-96 h-96 right-[10%] left-[10%] sm:w-9/12 sm:h-3/4 sm:max-w-[550px] sm:max-h-[550px] lg:right-[calc(14%-18.5rem)]  m-auto shadow-lg max-w-[90%] max-h-[90%] border-white border-solid border-[10px] md:border-[20px] rounded-lg"
     threshold="300" rotationmultiplier="7.5" maxrotation="90" snapbackduration="300" bouncepower="0.1" id={props.character._id} apiRef={apiRef} onSwipe={props.swipeAction} onMove={props.swipeMovement}>
-      <div class="absolute bg-cover w-96 h-96 max-w-full max-h-full" style={{ "background-image": `url(${props.character.avatar})` }}  >
+      <div class="absolute bg-cover w-full h-full max-w-full max-h-full" style={{ "background-image": `url(${props.character.avatar})` }}  >
         <div class="w-full absolute size bottom-4 p-2 text-3xl text-white text-shadow"><span class=" font-black ">{props.character.name}</span> {age}</div>
         <div class="absolute bottom-1 h-6 overflow-hidden">
           <For each={props.character.persona.attributes.likes}>
