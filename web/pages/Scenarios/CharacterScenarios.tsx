@@ -128,43 +128,7 @@ const DownloadModal: Component<{ show: boolean; close: () => void; char?: AppSch
         </Button>
       }
     >
-      <form ref={ref} class="flex flex-col gap-4">
-        <Dropdown
-          label="Output Format"
-          fieldName="app"
-          value={format()}
-          items={[
-            { value: 'native', label: 'Agnaistic' },
-            { value: 'tavern', label: 'TavernAI' },
-            { value: 'ooba', label: 'Textgen' },
-          ]}
-          onChange={(item) => setFormat(item.value)}
-        />
-        <div class="flex">
-          <Dropdown
-            label="Persona Format"
-            helperText="If exporting to Agnaistic format, this does not matter"
-            fieldName="format"
-            items={opts()}
-            value={schema()}
-            onChange={(item) => setSchema(item.value)}
-            disabled={format() === 'native'}
-          />
-        </div>
-        <div class="flex w-full justify-center">
-          <a
-            href={`data:text/json:charset=utf-8,${encodeURIComponent(
-              charToJson(props.char!, format(), schema())
-            )}`}
-            download={`${props.char!.name}.json`}
-          >
-            <Button>
-              <Save />
-              Download
-            </Button>
-          </a>
-        </div>
-      </form>
+     Gone
     </Modal>
   )
 }
