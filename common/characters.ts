@@ -6,6 +6,7 @@ export const defaultChars = {
     match: false,
     xp: 0,
     premium: false,
+    avatar: "/assets/aiva.png",
     persona: {
       kind: 'boostyle',
       attributes: {
@@ -24,6 +25,6 @@ export const defaultChars = {
 } satisfies {
   [key: string]: Pick<
     AppSchema.Character,
-    'name' | 'persona' | 'sampleChat' | 'scenario' | 'greeting' | 'match' | 'xp' | 'premium'
+    'name' | 'persona' | 'sampleChat' | 'scenario' | 'greeting' | 'match' | 'xp' | 'premium' | 'avatar'
   >
 }
