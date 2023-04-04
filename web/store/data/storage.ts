@@ -57,7 +57,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
     novelModel: NOVEL_MODELS.euterpe,
     hordeKey: '',
     hordeModel: 'PygmalionAI/pygmalion-6b',
-    defaultAdapter: 'kobold',
+    defaultAdapter: 'horde',
     koboldUrl: 'https://ai.aivo.chat',
     luminaiUrl: '',
   },
