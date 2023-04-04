@@ -42,7 +42,7 @@ const PremiumOptions: Component = () => {
   createEffect(() => {
     cartStore.getItems()
     cartStore.getCartItems()
-    loadScript({ "client-id": "AQlrOxbkPYGnPnoYLjOq4M5Ub_JhzVbpxzM8uv9AlY8RzVH7pXRLqFHKV0jTS5-gB7V_kurLSMsBcIjL","currency":"EUR" }).then((paypalObject) => {
+    loadScript({ "client-id": "AcfzQbmT9qPEf7Ab8lTpKxLGkEI_EG_bmg5DyuECpcliXUjB4DhWEoK_76P_7sqp1GtnQkaqbXiqz7ik","currency":"EUR" }).then((paypalObject) => {
       setPaypal(paypalObject)
     })
   }, { on: cartItems })
