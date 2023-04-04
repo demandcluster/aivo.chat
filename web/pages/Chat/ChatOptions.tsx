@@ -35,7 +35,7 @@ const ChatOptions: Component<{
         >
           <MailPlus /> Invite User
         </Option>
-
+        <Show when={user.user?.admin}>
         <Option
           onClick={() => props.show('memory')}
           class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
@@ -43,6 +43,7 @@ const ChatOptions: Component<{
           <Book />
           Edit Chat Memory
         </Option>
+        </Show>
 
         <Option
           onClick={() => props.show('members')}
@@ -50,7 +51,7 @@ const ChatOptions: Component<{
         >
           <Users /> Particpants
         </Option>
-
+        <Show when={user.user?.admin}>
         <Option
           onClick={() => props.show('gen')}
           class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
@@ -64,6 +65,7 @@ const ChatOptions: Component<{
         >
           <Settings /> Chat Settings
         </Option>
+        </Show>
       </Show>
 
       <Option

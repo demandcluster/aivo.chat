@@ -59,12 +59,12 @@ const Match: Component<{ character: AppSchema.Character;match: Any  }> = (props)
         </A>
       </div>
       <div class="flex flex-row items-center justify-center gap-2 sm:w-3/12" >
-       <div 
+       <Button
           class="ml-4 flex h-3/4 cursor-pointer items-center rounded-2xl sm:w-9/12" onClick={()=>props.match(props.character._id)} >
         
-          <Check class="cursor-pointer text-white/25 hover:text-white" />
+          MATCH <Check class="cursor-pointer text-white/25 hover:text-white" />
         
-         </div>
+         </Button>
       </div>
     </div>
   )
