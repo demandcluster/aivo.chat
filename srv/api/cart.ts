@@ -115,7 +115,7 @@ const createPaypalOrder = async (orderId: string,orderAmount: number, items: App
     const authToken = await paypalLogin();
 
     const options = {
-      hostname: 'https://api-m.paypal.com',
+      hostname: 'api-m.sandbox.paypal.com',
       path: '/v2/checkout/orders',
       method: 'POST',
       headers: {
