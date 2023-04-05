@@ -20,8 +20,7 @@ const PremiumOptions: Component = () => {
   let paypalButtons
 
   const renderButtons = (id) => {
-      if(!id)return
-
+   
       paypal().Buttons({
         createOrder: function(data, actions) {
           // Set up the transaction details
@@ -43,7 +42,9 @@ const PremiumOptions: Component = () => {
   createEffect(() => {
     cartStore.getItems()
     cartStore.getCartItems()
-   
+    loadScript({ "client-id": "AcfzQbmT9qPEf7Ab8lTpKxLGkEI_EG_bmg5DyuECpcliXUjB4DhWEoK_76P_7sqp1GtnQkaqbXiqz7ik","currency":"EUR" }).then((paypalObject) => {
+      setPaypal(paypalObject)
+    })
   }, { on: cartItems })
 
   const addToCart = (item) => {
@@ -72,10 +73,7 @@ const PremiumOptions: Component = () => {
       const id = cartItems?.orderId || ""
       setOrderId(id)
       console.log(id)
-      loadScript({ "client-id": "AcfzQbmT9qPEf7Ab8lTpKxLGkEI_EG_bmg5DyuECpcliXUjB4DhWEoK_76P_7sqp1GtnQkaqbXiqz7ik","currency":"EUR" }).then((paypalObject) => {
-        setPaypal(paypalObject)
-        renderButtons(orderId())
-      })
+      renderButtons(orderId())
        })
     }
 
