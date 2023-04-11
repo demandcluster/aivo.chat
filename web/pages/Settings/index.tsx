@@ -100,13 +100,7 @@ const Settings: Component = () => {
     <>
       <span>{hordeName()}</span>
       <br />
-      <span>
-        Leave blank to use guest account. Visit{' '}
-        <a class="link" href="https://aihorde.net" target="_blank">
-          stablehorde.net
-        </a>{' '}
-        to register.
-      </span>
+   
     </>
   )
 
@@ -142,8 +136,9 @@ const Settings: Component = () => {
               <h3 class="text-lg font-bold">AI Horde settings</h3>
               <TextInput
                 fieldName="hordeKey"
-                label="AI Horde API Key"
-                helperText={HordeHelpText}
+                
+                class="hidden"
+               
                 placeholder={
                   state.user?.hordeName || state.user?.hordeKey ? 'API key has been verified' : ''
                 }
@@ -151,11 +146,7 @@ const Settings: Component = () => {
                 value={state.user?.hordeKey}
               />
 
-              <Show when={state.user?.hordeName}>
-                <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('horde')}>
-                  Delete Horde API Key
-                </Button>
-              </Show>
+              
 
               <div class="flex justify-between">
                 <div class="w-fit">
@@ -183,8 +174,8 @@ const Settings: Component = () => {
               <Divider />
               <TextInput
                 fieldName="koboldUrl"
-                label="Kobold Compatible URL"
-                helperText="Fully qualified URL. This URL must be publicly accessible."
+                
+                class="hidden"
                 placeholder="E.g. https://local-tunnel-url-10-20-30-40.loca.lt"
                 value={state.user?.koboldUrl}
               />
