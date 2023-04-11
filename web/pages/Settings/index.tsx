@@ -45,7 +45,7 @@ const Settings: Component = () => {
   const [show, setShow] = createSignal(false)
   const [tab, setTab] = createSignal(0)
 
-  const tabs = [ 'ui'] satisfies Tab[]
+  const tabs = [ 'ui','ai'] satisfies Tab[]
   const currentTab = createMemo(() => tabs[tab()])
 
   const refreshHorde = () => {

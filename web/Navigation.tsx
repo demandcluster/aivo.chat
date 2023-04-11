@@ -42,10 +42,10 @@ console.log(user.ui)
       class={`drawer flex flex-col gap-4 bg-[var(--bg-800)] pt-4 ${hide()} ${fullscreen()}`}
     >
       <div class="drawer__content flex flex-col gap-2 px-1 lg:px-4">
-        <div class="hidden w-full items-center justify-center sm:flex">
+        <div class="hidden w-full sm:flex px-4 ph-1 pt-2">
           <A href="/">
-          <img width="100px" class="px-4 ph-1 pt-2" src={user.ui?.mode==="light"?logoDark:logo}/>
-          <span class="text-xs ml-4 text-gray-400">by Demandcluster</span>
+          <img width="100px"  src={user.ui?.mode==="light"?logoDark:logo}/>
+          <span class="text-xs text-gray-400">by Demandcluster</span>
           </A>
         </div>
         <Show when={user.loggedIn} fallback={<GuestNavigation />}>
