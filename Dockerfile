@@ -10,7 +10,7 @@ RUN npm install pnpm@6 -g
 ARG SHA=unknown
 
 ADD package.json pnpm-lock.yaml ./
-RUN pnpm i --frozen-lockfile
+RUN npx pnpm@6 i --frozen-lockfile --force
 
 ADD public.ts requirements.txt tailwind.config.js tsconfig.json .babelrc .postcssrc .prettierrc srv.tsconfig.json ./
 ADD common/ ./common/
