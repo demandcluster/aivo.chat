@@ -10,6 +10,7 @@ const ID = 'anon'
 export const KEYS = {
   characters: 'characters',
   profile: 'profile',
+  swipe: 'swipe',
   messages: 'messages',
   config: 'config',
   chats: 'chats',
@@ -23,6 +24,7 @@ type LocalStorage = {
   characters: AppSchema.Character[]
   chats: AppSchema.Chat[]
   profile: AppSchema.Profile
+  swipe: AppSchema.swipe
   messages: AppSchema.ChatMessage[]
   config: AppSchema.User
   presets: AppSchema.UserGenPreset[]
@@ -42,7 +44,7 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
       ...defaultChars.Robot,
     },
   ],
-  swipe: 0,
+  swipe: '',
   chats: [],
   presets: [],
   config: {
@@ -86,6 +88,10 @@ export function getMessages(chatId: string): AppSchema.ChatMessage[] {
   if (!messages) return []
 
   return JSON.parse(messages) as AppSchema.ChatMessage[]
+}
+
+export function saveSwipe(state: AppSchema.Profile) {
+  localStorage.setItem(KEYS.swipe, JSON.stringify(state))
 }
 
 export function saveProfile(state: AppSchema.Profile) {
@@ -150,6 +156,7 @@ export const local = {
   savePresets,
   saveProfile,
   saveBooks,
+  saveSwipe,
   deleteChatMessages,
   loadItem,
   getMessages,

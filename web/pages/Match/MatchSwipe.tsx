@@ -1,4 +1,5 @@
 import { Component, createEffect, createSignal, For, Show } from 'solid-js'
+import { createStore } from 'solid-js/store'
 import Button from '../../shared/Button'
 import PageHeader from '../../shared/PageHeader'
 import { Check, Delete, Heart, Undo2, X, AlignLeft } from 'lucide-solid'
@@ -11,13 +12,14 @@ import {SwipeCard} from '../../shared/Swipe'
 import type { SwipeCardRef} from '../../shared/Swipe'
 
 const MatchList: Component = () => {
-  const chars = matchStore((s) => s.characters)
   const swipeCount = swipeStore();
-  
+  let curApiref;
   let totalSwipes = [];
   
+  const [chars, setChar] = createStore( matchStore((s) => s.characters));
+  const [charsIDS, setCharIDS] = createSignal([]);
   const showZindex = {min: 1000000, plus: 2000000};
-  const [showSwipes, setSwipe] = createSignal(0)
+  const [showSwipes, setSwipe] = createSignal('')
   const [undoDisabled, setUndo] = createSignal('disabled')
   const [colorSwipeMove, setSwipeMove] = createSignal(
     {
@@ -34,11 +36,17 @@ const MatchList: Component = () => {
   const navigate=useNavigate()
 
   createEffect(() => {
+    curApiref = '';
     totalSwipes = [];
-    matchStore.getMatches(user.userId)
     swipeStore.getSwipe();
+    matchStore.getMatches( swipeCount.lastid);
+    // if(charsIDS().length==0 && chars.ids){
+    //   setCharIDS(chars.ids);
+    // }
   })
-  
+  // setInterval(async () => {
+  //   console.log( swipeCount);
+  // }, 1000);
   const createMatch=async (charId: string) => {
     const char = chars.list.find((c) => c._id === charId)
     //matchStore.createMatch(char).then(() => navigate('/character/list'))
@@ -47,21 +55,25 @@ const MatchList: Component = () => {
   
   const SwipeDirection = 'right' | 'left';
   function swipeAction(direction) {
-    let swipeNowAmount = 0;
+    // let swipeNowAmount = 0;
     if(direction === 'down') direction = 'left';
     if(direction === 'right' || direction === 'left'){
-        showZindex.min--;
-        this.apiRef.restoreBack(showZindex.min);
-        swipeNowAmount = showSwipes() + 1;
-        if(swipeNowAmount+swipeCount.count > totalSwipes.length ){
-          swipeNowAmount = 0;
-        }
+        // showZindex.min--;
+        // this.apiRef.restoreBack();
+        // swipeNowAmount = showSwipes() + 1;
+        // if(swipeNowAmount+swipeCount.count > totalSwipes.length ){
+        //   swipeNowAmount = 0;
+        // }
     }
     switch (direction) {
       case 'right':
         createMatch(this.id);
         this.apiRef.remove();
-        totalSwipes.splice((totalSwipes.length - showSwipes() - swipeCount.count),1);
+        // const objWithIdIndex = totalSwipes.findIndex((obj) => obj.id === this.id);
+        // if (objWithIdIndex > -1) {
+        //   totalSwipes.splice(objWithIdIndex, 1);
+        // }
+        // console.log(this.id,totalSwipes);
         // swipeCount.count--;
         break;
       case 'up':
@@ -69,9 +81,32 @@ const MatchList: Component = () => {
         break;
     }
     if(direction === 'right' || direction === 'left'){
-      swipeStore.setSwipe(swipeNowAmount+swipeCount.count);
-      setSwipe(swipeNowAmount);
-      (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
+      // swipeStore.setSwipe(swipeNowAmount+swipeCount.count);
+      swipeStore.setSwipe(chars.ids[chars.ids.length-1]);
+      // (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
+      if(direction === 'left'){
+        const test = chars.ids.splice(0,chars.ids.length-1);
+        test.unshift(chars.ids[chars.ids.length-1])
+        setChar({loaded:true,ids:test});
+        // 
+        setTimeout(() => {
+          this.apiRef.restoreBack(5);
+          const test = chars.list.splice(0,chars.list.length-1);
+          test.unshift(chars.list[chars.list.length-1])
+          setChar({loaded:true,list:test});
+          // totalSwipes[chars.ids[chars.ids.length-1]].toFront(8);
+        }, 3000);
+        setUndo('');
+      }else{
+        const test = chars.ids.splice(0,chars.list.length-1);
+        setChar({loaded:true,ids:test});
+        setTimeout(() => {
+          const test = chars.list.splice(0,chars.list.length-1);
+          // test.unshift(chars.list[chars.list.length-1])
+          setChar({loaded:true,list:test});
+        }, 3000);
+        setUndo('disabled');
+      }
     }
   }
 
@@ -120,21 +155,38 @@ const MatchList: Component = () => {
     }
   }
   function showProfile (){
-    navigate(`/likes/${totalSwipes[totalSwipes.length-swipeCount.count-1-showSwipes()].id}/profile`)
+    navigate(`/likes/${chars.ids[chars.ids.length-1]}/profile`)
   }
   function SwipeUndo (){
-    totalSwipes[totalSwipes.length - showSwipes() - swipeCount.count].snapBack();
-    swipeStore.setSwipe(showSwipes()-1);
-    setSwipe(showSwipes()-1);
-    (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
+    setUndo('disabled');
+    totalSwipes[chars.ids[0]].snapBack(6);
+    const tmpChar = [...chars.ids];
+    const firstElement = tmpChar.shift();
+    tmpChar.push(firstElement);
+    setChar({loaded:true,ids:tmpChar});
+    setTimeout(() => {
+        // console.log(chars.list);
+        const tmpChar = [...chars.list];
+        const firstElement = tmpChar.shift();
+        tmpChar.push(firstElement);
+        console.log(tmpChar,chars.ids);
+        // chars.list.push(firstElement);
+        // console.log(chars.list);
+        setChar({loaded:true,list:tmpChar});
+    }, 3000);
+    const highestId = window.setTimeout(() => {
+      window.clearInterval(highestId-3);
+    }, 0);
+
+    // swipeStore.setSwipe(showSwipes()-1);
+    // setSwipe(showSwipes()-1);
+    // (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
   }
   function buttonSwipe (direction){
-    if((totalSwipes.length-swipeCount.count-1-showSwipes())<0){
-     setSwipe(showSwipes()-totalSwipes.length);
-    }
-    console.log(totalSwipes);
-    console.log(totalSwipes.length,swipeCount.count,1,showSwipes());
-    totalSwipes[totalSwipes.length-swipeCount.count-1-showSwipes()].swipe(direction);
+    // if((totalSwipes.length-swipeCount.count-1-showSwipes())<0){
+    //  setSwipe(showSwipes()-totalSwipes.length);
+    // }
+    totalSwipes[chars.ids[chars.ids.length-1]].swipe(direction);
   }
   
   return (
@@ -145,12 +197,12 @@ const MatchList: Component = () => {
       </Show>
       <Show when={chars.loaded && swipeCount.loaded} >
         <div class="flex w-full flex-col gap-2 ">
-          <For each={chars.list}>
-            {(char) => <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount} totalCount={chars.list.length}  showZindex={showZindex} />}
-          </For>
+          <For each={chars.list}>{(char, i) =>
+            <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount}  showZindex={i} />
+          }</For>
         </div>
-          <div class="relative sm:top-40 sm:pl-1 mx-auto m-[26em] mb-4 sm:w-96  md:w-[26rem] pb-2">
-                <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeMove().left} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
+          <div class=" sm:mt-[36em] pl-6 md:pl-1 mx-auto m-[26em] mb-4 w-96 max-w-5xl md:w-[26rem] pb-2">
+               <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeMove().left} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
                   <X size={40} class={`${colorSwipeMove().left} "  icon-button inline-block "`}/>
                 </button>
                 <button onclick={()=>showProfile()} class={`${colorSwipeMove().up} " w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 border-cyan-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 align-bottom "`}>
@@ -163,7 +215,6 @@ const MatchList: Component = () => {
                   <Heart size={40} class={`${colorSwipeMove().right}  " icon-button inline-block fill-emerald-400 "`}/>
                 </button>
           </div>
-        
         {chars.list?.length === 0 ? <NoMatches /> : null}
       </Show>
     </>
@@ -173,22 +224,12 @@ const MatchList: Component = () => {
 const DSwipeCard: Component<{ character: AppSchema.Character;match: Any  }> = (props) => {
   const apiRef: SwipeCardRef = {};
   apiRef.id = props.character._id;
-  props.totalSwipes.push(apiRef);
-  let zindex = 0;
-  if((props.totalSwipes.length ) <= (props.totalCount - props.swipeCount.count)){
-    props.showZindex.plus++;
-    zindex = `${ props.showZindex.plus}`;
-  }else{
-    props.showZindex.min++;
-    zindex = `${ props.showZindex.min}`;
-  }
-  if(props.totalCount === props.totalSwipes.length){
-    props.showZindex.min -= props.totalCount;
-  }
+  props.totalSwipes[apiRef.id ]=(apiRef);
+  //map every id of an object to a new array
   const age = (props.character.persona.attributes.age) ? props.character.persona.attributes.age[0].split(" ")[0] : '';
   return (
-    <div class="absolute w-full max-w-5xl">
-    <SwipeCard zindex={zindex} class=" bg-[var(--bg-800)]  right-6 likes-middle fixed  w-96 h-96 sm:w-9/12 sm:h-3/4 m-auto shadow-lg max-w-[92%] sm:max-w-[550px] max-h-[550px] border-white border-solid border-[10px] md:border-[20px] rounded-lg"
+    <div class="absolute w-full max-w-5xl"> 
+    <SwipeCard zindex="5" class="bg-[var(--bg-800)] fixed w-96 h-96 right-[10%] left-[10%] sm:w-9/12 sm:h-3/4 sm:max-w-[550px] sm:max-h-[550px] lg:right-[calc(14%-18.5rem)]  m-auto shadow-lg max-w-[90%] max-h-[90%] border-white border-solid border-[10px] md:border-[20px] rounded-lg"
     threshold="300" rotationmultiplier="7.5" maxrotation="90" snapbackduration="300" bouncepower="0.1" id={props.character._id} apiRef={apiRef} onSwipe={props.swipeAction} onMove={props.swipeMovement}>
       <div class="absolute bg-cover max-w-full max-h-full w-full h-full" style={{ "background-image": `url(${props.character.avatar})` }}  >
         <div class="w-full absolute size bottom-4 sm:bottom-10 sm:text-5xl p-2 text-3xl text-white text-shadow"><span class=" font-black ">{props.character.name}</span> {age}</div>

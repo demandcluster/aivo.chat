@@ -26,20 +26,26 @@ export type NewMatch = {
 }
 
 export const matchStore = createStore<Matchesstate>('Match', {
-  Matches: { loaded: false, list: [] },
-})((get, set) => {
+  Matches: { loaded: false, list: [] }})((get, set) => {
   return {
     logout() {
       return { Matches: { loaded: false, list: [] } }
     },
-    getMatches: async () => {
+    getMatches: async (a, lastid) => {
       const res = await api.get('/match')
       if (res.error) toastStore.error('Failed to retrieve Matches')
       else {
-       
-        return { characters: { list: res.result.characters, loaded: true } }
+        const ss = res.result.characters.findIndex((i)=>i._id===lastid);
+        if(ss){
+          res.result.characters = [...res.result.characters, ...res.result.characters.splice(0,ss)];
+        }
+        return { characters: { 
+          ids: res.result.characters.map((i) => i._id),
+          list: res.result.characters, loaded: true } }
       }
     },
+ 
+    
     
     getMatch: async (_,char: AppSchema.Character) => {
        

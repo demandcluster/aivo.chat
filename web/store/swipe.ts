@@ -5,10 +5,10 @@ import { toastStore } from './toasts'
 import { userStore } from './user'
 
 type swipeState = {
-  count: int
+  lastid: string,
   loaded: boolean
 }
-export const swipeStore = createStore<swipeState>('swipe',  { count: 0, loaded:false }
+export const swipeStore = createStore<swipeState>('swipe',  { lastid: '', loaded:false }
 )((get, set) => {
   return {
     getSwipe: async () => {
@@ -16,8 +16,9 @@ export const swipeStore = createStore<swipeState>('swipe',  { count: 0, loaded:f
       if (res.error) toastStore.error('Failed to retrieve swipe')
       return res;
     },
-    setSwipe: async (_, count: count, onSuccess?: () => void) => {
-      const res = await data.swipe.setSwipe(count);
+    setSwipe: async (_, lastid: lastid, onSuccess?: () => void) => {
+      console.log(lastid);
+      const res = await data.swipe.setSwipe(lastid);
       if (res.error) toastStore.error(`Failed to set swipe: ${res.error}`)
       if (res.result) {
         onSuccess?.()
