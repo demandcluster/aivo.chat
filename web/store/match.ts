@@ -37,10 +37,11 @@ export const matchStore = createStore<Matchesstate>('Match', {
       else {
         const ss = res.result.characters.findIndex((i)=>i._id===lastid);
         if(ss){
-          res.result.characters = [...res.result.characters, ...res.result.characters.splice(0,ss)];
+          res.result.characters = [...res.result.characters.splice(ss), ...res.result.characters.splice(0,ss)];
         }
         return { characters: { 
-          ids: res.result.characters.map((i) => i._id),
+          // ids: res.result.characters.map((i) => i._id),
+          ids: res.result.characters,
           list: res.result.characters, loaded: true } }
       }
     },

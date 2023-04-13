@@ -17,7 +17,6 @@ export const swipeStore = createStore<swipeState>('swipe',  { lastid: '', loaded
       return res;
     },
     setSwipe: async (_, lastid: lastid, onSuccess?: () => void) => {
-      console.log(lastid);
       const res = await data.swipe.setSwipe(lastid);
       if (res.error) toastStore.error(`Failed to set swipe: ${res.error}`)
       if (res.result) {

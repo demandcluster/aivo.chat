@@ -6,8 +6,8 @@ export async function getSwipe() {
   return { lastid:  swipe , loaded:true, error: undefined }
 }
 
-export async function setSwipe(count: string) {
-  local.saveSwipe(count)
+export async function setSwipe(lastid: string) {
+  local.saveSwipe(lastid)
   return { result: true, error: undefined }
 }
 

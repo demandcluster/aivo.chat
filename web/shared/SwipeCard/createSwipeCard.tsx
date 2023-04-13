@@ -70,12 +70,13 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
     }
     
     const restoreBack = async (zindex) => {
-        // element.setAttribute("zindex",zindex);
+        element.setAttribute("zindex",zindex);
         setTimeout(() => {
             setStyle({
                 'z-index': zindex,
+                transform: 'none',
             });
-        }, 700)
+        }, 100)
         await new Promise<void>((resolve) =>
             setTimeout(() => {
                 console.log("zindex",zindex);
@@ -87,7 +88,7 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
                     'transition-duration': '40ms'
                 });
                 resolve();
-            }, 2000)
+            }, 200)
         );
     }
 

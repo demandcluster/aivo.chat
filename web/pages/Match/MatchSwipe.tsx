@@ -15,11 +15,11 @@ const MatchList: Component = () => {
   const swipeCount = swipeStore();
   let curApiref;
   let totalSwipes = [];
+  let tmpSwipes = [];
   
   const [chars, setChar] = createStore( matchStore((s) => s.characters));
   const [charsIDS, setCharIDS] = createSignal([]);
   const showZindex = {min: 1000000, plus: 2000000};
-  const [showSwipes, setSwipe] = createSignal('')
   const [undoDisabled, setUndo] = createSignal('disabled')
   const [colorSwipeMove, setSwipeMove] = createSignal(
     {
@@ -38,15 +38,11 @@ const MatchList: Component = () => {
   createEffect(() => {
     curApiref = '';
     totalSwipes = [];
+    tmpSwipes = [];
     swipeStore.getSwipe();
     matchStore.getMatches( swipeCount.lastid);
-    // if(charsIDS().length==0 && chars.ids){
-    //   setCharIDS(chars.ids);
-    // }
   })
-  // setInterval(async () => {
-  //   console.log( swipeCount);
-  // }, 1000);
+  
   const createMatch=async (charId: string) => {
     const char = chars.list.find((c) => c._id === charId)
     //matchStore.createMatch(char).then(() => navigate('/character/list'))
@@ -57,14 +53,6 @@ const MatchList: Component = () => {
   function swipeAction(direction) {
     // let swipeNowAmount = 0;
     if(direction === 'down') direction = 'left';
-    if(direction === 'right' || direction === 'left'){
-        // showZindex.min--;
-        // this.apiRef.restoreBack();
-        // swipeNowAmount = showSwipes() + 1;
-        // if(swipeNowAmount+swipeCount.count > totalSwipes.length ){
-        //   swipeNowAmount = 0;
-        // }
-    }
     switch (direction) {
       case 'right':
         createMatch(this.id);
@@ -82,29 +70,36 @@ const MatchList: Component = () => {
     }
     if(direction === 'right' || direction === 'left'){
       // swipeStore.setSwipe(swipeNowAmount+swipeCount.count);
-      swipeStore.setSwipe(chars.ids[chars.ids.length-1]);
+      swipeStore.setSwipe(chars.ids[chars.ids.length-1]._id);
       // (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
       if(direction === 'left'){
         const test = chars.ids.splice(0,chars.ids.length-1);
         test.unshift(chars.ids[chars.ids.length-1])
         setChar({loaded:true,ids:test});
-        // 
+        tmpSwipes[this.apiRef.id]=test;
         setTimeout(() => {
-          this.apiRef.restoreBack(5);
-          const test = chars.list.splice(0,chars.list.length-1);
-          test.unshift(chars.list[chars.list.length-1])
-          setChar({loaded:true,list:test});
+          if(tmpSwipes[this.apiRef.id] && !tmpSwipes[this.apiRef.id].deleted){
+            this.apiRef.restoreBack(5);
+            setChar({loaded:true,list: tmpSwipes[this.apiRef.id]});
+            tmpSwipes[this.apiRef.id].deleted = 1 ;
+            // delete tmpSwipes[this.apiRef.id];
+          }
           // totalSwipes[chars.ids[chars.ids.length-1]].toFront(8);
-        }, 3000);
+        }, 2500);
         setUndo('');
       }else{
         const test = chars.ids.splice(0,chars.list.length-1);
         setChar({loaded:true,ids:test});
+        tmpSwipes[this.apiRef.id] = test;
         setTimeout(() => {
-          const test = chars.list.splice(0,chars.list.length-1);
+          // const test = chars.list.splice(0,chars.list.length-1);
           // test.unshift(chars.list[chars.list.length-1])
-          setChar({loaded:true,list:test});
-        }, 3000);
+          if(tmpSwipes[this.apiRef.id]){
+            setChar({loaded:true,list:tmpSwipes[this.apiRef.id]});
+            tmpSwipes[this.apiRef.id].deleted = 1 ;
+            // delete tmpSwipes[this.apiRef.id];
+          }
+        }, 2500);
         setUndo('disabled');
       }
     }
@@ -155,28 +150,52 @@ const MatchList: Component = () => {
     }
   }
   function showProfile (){
-    navigate(`/likes/${chars.ids[chars.ids.length-1]}/profile`)
+    navigate(`/likes/${chars.ids[chars.ids.length-1]._id}/profile`)
   }
   function SwipeUndo (){
     setUndo('disabled');
-    totalSwipes[chars.ids[0]].snapBack(6);
-    const tmpChar = [...chars.ids];
+    totalSwipes[chars.ids[0]._id].snapBack(6);
+    const tmpChar = chars.ids;
     const firstElement = tmpChar.shift();
     tmpChar.push(firstElement);
     setChar({loaded:true,ids:tmpChar});
-    setTimeout(() => {
-        // console.log(chars.list);
-        const tmpChar = [...chars.list];
-        const firstElement = tmpChar.shift();
-        tmpChar.push(firstElement);
-        console.log(tmpChar,chars.ids);
-        // chars.list.push(firstElement);
-        // console.log(chars.list);
-        setChar({loaded:true,list:tmpChar});
-    }, 3000);
-    const highestId = window.setTimeout(() => {
-      window.clearInterval(highestId-3);
-    }, 0);
+    tmpSwipes[chars.ids[0]._id]=tmpChar;
+    swipeStore.setSwipe(chars.ids[0]._id);
+    //loop tmpSwipes and set the list to the last element
+    Object.keys(tmpSwipes).forEach(key => {
+      if(tmpSwipes[key][tmpSwipes[key].length -1]._id  !==chars.ids[0]._id ){
+        if(!tmpSwipes[key].deleted){
+          totalSwipes[key].restoreBack(5);
+          setChar({loaded:true,list:tmpSwipes[key]});
+        }
+        delete tmpSwipes[key];
+      }else{
+        setTimeout(() => {
+          setChar({loaded:true,list:tmpSwipes[key]});
+          setChar({loaded:true,ids:tmpSwipes[key]});
+          delete tmpSwipes[key];
+        }, 20);
+      }
+    });
+    
+    // setTimeout(() => {
+    //   console.log(tmpSwipes);
+    //     // console.log(chars.list);
+    //     // const tmpChar = [...chars.list];
+    //     // const firstElement = tmpChar.shift();
+    //     // tmpChar.push(firstElement);
+    //     // console.log(tmpChar,chars.ids);
+    //     // chars.list.push(firstElement);
+    //     console.log(tmpSwipes[chars.ids[0]._id]);
+    //     setChar({loaded:true,list:tmpSwipes[chars.ids[0]._id]});
+    //     delete tmpSwipes[chars.ids[0]._id];
+    // }, 1000);
+    // const highestId = window.setTimeout(() => {
+    //   console.log('highestId',highestId);
+    //   for (let i = highestId-4; i >= 0; i--) {
+    //     console.log(i);
+    //   }
+    // }, 0);
 
     // swipeStore.setSwipe(showSwipes()-1);
     // setSwipe(showSwipes()-1);
@@ -186,7 +205,7 @@ const MatchList: Component = () => {
     // if((totalSwipes.length-swipeCount.count-1-showSwipes())<0){
     //  setSwipe(showSwipes()-totalSwipes.length);
     // }
-    totalSwipes[chars.ids[chars.ids.length-1]].swipe(direction);
+    totalSwipes[chars.ids[chars.ids.length-1]._id].swipe(direction);
   }
   
   return (
