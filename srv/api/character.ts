@@ -3,9 +3,11 @@ import { assertValid } from 'frisker'
 import { store } from '../db'
 import { loggedIn,isAdmin } from './auth'
 import { handle, StatusError } from './wrap'
-import { handleUpload } from './upload'
+import { entityUpload, handleForm } from './upload'
 import { PERSONA_FORMATS } from '../../common/adapters'
 import {logger} from '../logger'
+import { v4 } from 'uuid'
+
 const router = Router()
 
 const valid = {
@@ -22,16 +24,13 @@ const valid = {
     kind: PERSONA_FORMATS,
     attributes: 'any',
   },
+  originalAvatar: 'string?',
 } as const
 
 const createCharacter = handle(async (req) => {
-  const body = await handleUpload(req, { ...valid, persona: 'string' })
+  const body = await handleForm(req, { ...valid, persona: 'string' })
   const persona = JSON.parse(body.persona)
-
   assertValid(valid.persona, persona)
-
-  const [file] = body.attachments
-  const avatar = file ? file.filename : undefined
 
   const char = await store.characters.createCharacter(req.user?.userId!, {
     name: body.name,
@@ -42,9 +41,19 @@ const createCharacter = handle(async (req) => {
     sampleChat: body.sampleChat,
     description: body.description,
     scenario: body.scenario,
-    avatar,
     greeting: body.greeting,
+    avatar: body.originalAvatar,
   })
+
+  const filename = await entityUpload(
+    'char',
+    char._id,
+    body.attachments.find((a) => a.field === 'avatar')
+  )
+
+  if (filename) {
+    await store.characters.updateCharacter(char._id, req.userId, { avatar: filename })
+  }
 
   return char
 })
@@ -56,13 +65,18 @@ const getCharacters = handle(async ({ userId }) => {
 
 const editCharacter = handle(async (req) => {
   const id = req.params.id
-  const body = await handleUpload(req, { ...valid, persona: 'string' })
+  const body = await handleForm(req, { ...valid, persona: 'string' })
   const persona = JSON.parse(body.persona)
 
   assertValid(valid.persona, persona)
 
-  const [file] = body.attachments
-  const avatar = file ? file.filename : undefined
+  const filename = await entityUpload(
+    'char',
+    id,
+    body.attachments.find((a) => a.field === 'avatar')
+  )
+
+  const avatar = filename ? filename : undefined
 
   const char = await store.characters.updateCharacter(id, req.userId!, {
     name: body.name,

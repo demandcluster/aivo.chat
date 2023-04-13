@@ -6,15 +6,23 @@ import { defaultPresets } from '../../common/presets'
 import { BOT_REPLACE, getPromptParts, SELF_REPLACE } from '../../common/prompt'
 import { getEncoder } from '../../common/tokenize'
 import { OPENAI_MODELS } from '../../common/adapters'
+import { StatusError } from '../api/wrap'
 
-const baseUrl = `https://api.openai.com/v1`
+const baseUrl = `https://api.openai.com`
 
 type OpenAIMessagePropType = {
   role: 'user' | 'assistant' | 'system'
   content: string
 }
+
+const CHAT_MODELS: Record<string, boolean> = {
+  [OPENAI_MODELS.Turbo]: true,
+  [OPENAI_MODELS.GPT4]: true,
+}
+
 export const handleOAI: ModelAdapter = async function* (opts) {
-  const { char, members, user, prompt, settings, sender, log, guest, lines, parts, gen } = opts
+  const { char, members, user, prompt, settings, sender, log, guest, lines, parts, gen, kind } =
+    opts
   if (!user.oaiKey) {
     yield { error: `OpenAI request failed: Not OpenAI API key not set. Check your settings.` }
     return
@@ -30,7 +38,8 @@ export const handleOAI: ModelAdapter = async function* (opts) {
     frequency_penalty: gen.frequencyPenalty ?? defaultPresets.openai.frequencyPenalty,
   }
 
-  const useChat = oaiModel === (OPENAI_MODELS.Turbo || OPENAI_MODELS.GPT4)
+  const useChat = !!CHAT_MODELS[oaiModel]
+
   if (useChat) {
     const encoder = getEncoder('openai', OPENAI_MODELS.Turbo)
     const user = sender.handle || 'You'
@@ -52,6 +61,12 @@ export const handleOAI: ModelAdapter = async function* (opts) {
     if (gen.ultimeJailbreak) {
       history.push({ role: 'system', content: gen.ultimeJailbreak })
       tokens += encoder(gen.ultimeJailbreak)
+    }
+
+    if (kind === 'continue') {
+      const content = '(Continue)'
+      tokens += encoder(content)
+      history.push({ role: 'user', content })
     }
 
     for (const line of all.reverse()) {
@@ -95,7 +110,7 @@ export const handleOAI: ModelAdapter = async function* (opts) {
 
   log.debug(body, 'OpenAI payload')
 
-  const url = useChat ? `${baseUrl}/chat/completions` : `${baseUrl}/completions`
+  const url = useChat ? `${baseUrl}/v1/chat/completions` : `${baseUrl}/v1/completions`
   const resp = await needle('post', url, JSON.stringify(body), {
     json: true,
     headers,
@@ -133,4 +148,39 @@ export const handleOAI: ModelAdapter = async function* (opts) {
     yield { error: `OpenAI request failed: ${ex.message}` }
     return
   }
+}
+
+export type OAIUsage = {
+  daily_costs: Array<{ timestamp: number; line_item: Array<{ name: string; cost: number }> }>
+  object: string
+  total_usage: number
+}
+
+export async function getOpenAIUsage(oaiKey: string, guest: boolean): Promise<OAIUsage> {
+  const key = guest ? oaiKey : decryptText(oaiKey)
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${key}`,
+  }
+
+  const date = new Date()
+  date.setDate(1)
+  const start_date = date.toISOString().slice(0, 10)
+
+  date.setMonth(date.getMonth() + 1)
+  const end_date = date.toISOString().slice(0, 10)
+
+  const res = await needle(
+    'get',
+    `${baseUrl}/dashboard/billing/usage?start_date=${start_date}&end_date=${end_date}`,
+    { headers }
+  )
+  if (res.statusCode && res.statusCode >= 400) {
+    throw new StatusError(
+      `Failed to retrieve usage (${res.statusCode}): ${res.body?.message || res.statusMessage}`,
+      400
+    )
+  }
+
+  return res.body
 }

@@ -1,5 +1,6 @@
 import { UnwrapBody, assertValid } from 'frisker'
 import { ADAPTER_LABELS, AIAdapter } from '../../common/adapters'
+import { isLoggedIn } from '../store/api'
 import { Option } from './Select'
 
 type FormRef = {
@@ -11,6 +12,24 @@ type FormRef = {
     | 'number'
     | 'number?'
     | 'boolean?'
+}
+
+const PREFIX_CACHE_KEY = 'agnai-asset-prefix'
+
+let assetPrefix: string = localStorage.getItem(PREFIX_CACHE_KEY) || ''
+
+export function getAssetUrl(filename: string) {
+  if (isLoggedIn()) {
+    const infix = assetPrefix.endsWith('/') || filename.startsWith('/') ? '' : '/'
+    return `${assetPrefix}${infix}${filename}`
+  }
+
+  return filename
+}
+
+export function setAssetPrefix(prefix: string) {
+  localStorage.setItem(PREFIX_CACHE_KEY, prefix)
+  assetPrefix = prefix
 }
 
 export function getForm<T = {}>(evt: Event | HTMLFormElement): T {
@@ -186,21 +205,15 @@ export function toDropdownItems(values: string[] | readonly string[]): Option[] 
   return values.map((value) => ({ label: capitalize(value), value }))
 }
 
-export function debounce(fn: Function, secs = 2) {
-  const ms = secs * 1000
-  let lastCalled = 0
+export function debounce<T extends Function>(fn: T, secs = 2): T {
+  let timer: any
 
-  const wrapped = () => {
-    const now = Date.now()
-    const diff = now - lastCalled
-
-    if (diff < ms) return
-    lastCalled = now
-
-    return fn()
+  const wrapped = (...args: any[]) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => fn.apply(null, args), secs * 1000)
   }
 
-  return wrapped
+  return wrapped as any
 }
 
 /**

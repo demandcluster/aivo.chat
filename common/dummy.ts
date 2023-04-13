@@ -1,6 +1,8 @@
 import { NOVEL_MODELS } from '../common/adapters'
 import { AppSchema } from '../srv/db/schema'
 
+let counter = Date.now()
+
 export function toChar(name: string): AppSchema.Character {
   return {
     _id: name,
@@ -54,27 +56,37 @@ export function toUser(name: string): AppSchema.User {
   }
 }
 
-export function toBotMsg(bot: AppSchema.Character, msg: string): AppSchema.ChatMessage {
+export function toBotMsg(
+  bot: AppSchema.Character,
+  msg: string,
+  props?: Partial<AppSchema.ChatMessage>
+): AppSchema.ChatMessage {
   return {
     _id: '',
     chatId: '',
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(++counter).toISOString(),
     kind: 'chat-message',
     msg,
     characterId: bot._id,
     updatedAt: '',
+    ...props,
   }
 }
 
-export function toUserMsg(user: AppSchema.Profile, msg: string): AppSchema.ChatMessage {
+export function toUserMsg(
+  user: AppSchema.Profile,
+  msg: string,
+  props?: Partial<AppSchema.ChatMessage>
+): AppSchema.ChatMessage {
   return {
     _id: '',
     chatId: '',
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(++counter).toISOString(),
     kind: 'chat-message',
     msg,
     userId: user.userId,
     updatedAt: new Date().toISOString(),
+    ...props,
   }
 }
 

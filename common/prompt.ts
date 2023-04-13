@@ -35,64 +35,41 @@ export type PromptOpts = {
 export const BOT_REPLACE = /\{\{char\}\}/g
 export const SELF_REPLACE = /\{\{user\}\}/g
 
-export const testBook: AppSchema.MemoryBook = {
-  kind: 'memory',
-  _id: '',
-  name: 'test book',
-  userId: '',
-  entries: [
-    {
-      keywords: ['skin colour'],
-      priority: 10,
-      weight: 5,
-      name: '',
-      entry: "{{user}}'s skin is blue",
-      enabled: true,
-    },
-    {
-      keywords: ['height'],
-      priority: 10,
-      weight: 5,
-      name: '',
-      entry: '{{user}} is incredibly small',
-      enabled: true,
-    },
-    {
-      keywords: ['foo'],
-      priority: 10,
-      weight: 4,
-      name: '',
-      entry: 'Foo bar baz qux',
-      enabled: true,
-    },
-  ],
-}
-
+/**
+ * This is only ever invoked client-side
+ * @param opts
+ * @returns
+ */
 export function createPrompt(opts: PromptOpts) {
   const sortedMsgs = opts.messages.slice().sort(sortMessagesDesc)
   opts.messages = sortedMsgs
 
+  /**
+   * The lines from `getLinesForPrompt` are returned in time-descending order
+   */
   const lines = getLinesForPrompt(opts)
   const parts = getPromptParts(opts, lines)
-  const { pre, post, history, prompt } = buildPrompt(opts, parts, lines)
-  return { prompt, lines, pre, post, parts, history }
+  const { pre, post, history, prompt } = buildPrompt(opts, parts, lines, 'desc')
+  return { prompt, lines: lines.reverse(), pre, post, parts, history }
 }
 
 const START_TEXT = '<START>'
 
+/**
+ * This is only ever invoked server-side
+ *
+ * @param opts
+ * @param parts
+ * @param lines Always in time-ascending order (oldest to newest)
+ * @returns
+ */
 export function createPromptWithParts(
   opts: Pick<GenerateRequestV2, 'chat' | 'char' | 'members' | 'settings' | 'user'>,
   parts: PromptParts,
   lines: string[]
 ) {
-  const { adapter, model } = getAdapter(opts.chat, opts.user, opts.settings)
-  const encoder = getEncoder(adapter, model)
-  const { pre, post } = buildPrompt(opts, parts, lines)
-
-  const maxContext = getContextLimit(opts.settings, adapter, model)
-  const history = fillPromptWithLines(encoder, maxContext, pre + '\n' + post, lines)
-
-  const prompt = [pre, ...history, post].filter(removeEmpty).join('\n')
+  const { pre, post, history } = buildPrompt(opts, parts, lines, 'asc')
+  const prompt = [pre, history, post].filter(removeEmpty).join('\n')
   return { lines, prompt, parts, pre, post }
 }
 
@@ -105,7 +82,18 @@ type BuildPromptOpts = {
   settings?: Partial<AppSchema.GenSettings>
 }
 
-export function buildPrompt(opts: BuildPromptOpts, parts: PromptParts, lines: string[]) {
+/**
+ * @param lines
+ * @param order The incoming order of the lines by time. asc = time oldest->newest, desc = newest->oldest. This affects whether the history is reversed before being returned
+ * @returns
+ */
+export function buildPrompt(
+  opts: BuildPromptOpts,
+  parts: PromptParts,
+  incomingLines: string[],
+  order: 'asc' | 'desc'
+) {
+  const lines = order === 'asc' ? incomingLines.slice().reverse() : incomingLines.slice()
   const { chat, char } = opts
   const user = opts.members.find((mem) => mem.userId === chat.userId)
   const sender = user?.handle || 'You'
@@ -147,7 +135,7 @@ export function buildPrompt(opts: BuildPromptOpts, parts: PromptParts, lines: st
 
   const maxContext = getContextLimit(opts.settings, adapter, model)
 
-  const history = fillPromptWithLines(encoder, maxContext, pre + '\n' + post, lines)
+  const history = fillPromptWithLines(encoder, maxContext, pre + '\n' + post, lines).reverse()
 
   /**
    * TODO: This is doubling up on memory a fair bit
@@ -212,7 +200,7 @@ export function getPromptParts(
     post.unshift(`${char.name}: ${opts.continue}`)
   }
 
-  parts.memory = getMemoryPrompt({ ...opts, lines })
+  parts.memory = getMemoryPrompt({ ...opts, lines: lines.slice().reverse() })
 
   const gaslight = opts.settings?.gaslight || defaultPresets.openai.gaslight
 
@@ -354,21 +342,18 @@ function getLinesForPrompt({
   const formatMsg = (chat: AppSchema.ChatMessage) =>
     fillPlaceholders(chat, char.name, profiles.get(chat.userId!)?.handle || 'You').trim()
 
-  const base = cont ? messages : messages
-  const history = base.slice().sort(sortMessagesDesc).map(formatMsg)
+  const history = messages.slice().sort(sortMessagesDesc).map(formatMsg)
 
   const lines = fillPromptWithLines(encoder, maxContext, '', history)
-  return lines.reverse()
+  return lines
 }
 
 function fillPromptWithLines(encoder: Encoder, tokenLimit: number, amble: string, lines: string[]) {
-  let estimated = amble
-
   let count = encoder(amble)
   const adding: string[] = []
 
   for (const line of lines) {
-    const tokens = encoder(line + '\n')
+    const tokens = encoder(line)
     if (tokens + count > tokenLimit) {
       return adding
     }
@@ -444,11 +429,11 @@ function getContextLimit(
     // Any LLM could be used here so don't max any assumptions
     case 'kobold':
     case 'luminai':
-    case 'horde':
     case 'ooba':
       return configuredMax - genAmount
 
     case 'novel':
+    case 'horde':
       return Math.min(2048, configuredMax) - genAmount
 
     case 'openai': {
@@ -458,5 +443,11 @@ function getContextLimit(
 
     case 'scale':
       return configuredMax - genAmount
+
+    case 'claude':
+      return configuredMax - genAmount
+
+    default:
+      throw new Error(`Unknown adapter: ${adapter}`)
   }
 }

@@ -1,5 +1,6 @@
 import { createPrompt, Prompt } from '../../common/prompt'
 import { AppSchema } from '../../srv/db/schema'
+import { EVENTS, events } from '../emitter'
 import { api } from './api'
 import { characterStore } from './character'
 import { createStore, getStore } from './create'
@@ -51,25 +52,30 @@ export type NewChat = {
   overrides: AppSchema.Chat['overrides']
 }
 
+const initState: ChatState = {
+  lastChatId: null,
+  loaded: false,
+  all: undefined,
+  char: undefined,
+  active: undefined,
+  activeMembers: [],
+  memberIds: {},
+}
+
 export const chatStore = createStore<ChatState>('chat', {
   lastChatId: localStorage.getItem('lastChatId'),
   loaded: false,
   activeMembers: [],
   memberIds: {},
 })((get, set) => {
+  events.on(EVENTS.loggedOut, () => {
+    chatStore.setState(initState)
+  })
+
+  events.on(EVENTS.init, (init) => {
+    chatStore.setState({ all: { chats: init.chats, chars: init.characters } })
+  })
   return {
-    logout() {
-      localStorage.removeItem('lastChildId')
-      return {
-        lastChatId: null,
-        loaded: false,
-        all: undefined,
-        char: undefined,
-        active: undefined,
-        activeMembers: [],
-        memberIds: {},
-      }
-    },
     /**
      * If a user accepts an invite to a chat, their profile has not been fetched and cached
      * To fix this, we'll lazy load them when they send a message and their profile isn't already present
@@ -308,7 +314,7 @@ export const chatStore = createStore<ChatState>('chat', {
       if (!active) return
 
       const { msgs } = msgStore.getState()
-      const entities = data.msg.getPromptEntities()
+      const entities = await data.msg.getPromptEntities()
 
       const prompt = createPrompt({
         ...entities,

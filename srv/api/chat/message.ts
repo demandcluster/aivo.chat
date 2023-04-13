@@ -54,10 +54,11 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
   const guest = userId ? undefined : socketId
 
   const chat: AppSchema.Chat = guest ? body.chat : await store.chats.getChat(chatId)
-  const members = guest ? [chat.userId] : chat.memberIds.concat(chat.userId)
   if (!chat) {
     throw errors.NotFound
   }
+
+  const members = guest ? [chat.userId] : chat.memberIds.concat(chat.userId)
 
   if (userId) {
     if (body.kind === 'retry' && userId !== chat.userId) {
@@ -115,6 +116,7 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
   res.json({ success: true, generating: true, message: 'Generating message' })
 
   const { stream, adapter } = await createTextStreamV2({ ...body, chat }, log, guest)
+
   log.setBindings({ adapter })
 
   let generated = ''
@@ -127,7 +129,8 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
 
     if (gen.error) {
       error = true
-      sendMany(members, { type: 'message-error', error: gen.error, adapter, chatId })
+      if (!guest) sendMany(members, { type: 'message-error', error: gen.error, adapter, chatId })
+      else sendGuest(guest, { type: 'message-error', error: gen.error, adapter, chatId })
       continue
     }
   }
@@ -185,7 +188,7 @@ export const generateMessageV2 = handle(async ({ userId, body, socketId, params,
       sendOne(userId!, { type: 'credits-updated', credits })
 
   } else if (body.kind === 'continue') {
-    await store.msgs.editMessage(body.continuing._id, generated, adapter)
+    await store.msgs.editMessage(body.continuing._id, responseText, adapter)
     sendMany(members, {
       type: 'message-retry',
       chatId,

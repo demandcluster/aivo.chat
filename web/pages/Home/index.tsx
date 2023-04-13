@@ -50,7 +50,7 @@ const HomePage: Component = () => {
       <div>
         <p class="text-lg text-center gap-4 mt-4 lg:text-2xl text-gray-500 animate-pulse">:::EARLY::ACCESS:::REGISTRATION::LIMITED:::</p>
       </div>
-      <div class="gap-4 mt-20 mx-4 center flex-end bg-slate-400 max-w-sm p-11 rounded-md shadow-gray-800 shadow drop-shadow-lg">
+      <div class="gap-4 mt-20 mx-4 center flex-end bg-gray-500 max-w-sm p-11 rounded-md shadow-gray-800 shadow drop-shadow-lg">
        Join us on Discord for updates and to get early access code to the website.
       <Button class="my-4 drop-shadow-xl shadow-emerald-500 shadow"><a href="https://discord.gg/vr8M57PDwH" target="blank"> <img src={discord} alt="discord" class="w-36 max-w-sm" /></a></Button>
       </div>  

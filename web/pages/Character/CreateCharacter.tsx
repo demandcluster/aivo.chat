@@ -87,6 +87,7 @@ const CreateCharacter: Component = () => {
       greeting: body.greeting,
       sampleChat: body.sampleChat,
       persona,
+      originalAvatar: state.edit?.avatar,
     }
 
     if (params.editId) {

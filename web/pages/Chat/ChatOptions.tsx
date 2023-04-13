@@ -1,5 +1,5 @@
-import { Book, Download, MailPlus, Palette, Settings, Sliders, Users } from 'lucide-solid'
-import { Component, Show } from 'solid-js'
+import { Book, Download, MailPlus, Palette, Settings, Sliders, Users, Camera } from 'lucide-solid'
+import { Component, Show, createSignal } from 'solid-js'
 import Button from '../../shared/Button'
 import { Toggle } from '../../shared/Toggle'
 import { chatStore, userStore } from '../../store'
@@ -10,6 +10,8 @@ const ChatOptions: Component<{
   show: (modal: ChatModal) => void
   editing: boolean
   toggleEditing: () => void
+  anonymizeOn: boolean
+  toggleAnonymize: () => void
 }> = (props) => {
   const chats = chatStore((s) => ({ ...s.active, lastId: s.lastChatId }))
   const user = userStore()
@@ -29,13 +31,24 @@ const ChatOptions: Component<{
           </div>
         </Option>
 
+        <Option onClick={props.toggleAnonymize}>
+          <div class="flex w-full items-center justify-between">
+            <div>Anonymize Chat</div>
+            <Toggle
+              class="flex items-center"
+              fieldName="anonymizeChat"
+              value={props.anonymizeOn}
+              onChange={props.toggleAnonymize}
+            />
+          </div>
+        </Option>
+
         <Option
           onClick={() => props.show('invite')}
           class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
         >
           <MailPlus /> Invite User
         </Option>
-        <Show when={user.user?.admin}>
         <Option
           onClick={() => props.show('memory')}
           class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
@@ -43,13 +56,12 @@ const ChatOptions: Component<{
           <Book />
           Edit Chat Memory
         </Option>
-        </Show>
-
+        
         <Option
           onClick={() => props.show('members')}
           class="flex justify-start gap-2 hover:bg-[var(--bg-700)]"
         >
-          <Users /> Particpants
+          <Users /> Participants
         </Option>
         <Show when={user.user?.admin}>
         <Option
@@ -96,7 +108,7 @@ const Option: Component<{
     props.close?.()
   }
   return (
-    <Button schema="secondary" size="sm" onClick={onClick}>
+    <Button schema="secondary" size="sm" onClick={onClick} alignLeft>
       {props.children}
     </Button>
   )

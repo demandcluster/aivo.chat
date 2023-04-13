@@ -1,26 +1,36 @@
+import { S3 } from '@aws-sdk/client-s3'
 import mp from 'multiparty'
 import { mkdirpSync } from 'mkdirp'
 import { Request } from 'express'
-import { rename, writeFile } from 'fs/promises'
-import { basename, dirname, extname, resolve } from 'path'
-import { createReadStream, mkdirSync, readdirSync,existsSync } from 'fs'
-import { v4 } from 'uuid'
+import { writeFile } from 'fs/promises'
+import { extname, resolve } from 'path'
+import { createReadStream, readdirSync } from 'fs'
 import { assertValid, Validator, UnwrapBody } from 'frisker'
 import { config } from '../config'
+
+const s3 = new S3({
+  region: 'us-east-1',
+  forcePathStyle: false,
+  endpoint: `https://${config.storage.endpoint}`,
+  credentials: {
+    accessKeyId: config.storage.id,
+    secretAccessKey: config.storage.key,
+  },
+})
 
 export type Attachment = {
   field: string
   original: string
-  filename: string
   type: string
+  content: Buffer
+  ext: string
 }
 
-export function handleUpload<T extends Validator>(req: Request, type: T) {
+export function handleForm<T extends Validator>(req: Request, type: T) {
   const form = new mp.Form()
 
   const obj: any = {}
   const attachments: Attachment[] = []
-  const jobs: Promise<any>[] = []
 
   return new Promise<UnwrapBody<T> & { attachments: Attachment[] }>((resolve, reject) => {
     form.on('part', (part) => {
@@ -46,27 +56,21 @@ export function handleUpload<T extends Validator>(req: Request, type: T) {
         const ext = type.split('/').slice(-1)[0]
         const filename = part.filename
         const data = Buffer.concat(chunks)
-        const id = `${new Date().toISOString()}_${v4().slice(0, 7)}.${ext}`.split(':').join('-')
 
         attachments.push({
           field: part.name,
-          filename: `/assets/${id}`,
+          content: data,
           type,
           original: filename,
+          ext,
         })
-        jobs.push(saveFile(id, data))
         part.resume()
       })
     })
 
     form.on('close', async () => {
       try {
-        await Promise.all(jobs)
-        try {
-          assertValid(type, obj)
-        } catch (ex) {
-          return reject(ex)
-        }
+        assertValid(type, obj)
         resolve({ ...obj, attachments } as any)
       } catch (ex) {
         reject(ex)
@@ -74,21 +78,41 @@ export function handleUpload<T extends Validator>(req: Request, type: T) {
     })
 
     form.on('error', (err) => reject(err))
-
     form.parse(req)
   })
 }
 
-export async function renameFile(attach: Attachment, filename: string) {
-  const base = basename(attach.filename)
-  const folder = dirname(attach.filename)
-  const ext = extname(attach.filename)
+export async function entityUpload(kind: string, id: string, attachment?: Attachment) {
+  if (!attachment) return
+  const filename = `${kind}-${id}`
+  return upload(attachment, filename)
+}
 
-  await rename(resolve(config.assetFolder, base), resolve(config.assetFolder, filename + ext))
+export async function upload(attachment: Attachment, name: string) {
+  const filename = `${name}.${attachment.ext}`
+  if (config.storage.enabled) {
+    await s3.putObject({
+      Bucket: config.storage.bucket,
+      Key: `assets/${name}.${attachment.ext}`,
+      Body: attachment.content,
+      ContentType: attachment.type,
+      ACL: 'public-read',
+    })
+    return `/assets/` + filename
+  }
+
+  await saveFile(filename, attachment.content)
+  return `/assets/` + filename
 }
 
 export async function saveFile(filename: string, content: any) {
   await writeFile(resolve(config.assetFolder, filename), content, { encoding: 'utf8' })
+  return `/assets/${filename}`
+}
+
+export async function saveBase64File(filename: string, content: any) {
+  await writeFile(resolve(config.assetFolder, filename), content, 'base64')
+  return `/assets/${filename}`
 }
 
 export function getFile(filename: string) {
@@ -97,11 +121,13 @@ export function getFile(filename: string) {
   return { stream, type }
 }
 
-  function createAssetFolder() {
-    if (!existsSync(config.assetFolder)) {
-      mkdirpSync(config.assetFolder);
-    }
+function createAssetFolder() {
+  try {
+    readdirSync(config.assetFolder)
+  } catch (ex) {
+    mkdirpSync(config.assetFolder)
   }
+}
 
 function getType(filename: string) {
   const ext = extname(filename)

@@ -3,47 +3,22 @@ import { api, isLoggedIn } from '../api'
 import { AppSchema } from '../../../srv/db/schema'
 import { toastStore } from '../toasts'
 
-const emptyCfg: AppSchema.AppConfig = {
-  adapters: [],
-  canAuth: false,
-  version: '',
+type InitEntities = {
+  profile: AppSchema.Profile
+  user: AppSchema.User
+  presets: AppSchema.UserGenPreset[]
+  config: AppSchema.AppConfig
+  books: AppSchema.MemoryBook[]
 }
 
 export async function getInit() {
   if (isLoggedIn()) {
-    const res = await api.get<{
-      profile: AppSchema.Profile
-      user: AppSchema.User
-      presets: AppSchema.UserGenPreset[]
-      config: AppSchema.AppConfig
-      books: AppSchema.MemoryBook[]
-    }>('/user/init')
+    const res = await api.get<InitEntities>('/user/init')
     return res
   }
 
-  const user = local.loadItem('config')
-  const profile = local.loadItem('profile')
-  const presets = local.loadItem('presets')
-  const books = local.loadItem('memory')
-  const res = await api.get<AppSchema.AppConfig>('/settings')
-
-  if (res.error) {
-    return local.result({
-      user,
-      profile,
-      presets,
-      books,
-      config: emptyCfg,
-    })
-  }
-
-  return local.result({
-    user,
-    profile,
-    presets,
-    books,
-    config: res.result!,
-  })
+  const init = await local.handleGuestInit()
+  return init
 }
 
 export async function getProfile(id?: string) {
@@ -92,6 +67,10 @@ export async function deleteApiKey(kind: string) {
     user.scaleApiKey = ''
   }
 
+  if (kind === 'claude') {
+    user.claudeApiKey = ''
+  }
+
   local.saveConfig(user)
   return local.result({ success: true })
 }
@@ -137,6 +116,20 @@ export async function updateConfig(config: Partial<AppSchema.User>) {
 
   const res = await api.post('/user/config', config)
   return res
+}
+
+export async function getOpenAIUsage() {
+  if (isLoggedIn()) {
+    const res = await api.post('/user/services/openai-usage')
+    return res
+  }
+
+  const user = local.loadItem('config')
+  if (!user.oaiKey) {
+    return local.error(`OpenAI key not set`)
+  }
+
+  return api.post('/user/services/openai-usage', { key: user.oaiKey })
 }
 
 async function getImageData(file?: File) {

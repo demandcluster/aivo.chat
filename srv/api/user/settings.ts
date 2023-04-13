@@ -5,11 +5,10 @@ import { config } from '../../config'
 import { store } from '../../db'
 import { AppSchema } from '../../db/schema'
 import { encryptText } from '../../db/util'
-import { personaValidator } from '../chat/common'
 import { findUser, HORDE_GUEST_KEY } from '../horde'
 import { get } from '../request'
 import { getAppConfig } from '../settings'
-import { handleUpload } from '../upload'
+import { entityUpload, handleForm } from '../upload'
 import { errors, handle, StatusError } from '../wrap'
 import { sendAll } from '../ws'
 
@@ -39,6 +38,14 @@ export const getConfig = handle(async ({ userId }) => {
 export const deleteScaleKey = handle(async ({ userId }) => {
   await store.users.updateUser(userId!, {
     scaleApiKey: '',
+  })
+
+  return { success: true }
+})
+
+export const deleteClaudeKey = handle(async ({ userId }) => {
+  await store.users.updateUser(userId!, {
+    claudeApiKey: '',
   })
 
   return { success: true }
@@ -76,6 +83,7 @@ export const updateConfig = handle(async ({ userId, body }) => {
       novelApiKey: 'string?',
       novelModel: 'string?',
       koboldUrl: 'string?',
+      hordeUseTrusted: 'boolean?',
       hordeApiKey: 'string?',
       hordeKey: 'string?',
       hordeModel: 'string?',
@@ -86,6 +94,7 @@ export const updateConfig = handle(async ({ userId, body }) => {
       defaultPresets: 'any?',
       scaleUrl: 'string?',
       scaleApiKey: 'string?',
+      claudeApiKey: 'string?',
     },
     body
   )
@@ -99,6 +108,7 @@ export const updateConfig = handle(async ({ userId, body }) => {
     defaultAdapter: body.defaultAdapter,
     hordeWorkers: body.hordeWorkers,
     defaultPresets: body.defaultPresets,
+    hordeUseTrusted: body.hordeUseTrusted ?? false,
   }
 
   if (body.hordeKey || body.hordeApiKey) {
@@ -152,15 +162,22 @@ export const updateConfig = handle(async ({ userId, body }) => {
     update.scaleApiKey = encryptText(body.scaleApiKey)
   }
 
+  if (body.claudeApiKey) {
+    update.claudeApiKey = encryptText(body.claudeApiKey)
+  }
+
   await store.users.updateUser(userId!, update)
   const user = await getSafeUserConfig(userId!)
   return user
 })
 
 export const updateProfile = handle(async (req) => {
-  const form = await handleUpload(req, { handle: 'string' } as const)
-
-  const [file] = form.attachments
+  const form = await handleForm(req, { handle: 'string' } as const)
+  const filename = await entityUpload(
+    'profile',
+    req.userId,
+    form.attachments.find((a) => a.field === 'avatar')
+  )
 
   const previous = await store.users.getProfile(req.userId!)
   if (!previous) {
@@ -171,8 +188,8 @@ export const updateProfile = handle(async (req) => {
     handle: form.handle,
   }
 
-  if (file) {
-    update.avatar = file.filename
+  if (filename) {
+    update.avatar = filename
   }
 
   const profile = await store.users.updateProfile(req.userId!, update)
@@ -185,7 +202,7 @@ export const updateProfile = handle(async (req) => {
 })
 
 async function verifyKobldUrl(user: AppSchema.User, incomingUrl?: string) {
-  if (!incomingUrl) return
+  if (!incomingUrl) return incomingUrl
   if (user.koboldUrl === incomingUrl) return
 
   const url = incomingUrl.match(/(http(s{0,1})\:\/\/)([a-z0-9\.\-]+)(\:[0-9]+){0,1}/gm)
@@ -229,37 +246,11 @@ async function getSafeUserConfig(userId: string) {
       user.scaleApiKeySet = true
       user.scaleApiKey = ''
     }
+
+    if (user.claudeApiKey) {
+      user.claudeApiKey = ''
+      user.claudeApiKeySet = true
+    }
   }
   return user
-}
-
-function isSamePersona(left?: AppSchema.Persona, right?: AppSchema.Persona) {
-  if (!left || !right) {
-    if (!left && !right) return true
-    return false
-  }
-
-  if (left.kind === 'text' || right.kind === 'text') {
-    if (left.kind !== right.kind) return false
-    return left.attributes.text?.[0] === right.attributes.text?.[0]
-  }
-
-  const [keys, values] = Object.keys(left.attributes)
-
-  const leftSet = new Set(keys)
-  for (const key in right.attributes) {
-    leftSet.add(key)
-  }
-
-  if (leftSet.size !== keys.length) return false
-
-  for (const key of keys) {
-    const l = left.attributes[key]
-    const r = right.attributes[key]
-
-    const set = new Set(...l, ...r)
-    if (set.size !== l.length) return false
-  }
-
-  return true
 }

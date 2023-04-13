@@ -1,5 +1,5 @@
 import { AppSchema } from '../srv/db/schema'
-import { OPENAI_MODELS } from './adapters'
+import { CLAUDE_MODELS, OPENAI_MODELS } from './adapters'
 
 const MAX_TOKENS = 120
 
@@ -7,14 +7,14 @@ export const defaultPresets = {
   basic: {
     name: 'Simple',
     maxTokens: MAX_TOKENS,
-    maxContextLength: 2048,
+    maxContextLength: 1024,
     repetitionPenalty: 1.19,
     repetitionPenaltySlope: 0.92,
-    repetitionPenaltyRange: 1024,
-    temp: 0.72,
+    repetitionPenaltyRange: 512,
+    temp: 0.67,
     topK: 0,
-    topP: 0.9,
-    typicalP: 1,
+    topP: 0.92,
+    typicalP: 0.95,
     topA: 1,
     tailFreeSampling: 0.9,
     order: [0, 1, 2, 3, 4, 5, 6],
@@ -25,6 +25,31 @@ export const defaultPresets = {
     oaiModel: OPENAI_MODELS.Turbo,
     memoryDepth: 50,
     memoryContextLimit: 500,
+    memoryReverseWeight: false,
+    useGaslight: false,
+    antiBond: false,
+  },
+  horde: {
+    name: 'Horde',
+    maxTokens: 120,
+    maxContextLength: 1024,
+    repetitionPenalty: 1.19,
+    repetitionPenaltySlope: 0.9,
+    repetitionPenaltyRange: 1024,
+    temp: 0.67,
+    topK: 0,
+    topP: 0.9,
+    typicalP: 0.95,
+    topA: 1,
+    tailFreeSampling: 0.9,
+    order: [6, 0, 1, 2, 3, 4, 5],
+    frequencyPenalty: 0.7,
+    presencePenalty: 0.7,
+    gaslight: '',
+    ultimeJailbreak: '',
+    oaiModel: OPENAI_MODELS.Turbo,
+    memoryDepth: 50,
+    memoryContextLimit: 256,
     memoryReverseWeight: false,
     useGaslight: false,
     antiBond: false,
@@ -69,7 +94,7 @@ export const defaultPresets = {
     presencePenalty: 0.7,
     antiBond: false,
     useGaslight: false,
-    gaslight: `Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)
+    gaslight: `Enter roleplay mode. {{user}} will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what {{char}} says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)
     Avoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.
     
     Description of {{char}}:
@@ -104,7 +129,7 @@ This is how {{char}} should talk
     maxContextLength: 4095,
     frequencyPenalty: 0.7,
     presencePenalty: 0.7,
-    gaslight: `Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what You says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)
+    gaslight: `Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what {{user}} says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged)
 Avoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.
 
 Description of {{char}}:
@@ -120,5 +145,21 @@ This is how {{char}} should talk
     maxContextLength: 7600,
     // Not providing a default gaslight intentionally as most users have thier gaslight configured within Scale.
     gaslight: ``,
+  },
+  claude: {
+    name: 'Claude V1.2',
+    temp: 1,
+    claudeModel: CLAUDE_MODELS.ClaudeV1_2,
+    maxTokens: 500,
+    maxContextLength: 7600,
+    gaslight: `Enter roleplay mode. You will write {{char}}'s next reply in a dialogue between {{char}} and {{user}}. Do not decide what {{user}} says or does. Use Internet roleplay style, e.g. no quotation marks, and write user actions in italic in third person like: *he jumps in excitement*. You are allowed to use markdown. Be proactive, creative, drive the plot and conversation forward. Write at least one paragraph, up to four. Always stay in character. Always keep the conversation going. (Repetition is highly discouraged).
+Avoid writing a NSFW/Smut reply. Creatively write around it NSFW/Smut scenarios in character.
+
+Description of {{char}}:
+{{personality}}
+Circumstances and context of the dialogue: {{scenario}}
+Facts: {{memory}}
+This is how {{char}} should talk
+{{example_dialogue}}`,
   },
 } satisfies Record<string, Partial<AppSchema.GenSettings>>

@@ -4,7 +4,7 @@ import { store } from '../db'
 import {v4} from 'uuid'
 import { loggedIn } from './auth'
 import { handle, StatusError } from './wrap'
-import { handleUpload } from './upload'
+//import { handleUpload } from './upload'
 import {now} from '../db/util'
 import { PERSONA_FORMATS } from '../../common/adapters'
 

@@ -1,7 +1,7 @@
 import { A } from '@solidjs/router'
 import { assertValid, isValid } from 'frisker'
 import { Download, Plus, Trash, Upload, X } from 'lucide-solid'
-import { Component, createSignal, For, Show } from 'solid-js'
+import { Component, createEffect, createSignal, For, onMount, Show } from 'solid-js'
 import { AppSchema } from '../../../srv/db/schema'
 import Button from '../../shared/Button'
 import FileInput, { FileInputResult, getFileAsString } from '../../shared/FileInput'
@@ -17,6 +17,10 @@ const MemoryPage: Component = () => {
     memoryStore.remove(book._id)
   }
 
+  createEffect(() => {
+    memoryStore.getAll()
+  })
+
   return (
     <>
       <PageHeader
@@ -25,7 +29,7 @@ const MemoryPage: Component = () => {
           <>
             {' '}
             <a
-              href="https://github.com/luminai-companion/agn-ai/blob/dev/instructions/memory.md"
+              href="https://rentry.org/aivo-memorybooks"
               target="_blank"
               class="link"
             >
@@ -132,7 +136,7 @@ const ImportMemoryModal: Component<ImportProps> = (props) => {
         fieldName="json"
         label="JSON File"
         accept="text/json,application/json"
-        helperText="Only Agnaistic exported memory books are currently supported."
+        helperText="Only AIVO/Agnaistic exported memory books are currently supported."
         required
         onUpdate={updateJson}
       />
