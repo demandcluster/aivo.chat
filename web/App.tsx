@@ -70,8 +70,12 @@ const App: Component = () => {
                 <Route path="/settings" component={Settings} />
                 <Route path="/memory" component={MemoryPage} />
                 <Route path="/memory/:id" component={EditMemoryPage} />
+                <HelpPage/>
                 <Show when={state.loggedIn}>
                   <MatchRoutes />
+                  <Route path="/shop" component={PremiumOptions}/>
+                <Route path="/thankyou" component={ThankYou}/>
+                <Route path="/shop/error" component={Error}/>
                   <Route path="/invites" component={InvitesPage} />
                   <Show when={state.user?.admin}>
                     <Route path="/admin/metrics" component={MetricsPage} />
