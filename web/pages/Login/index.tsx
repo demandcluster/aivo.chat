@@ -64,7 +64,7 @@ const LoginPage: Component = () => {
           <p>
             If you choose to register your data will be stored and accessible on any devices you
             login with.</p>
-            <p>You need a (free) account for the virtual dating.
+            <p>You need a (free) account for the virtual dating. <span class="font-bold">Please do not use your email as username, we don't need your email.</span>
           </p>
         </div>
       </div>
@@ -109,7 +109,7 @@ const RegisterForm: Component<FormProps> = (props) => {
           required
         />
         <TextInput fieldName="confirm" placeholder="Confirm Password" type="password" required />
-        <TextInput label="Invite code" fieldName="invitecode" placeholder="" required />
+        <TextInput label="Invite code" fieldName="invitecode" placeholder="Get an invite on our Discord!" required />
       </div>
 
       <Button type="submit" disabled={props.isLoading}>
