@@ -1,13 +1,15 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   '@aws-sdk/client-s3': ^3.309.0
   '@babel/core': ^7.20.12
   '@dqbd/tiktoken': ^1.0.2
+  '@paypal/paypal-js': ^5.1.6
   '@solidjs/router': ^0.6.0
   '@types/bcryptjs': ^2.4.2
   '@types/chai': ^4.3.4
   '@types/cors': ^2.8.13
+  '@types/crypto-js': ^4.1.1
   '@types/express': ^4.17.17
   '@types/js-cookie': ^3.0.2
   '@types/jsonwebtoken': ^9.0.1
@@ -15,6 +17,8 @@ specifiers:
   '@types/multiparty': ^0.0.33
   '@types/needle': ^3.2.0
   '@types/node': ^18.13.0
+  '@types/paypal-rest-sdk': ^1.7.6
+  '@types/paypal__checkout-server-sdk': ^1.0.5
   '@types/showdown': ^2.0.0
   '@types/uuid': ^9.0.0
   '@types/ws': ^8.5.4
@@ -24,6 +28,9 @@ specifiers:
   chai: ^4.3.7
   concurrently: ^7.6.0
   cors: ^2.8.5
+  crc-32: ^1.2.2
+  crypto-js: ^4.1.1
+  discord.js: ^14.8.0
   dotenv: ^16.0.3
   events: ^3.1.0
   express: ^4.18.2
@@ -42,6 +49,7 @@ specifiers:
   nodemon: ^2.0.20
   parcel: ^2.8.3
   path-browserify: ^1.0.0
+  paypal-rest-sdk: ^1.8.1
   pino: ^8.10.0
   pino-pretty: ^9.2.0
   png-chunk-text: ^1.0.0
@@ -63,6 +71,7 @@ specifiers:
 dependencies:
   '@aws-sdk/client-s3': 3.309.0
   '@dqbd/tiktoken': 1.0.2
+  '@paypal/paypal-js': 5.1.6
   '@types/bcryptjs': 2.4.2
   '@types/cors': 2.8.13
   '@types/express': 4.17.17
@@ -75,6 +84,9 @@ dependencies:
   '@types/ws': 8.5.4
   bcryptjs: 2.4.3
   cors: 2.8.5
+  crc-32: 1.2.2
+  crypto-js: 4.1.1
+  discord.js: 14.9.0
   dotenv: 16.0.3
   express: 4.18.2
   frisker: 1.6.2
@@ -85,6 +97,7 @@ dependencies:
   mongodb: 5.1.0
   multiparty: 4.2.3
   needle: 3.2.0
+  paypal-rest-sdk: 1.8.1
   pino: 8.10.0
   pino-pretty: 9.2.0
   redis: 4.6.5
@@ -96,13 +109,16 @@ devDependencies:
   '@babel/core': 7.20.12
   '@solidjs/router': 0.6.0_solid-js@1.6.9
   '@types/chai': 4.3.4
+  '@types/crypto-js': 4.1.1
   '@types/mocha': 10.0.1
+  '@types/paypal-rest-sdk': 1.7.6
+  '@types/paypal__checkout-server-sdk': 1.0.5
   '@types/showdown': 2.0.0
   babel-preset-solid: 1.6.9_@babel+core@7.20.12
   buffer: 5.7.1
   chai: 4.3.7
   concurrently: 7.6.0
-  events: registry.npmjs.org/events/3.3.0
+  events: 3.3.0
   js-cookie: 3.0.1
   localtunnel: 2.0.2
   lucide-solid: 0.105.0-alpha.9_solid-js@1.6.9
@@ -119,7 +135,7 @@ devDependencies:
   process: 0.11.10
   showdown: 2.1.0
   solid-js: 1.6.9
-  tailwindcss: 3.2.4
+  tailwindcss: 3.2.4_postcss@8.4.21
   zustand: 4.3.3
 
 packages:
@@ -1299,6 +1315,50 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
+  /@discordjs/builders/1.6.1:
+    resolution: {integrity: sha512-CCcLwn/8ANhlAbhlE18fcaN0hfXTen53/JiwZs1t9oE/Cqa9maA8ZRarkCIsXF4J7J/MYnd0J6IsxeKsq+f6mw==}
+    engines: {node: '>=16.9.0'}
+    dependencies:
+      '@discordjs/formatters': 0.3.0
+      '@discordjs/util': 0.2.0
+      '@sapphire/shapeshift': 3.8.2
+      discord-api-types: 0.37.38
+      fast-deep-equal: 3.1.3
+      ts-mixer: 6.0.3
+      tslib: 2.5.0
+    dev: false
+
+  /@discordjs/collection/1.5.0:
+    resolution: {integrity: sha512-suyVndkEAAWrGxyw/CPGdtXoRRU6AUNkibtnbJevQzpelkJh3Q1gQqWDpqf5i39CnAn5+LrN0YS+cULeEjq2Yw==}
+    engines: {node: '>=16.9.0'}
+    dev: false
+
+  /@discordjs/formatters/0.3.0:
+    resolution: {integrity: sha512-Fc4MomalbP8HMKEMor3qUiboAKDtR7PSBoPjwm7WYghVRwgJlj5WYvUsriLsxeKk8+Qq2oy+HJlGTUkGvX0YnA==}
+    engines: {node: '>=16.9.0'}
+    dependencies:
+      discord-api-types: 0.37.38
+    dev: false
+
+  /@discordjs/rest/1.7.0:
+    resolution: {integrity: sha512-r2HzmznRIo8IDGYBWqQfkEaGN1LrFfWQd3dSyC4tOpMU8nuVvFUEw6V/lwnG44jyOq+vgyDny2fxeUDMt9I4aQ==}
+    engines: {node: '>=16.9.0'}
+    dependencies:
+      '@discordjs/collection': 1.5.0
+      '@discordjs/util': 0.2.0
+      '@sapphire/async-queue': 1.5.0
+      '@sapphire/snowflake': 3.4.2
+      discord-api-types: 0.37.38
+      file-type: 18.2.1
+      tslib: 2.5.0
+      undici: 5.21.2
+    dev: false
+
+  /@discordjs/util/0.2.0:
+    resolution: {integrity: sha512-/8qNbebFzLWKOOg+UV+RB8itp4SmU5jw0tBUD3ifElW6rYNOj1Ku5JaSW7lLl/WgjjxF01l/1uQPCzkwr110vg==}
+    engines: {node: '>=16.9.0'}
+    dev: false
+
   /@dqbd/tiktoken/1.0.2:
     resolution: {integrity: sha512-AjGTBRWsMoVmVeN55NLyupyM8TNamOUBl6tj5t/leLDVup3CFGO9tVagNL1jf3GyZLkWZSTmYVbPQ/M2LEcNzw==}
     dev: false
@@ -1358,6 +1418,54 @@ packages:
       '@lezer/common': 0.15.12
     dev: true
 
+  /@lmdb/lmdb-darwin-arm64/2.5.2:
+    resolution: {integrity: sha512-+F8ioQIUN68B4UFiIBYu0QQvgb9FmlKw2ctQMSBfW2QBrZIxz9vD9jCGqTCPqZBRbPHAS/vG1zSXnKqnS2ch/A==}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@lmdb/lmdb-darwin-x64/2.5.2:
+    resolution: {integrity: sha512-KvPH56KRLLx4KSfKBx0m1r7GGGUMXm0jrKmNE7plbHlesZMuPJICtn07HYgQhj1LNsK7Yqwuvnqh1QxhJnF1EA==}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@lmdb/lmdb-linux-arm/2.5.2:
+    resolution: {integrity: sha512-5kQAP21hAkfW5Bl+e0P57dV4dGYnkNIpR7f/GAh6QHlgXx+vp/teVj4PGRZaKAvt0GX6++N6hF8NnGElLDuIDw==}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@lmdb/lmdb-linux-arm64/2.5.2:
+    resolution: {integrity: sha512-aLl89VHL/wjhievEOlPocoefUyWdvzVrcQ/MHQYZm2JfV1jUsrbr/ZfkPPUFvZBf+VSE+Q0clWs9l29PCX1hTQ==}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@lmdb/lmdb-linux-x64/2.5.2:
+    resolution: {integrity: sha512-xUdUfwDJLGjOUPH3BuPBt0NlIrR7f/QHKgu3GZIXswMMIihAekj2i97oI0iWG5Bok/b+OBjHPfa8IU9velnP/Q==}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@lmdb/lmdb-win32-x64/2.5.2:
+    resolution: {integrity: sha512-zrBczSbXKxEyK2ijtbRdICDygRqWSRPpZMN5dD1T8VMEW5RIhIbwFWw2phDRXuBQdVDpSjalCIUMWMV2h3JaZA==}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
   /@mischnic/json-sourcemap/0.1.0:
     resolution: {integrity: sha512-dQb3QnfNqmQNYA4nFSN/uLaByIic58gOXq4Y4XqLOWmOrw73KmJPt/HLyG0wvn1bnR6mBKs/Uwvkh+Hns1T0XA==}
     engines: {node: '>=12.0.0'}
@@ -1366,6 +1474,54 @@ packages:
       '@lezer/lr': 0.15.8
       json5: 2.2.3
     dev: true
+
+  /@msgpackr-extract/msgpackr-extract-darwin-arm64/2.2.0:
+    resolution: {integrity: sha512-Z9LFPzfoJi4mflGWV+rv7o7ZbMU5oAU9VmzCgL240KnqDW65Y2HFCT3MW06/ITJSnbVLacmcEJA8phywK7JinQ==}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@msgpackr-extract/msgpackr-extract-darwin-x64/2.2.0:
+    resolution: {integrity: sha512-vq0tT8sjZsy4JdSqmadWVw6f66UXqUCabLmUVHZwUFzMgtgoIIQjT4VVRHKvlof3P/dMCkbMJ5hB1oJ9OWHaaw==}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@msgpackr-extract/msgpackr-extract-linux-arm/2.2.0:
+    resolution: {integrity: sha512-SaJ3Qq4lX9Syd2xEo9u3qPxi/OB+5JO/ngJKK97XDpa1C587H9EWYO6KD8995DAjSinWvdHKRrCOXVUC5fvGOg==}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@msgpackr-extract/msgpackr-extract-linux-arm64/2.2.0:
+    resolution: {integrity: sha512-hlxxLdRmPyq16QCutUtP8Tm6RDWcyaLsRssaHROatgnkOxdleMTgetf9JsdncL8vLh7FVy/RN9i3XR5dnb9cRA==}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@msgpackr-extract/msgpackr-extract-linux-x64/2.2.0:
+    resolution: {integrity: sha512-94y5PJrSOqUNcFKmOl7z319FelCLAE0rz/jPCWS+UtdMZvpa4jrQd+cJPQCLp2Fes1yAW/YUQj/Di6YVT3c3Iw==}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@msgpackr-extract/msgpackr-extract-win32-x64/2.2.0:
+    resolution: {integrity: sha512-XrC0JzsqQSvOyM3t04FMLO6z5gCuhPE6k4FXuLK5xf52ZbdvcFe1yBmo7meCew9B8G2f0T9iu9t3kfTYRYROgA==}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1431,7 +1587,7 @@ packages:
       - '@parcel/core'
     dev: true
 
-  /@parcel/config-default/2.8.3_d0e09bd126101a24361fa9a1d13dcbb6:
+  /@parcel/config-default/2.8.3_2dqjxujgcancinq7vgq5cpolwy:
     resolution: {integrity: sha512-o/A/mbrO6X/BfGS65Sib8d6SSG45NYrNooNBkH/o7zbOBSRQxwyTlysleK1/3Wa35YpvFyLOwgfakqCtbGy4fw==}
     peerDependencies:
       '@parcel/core': ^2.8.3
@@ -1441,7 +1597,7 @@ packages:
       '@parcel/core': 2.8.3
       '@parcel/namer-default': 2.8.3_@parcel+core@2.8.3
       '@parcel/optimizer-css': 2.8.3_@parcel+core@2.8.3
-      '@parcel/optimizer-htmlnano': 2.8.3_d0e09bd126101a24361fa9a1d13dcbb6
+      '@parcel/optimizer-htmlnano': 2.8.3_2dqjxujgcancinq7vgq5cpolwy
       '@parcel/optimizer-image': 2.8.3_@parcel+core@2.8.3
       '@parcel/optimizer-svgo': 2.8.3_@parcel+core@2.8.3
       '@parcel/optimizer-terser': 2.8.3_@parcel+core@2.8.3
@@ -1607,7 +1763,7 @@ packages:
       - '@parcel/core'
     dev: true
 
-  /@parcel/optimizer-htmlnano/2.8.3_d0e09bd126101a24361fa9a1d13dcbb6:
+  /@parcel/optimizer-htmlnano/2.8.3_2dqjxujgcancinq7vgq5cpolwy:
     resolution: {integrity: sha512-L8/fHbEy8Id2a2E0fwR5eKGlv9VYDjrH9PwdJE9Za9v1O/vEsfl/0T/79/x129l5O0yB6EFQkFa20MiK3b+vOg==}
     engines: {node: '>= 12.0.0', parcel: ^2.8.3}
     dependencies:
@@ -2059,6 +2215,12 @@ packages:
       nullthrows: 1.1.1
     dev: true
 
+  /@paypal/paypal-js/5.1.6:
+    resolution: {integrity: sha512-1upF06pv0AUtTftRVSra44p8ibqGa3ruKLArvdhpZla25zcrND7R+nDUIMrJ0iteVYZowhujZStFs6NoruExfg==}
+    dependencies:
+      promise-polyfill: 8.3.0
+    dev: false
+
   /@redis/bloom/1.2.0_@redis+client@1.5.6:
     resolution: {integrity: sha512-HG2DFjYKbpNmVXsa0keLHp/3leGJz1mjh09f2RLGGLQZzSHpkmZWuwJbAvo3QcRY8p80m5+ZdXZdYOSBLlp7Cg==}
     peerDependencies:
@@ -2108,6 +2270,24 @@ packages:
       '@redis/client': 1.5.6
     dev: false
 
+  /@sapphire/async-queue/1.5.0:
+    resolution: {integrity: sha512-JkLdIsP8fPAdh9ZZjrbHWR/+mZj0wvKS5ICibcLrRI1j84UmLMshx5n9QmL8b95d4onJ2xxiyugTgSAX7AalmA==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+    dev: false
+
+  /@sapphire/shapeshift/3.8.2:
+    resolution: {integrity: sha512-NXpnJAsxN3/h9TqQPntOeVWZrpIuucqXI3IWF6tj2fWCoRLCuVK5wx7Dtg7pRrtkYfsMUbDqgKoX26vrC5iYfA==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+    dependencies:
+      fast-deep-equal: 3.1.3
+      lodash: 4.17.21
+    dev: false
+
+  /@sapphire/snowflake/3.4.2:
+    resolution: {integrity: sha512-KJwlv5gkGjs1uFV7/xx81n3tqgBwBJvH94n1xDyH3q+JSmtsMeSleJffarEBfG2yAFeJiFA4BnGOK6FFPHc19g==}
+    engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
+    dev: false
+
   /@solidjs/router/0.6.0_solid-js@1.6.9:
     resolution: {integrity: sha512-7ug2fzXXhvvDBL4CQyMvMM9o3dgBE6PoRh38T8UTmMnYz4rcCfROqSZc9yq+YEC96qWt5OvJgZ1Uj/4EAQXlfA==}
     peerDependencies:
@@ -2121,6 +2301,10 @@ packages:
     dependencies:
       tslib: 2.5.0
     dev: true
+
+  /@tokenizer/token/0.3.0:
+    resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
+    dev: false
 
   /@trysound/sax/0.2.0:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -2153,6 +2337,10 @@ packages:
     dependencies:
       '@types/node': 18.13.0
     dev: false
+
+  /@types/crypto-js/4.1.1:
+    resolution: {integrity: sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==}
+    dev: true
 
   /@types/express-serve-static-core/4.17.33:
     resolution: {integrity: sha512-TPBqmR/HRYI3eC2E5hmiivIzv+bidAfXofM+sbonAGvyDhySGw9/PQZFt2BLOrjUUR++4eJVpx6KnLQK1Fk9tA==}
@@ -2207,10 +2395,27 @@ packages:
 
   /@types/node/18.13.0:
     resolution: {integrity: sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==}
-    dev: false
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
+    dev: true
+
+  /@types/paypal-rest-sdk/1.7.6:
+    resolution: {integrity: sha512-YUzJd4xEdSBFmsdfNuQBIGHbskgkf61w9TBcnieCDGTwRXLqsUgEHcB78sMv4hfB4a6S3kos8nUuWRpICohsYA==}
+    dependencies:
+      '@types/node': 18.13.0
+    dev: true
+
+  /@types/paypal__checkout-server-sdk/1.0.5:
+    resolution: {integrity: sha512-pGpESvscnVi26tPOZGEXzr1PQXgNW8aaKtMSB2C8K41+4UW3kT28MCMLmKJkSkkNaJ4LHKEOzfun/c2ntC416g==}
+    dependencies:
+      '@types/paypal__paypalhttp': 1.0.0
+    dev: true
+
+  /@types/paypal__paypalhttp/1.0.0:
+    resolution: {integrity: sha512-JSrGEKWT+VnMNNkOFPYRcBdv/W5FuDP0ZDp9KxExZVEtX8xZTO4NFfkG9gkQ+g/RnEbVZnFwrQ04LH5HLio5Gw==}
+    dependencies:
+      '@types/node': 18.13.0
     dev: true
 
   /@types/qs/6.9.7:
@@ -2472,6 +2677,10 @@ packages:
     engines: {node: '>=14.20.1'}
     dev: false
 
+  /buffer-crc32/0.2.13:
+    resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
+    dev: false
+
   /buffer-equal-constant-time/1.0.1:
     resolution: {integrity: sha1-+OcRMvf/5uAaXJaXpMbz5I1cyBk=}
     dev: false
@@ -2492,6 +2701,13 @@ packages:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
+    dev: false
+
+  /busboy/1.6.0:
+    resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
+    engines: {node: '>=10.16.0'}
+    dependencies:
+      streamsearch: 1.1.0
     dev: false
 
   /bytes/3.1.2:
@@ -2571,7 +2787,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: registry.npmjs.org/fsevents/2.3.2
+      fsevents: 2.3.2
     dev: true
 
   /chrome-trace-event/1.0.3:
@@ -2713,6 +2929,16 @@ packages:
     resolution: {integrity: sha512-kucVIjOmMc1f0tv53BJ/5WIX+MGLcKuoBhnGqQrgKJNqLByb/sVMWfW/Aw6hw0jgcqjJ2pi9E5y32zOIpaUlsA==}
     engines: {node: '>=0.8'}
     dev: true
+
+  /crc-32/1.2.2:
+    resolution: {integrity: sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==}
+    engines: {node: '>=0.8'}
+    hasBin: true
+    dev: false
+
+  /crypto-js/4.1.1:
+    resolution: {integrity: sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==}
+    dev: false
 
   /css-select/4.3.0:
     resolution: {integrity: sha512-wPpOYtnsVontu2mODhA19JrqWxNsfdatRKd64kmpRbQgh1KtItko5sTnEpPdpSaJszTOhEMlF/RPz28qj4HqhQ==}
@@ -2890,6 +3116,32 @@ packages:
     engines: {node: '>=0.3.1'}
     dev: true
 
+  /discord-api-types/0.37.38:
+    resolution: {integrity: sha512-p9dibYycLXY1FUM9bIuohYeHHwa/634394QE90n6Tlb6ID5HtCtXBPYY68oaOlFnlFLBJAOYATMwX5oiV+VqiA==}
+    dev: false
+
+  /discord.js/14.9.0:
+    resolution: {integrity: sha512-ygGms5xP4hG+QrrY9k7d/OYCzMltSMtdl/2Snzq/nLCiZo+Sna91Ulv9l0+B5Jd/Czcq37B7wJAnmja7GOa+bg==}
+    engines: {node: '>=16.9.0'}
+    dependencies:
+      '@discordjs/builders': 1.6.1
+      '@discordjs/collection': 1.5.0
+      '@discordjs/formatters': 0.3.0
+      '@discordjs/rest': 1.7.0
+      '@discordjs/util': 0.2.0
+      '@sapphire/snowflake': 3.4.2
+      '@types/ws': 8.5.4
+      discord-api-types: 0.37.38
+      fast-deep-equal: 3.1.3
+      lodash.snakecase: 4.1.1
+      tslib: 2.5.0
+      undici: 5.21.2
+      ws: 8.13.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
   /dlv/1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
     dev: true
@@ -3008,6 +3260,10 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /events/3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==, registry: https://registry.npmjs.com/}
+    engines: {node: '>=0.8.x'}
+
   /express/4.18.2:
     resolution: {integrity: sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ==}
     engines: {node: '>= 0.10.0'}
@@ -3051,6 +3307,10 @@ packages:
     resolution: {integrity: sha512-4HzS+9pQ5Yxtv13Lhs1Z1unMXamBdn5nA4bEi1abYpDNSpSp7ODYQ1KPMF6nTatfEzgH6/zPvXKU1zvHiUjWlA==}
     dev: false
 
+  /fast-deep-equal/3.1.3:
+    resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
+    dev: false
+
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
     engines: {node: '>=8.6.0'}
@@ -3083,6 +3343,15 @@ packages:
     dependencies:
       reusify: 1.0.4
     dev: true
+
+  /file-type/18.2.1:
+    resolution: {integrity: sha512-Yw5MtnMv7vgD2/6Bjmmuegc8bQEVA9GmAyaR18bMYWKqsWDG9wgYZ1j4I6gNMF5Y5JBDcUcjRQqNQx7Y8uotcg==}
+    engines: {node: '>=14.16'}
+    dependencies:
+      readable-web-to-node-stream: 3.0.2
+      strtok3: 7.0.0
+      token-types: 5.0.1
+    dev: false
 
   /fill-range/7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
@@ -3149,6 +3418,14 @@ packages:
 
   /fs.realpath/1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
+
+  /fsevents/2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
 
   /function-bind/1.1.1:
     resolution: {integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==}
@@ -3503,20 +3780,92 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
+  /lightningcss-darwin-arm64/1.18.0:
+    resolution: {integrity: sha512-OqjydwtiNPgdH1ByIjA1YzqvDG/OMR6L3LPN6wRl1729LB0y4Mik7L06kmZaTb+pvUHr+NmDd2KCwnlrQ4zO3w==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-darwin-x64/1.18.0:
+    resolution: {integrity: sha512-mNiuPHj89/JHZmJMp+5H8EZSt6EL5DZRWJ31O6k3DrLLnRIQjXuXdDdN8kP7LoIkeWI5xvyD60CsReJm+YWYAw==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-arm-gnueabihf/1.18.0:
+    resolution: {integrity: sha512-S+25JjI6601HiAVoTDXW6SqH+E94a+FHA7WQqseyNHunOgVWKcAkNEc2LJvVxgwTq6z41sDIb9/M3Z9wa9lk4A==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-arm64-gnu/1.18.0:
+    resolution: {integrity: sha512-JSqh4+21dCgBecIQUet35dtE4PhhSEMyqe3y0ZNQrAJQ5kyUPSQHiw81WXnPJcOSTTpG0TyMLiC8K//+BsFGQA==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-arm64-musl/1.18.0:
+    resolution: {integrity: sha512-2FWHa8iUhShnZnqhn2wfIcK5adJat9hAAaX7etNsoXJymlliDIOFuBQEsba2KBAZSM4QqfQtvRdR7m8i0I7ybQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-x64-gnu/1.18.0:
+    resolution: {integrity: sha512-plCPGQJtDZHcLVKVRLnQVF2XRsIC32WvuJhQ7fJ7F6BV98b/VZX0OlX05qUaOESD9dCDHjYSfxsgcvOKgCWh7A==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-x64-musl/1.18.0:
+    resolution: {integrity: sha512-na+BGtVU6fpZvOHKhnlA0XHeibkT3/46nj6vLluG3kzdJYoBKU6dIl7DSOk++8jv4ybZyFJ0aOFMMSc8g2h58A==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-win32-x64-msvc/1.18.0:
+    resolution: {integrity: sha512-5qeAH4RMNy2yMNEl7e5TI6upt/7xD2ZpHWH4RkT8iJ7/6POS5mjHbXWUO9Q1hhDhqkdzGa76uAdMzEouIeCyNw==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
   /lightningcss/1.18.0:
     resolution: {integrity: sha512-uk10tNxi5fhZqU93vtYiQgx/8a9f0Kvtj5AXIm+VlOXY+t/DWDmCZWJEkZJmmALgvbS6aAW8or+Kq85eJ6TDTw==}
     engines: {node: '>= 12.0.0'}
     dependencies:
       detect-libc: 1.0.3
     optionalDependencies:
-      lightningcss-darwin-arm64: registry.npmjs.org/lightningcss-darwin-arm64/1.18.0
-      lightningcss-darwin-x64: registry.npmjs.org/lightningcss-darwin-x64/1.18.0
-      lightningcss-linux-arm-gnueabihf: registry.npmjs.org/lightningcss-linux-arm-gnueabihf/1.18.0
-      lightningcss-linux-arm64-gnu: registry.npmjs.org/lightningcss-linux-arm64-gnu/1.18.0
-      lightningcss-linux-arm64-musl: registry.npmjs.org/lightningcss-linux-arm64-musl/1.18.0
-      lightningcss-linux-x64-gnu: registry.npmjs.org/lightningcss-linux-x64-gnu/1.18.0
-      lightningcss-linux-x64-musl: registry.npmjs.org/lightningcss-linux-x64-musl/1.18.0
-      lightningcss-win32-x64-msvc: registry.npmjs.org/lightningcss-win32-x64-msvc/1.18.0
+      lightningcss-darwin-arm64: 1.18.0
+      lightningcss-darwin-x64: 1.18.0
+      lightningcss-linux-arm-gnueabihf: 1.18.0
+      lightningcss-linux-arm64-gnu: 1.18.0
+      lightningcss-linux-arm64-musl: 1.18.0
+      lightningcss-linux-x64-gnu: 1.18.0
+      lightningcss-linux-x64-musl: 1.18.0
+      lightningcss-win32-x64-msvc: 1.18.0
     dev: true
 
   /lilconfig/2.0.6:
@@ -3538,12 +3887,12 @@ packages:
       ordered-binary: 1.4.0
       weak-lru-cache: 1.2.2
     optionalDependencies:
-      '@lmdb/lmdb-darwin-arm64': registry.npmjs.org/@lmdb/lmdb-darwin-arm64/2.5.2
-      '@lmdb/lmdb-darwin-x64': registry.npmjs.org/@lmdb/lmdb-darwin-x64/2.5.2
-      '@lmdb/lmdb-linux-arm': registry.npmjs.org/@lmdb/lmdb-linux-arm/2.5.2
-      '@lmdb/lmdb-linux-arm64': registry.npmjs.org/@lmdb/lmdb-linux-arm64/2.5.2
-      '@lmdb/lmdb-linux-x64': registry.npmjs.org/@lmdb/lmdb-linux-x64/2.5.2
-      '@lmdb/lmdb-win32-x64': registry.npmjs.org/@lmdb/lmdb-win32-x64/2.5.2
+      '@lmdb/lmdb-darwin-arm64': 2.5.2
+      '@lmdb/lmdb-darwin-x64': 2.5.2
+      '@lmdb/lmdb-linux-arm': 2.5.2
+      '@lmdb/lmdb-linux-arm64': 2.5.2
+      '@lmdb/lmdb-linux-x64': 2.5.2
+      '@lmdb/lmdb-win32-x64': 2.5.2
     dev: true
 
   /localtunnel/2.0.2:
@@ -3565,6 +3914,10 @@ packages:
     dependencies:
       p-locate: 5.0.0
     dev: true
+
+  /lodash.snakecase/4.1.1:
+    resolution: {integrity: sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==}
+    dev: false
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -3741,7 +4094,7 @@ packages:
       mongodb-connection-string-url: 2.6.0
       socks: 2.7.1
     optionalDependencies:
-      saslprep: registry.npmjs.org/saslprep/1.0.3
+      saslprep: 1.0.3
     dev: false
 
   /ms/2.0.0:
@@ -3755,10 +4108,26 @@ packages:
   /ms/2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
+  /msgpackr-extract/2.2.0:
+    resolution: {integrity: sha512-0YcvWSv7ZOGl9Od6Y5iJ3XnPww8O7WLcpYMDwX+PAA/uXLDtyw94PJv9GLQV/nnp3cWlDhMoyKZIQLrx33sWog==}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      node-gyp-build-optional-packages: 5.0.3
+    optionalDependencies:
+      '@msgpackr-extract/msgpackr-extract-darwin-arm64': 2.2.0
+      '@msgpackr-extract/msgpackr-extract-darwin-x64': 2.2.0
+      '@msgpackr-extract/msgpackr-extract-linux-arm': 2.2.0
+      '@msgpackr-extract/msgpackr-extract-linux-arm64': 2.2.0
+      '@msgpackr-extract/msgpackr-extract-linux-x64': 2.2.0
+      '@msgpackr-extract/msgpackr-extract-win32-x64': 2.2.0
+    dev: true
+    optional: true
+
   /msgpackr/1.8.1:
     resolution: {integrity: sha512-05fT4J8ZqjYlR4QcRDIhLCYKUOHXk7C/xa62GzMKj74l3up9k2QZ3LgFc6qWdsPHl91QA2WLWqWc8b8t7GLNNw==}
     optionalDependencies:
-      msgpackr-extract: registry.npmjs.org/msgpackr-extract/2.2.0
+      msgpackr-extract: 2.2.0
     dev: true
 
   /multiparty/4.2.3:
@@ -3920,7 +4289,7 @@ packages:
       '@parcel/core':
         optional: true
     dependencies:
-      '@parcel/config-default': 2.8.3_d0e09bd126101a24361fa9a1d13dcbb6
+      '@parcel/config-default': 2.8.3_2dqjxujgcancinq7vgq5cpolwy
       '@parcel/core': 2.8.3
       '@parcel/diagnostic': 2.8.3
       '@parcel/events': 2.8.3
@@ -3996,6 +4365,19 @@ packages:
   /pathval/1.1.1:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
     dev: true
+
+  /paypal-rest-sdk/1.8.1:
+    resolution: {integrity: sha512-Trj2GuPn10GqpICAxQh5wjxuDT7rq7DMOkvyatz05wI5xPGmqXN7UC0WfDSF9WSBs4YdcWZP0g+nY+sOdaFggw==}
+    engines: {node: '>= v0.6.0'}
+    dependencies:
+      buffer-crc32: 0.2.13
+      semver: 5.7.1
+    dev: false
+
+  /peek-readable/5.0.0:
+    resolution: {integrity: sha512-YtCKvLUOvwtMGmrniQPdO7MwPjgkFBtFIrmfSbYmYuq3tKDV/mcfAhBth1+C3ru7uXIZasc/pHnb+YDYNkkj4A==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /picocolors/1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
@@ -4198,6 +4580,10 @@ packages:
     resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
     engines: {node: '>= 0.6.0'}
 
+  /promise-polyfill/8.3.0:
+    resolution: {integrity: sha512-H5oELycFml5yto/atYqmjyigJoAo3+OXwolYiH7OfQuYlAqhxNvTfiNMbV9hsC6Yp83yE5r2KTVmtrG6R9i6Pg==}
+    dev: false
+
   /proxy-addr/2.0.7:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
@@ -4298,8 +4684,15 @@ packages:
     dependencies:
       abort-controller: 3.0.0
       buffer: 6.0.3
-      events: registry.npmjs.org/events/3.3.0
+      events: 3.3.0
       process: 0.11.10
+    dev: false
+
+  /readable-web-to-node-stream/3.0.2:
+    resolution: {integrity: sha512-ePeK6cc1EcKLEhJFt/AebMCLL+GgSKhuygrZ/GLaKZYEecIgIECf4UaUuaByiGtzckwR4ain9VzUh95T1exYGw==}
+    engines: {node: '>=8'}
+    dependencies:
+      readable-stream: 3.6.0
     dev: false
 
   /readdirp/3.6.0:
@@ -4362,7 +4755,7 @@ packages:
   /rxjs/7.8.0:
     resolution: {integrity: sha512-F2+gxDshqmIub1KdvZkaEfGDwLNpPvk9Fs6LD/MyQxNgMds/WH9OdDDXOmxUZpME+iSK3rQCctkL0DYyytUqMg==}
     dependencies:
-      tslib: 2.4.1
+      tslib: 2.5.0
     dev: true
 
   /safe-buffer/5.2.1:
@@ -4377,6 +4770,15 @@ packages:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
     dev: false
 
+  /saslprep/1.0.3:
+    resolution: {integrity: sha512-/MY/PEMbk2SuY5sScONwhUDsV2p77Znkb/q3nSVstq/yQzYJOH/Azh29p9oJLsl3LnQwSvZDKagDGBsBwSooag==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dependencies:
+      sparse-bitfield: 3.0.3
+    dev: false
+    optional: true
+
   /sax/1.2.4:
     resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
     dev: false
@@ -4388,7 +4790,6 @@ packages:
   /semver/5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
     hasBin: true
-    dev: true
 
   /semver/6.3.0:
     resolution: {integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==}
@@ -4559,6 +4960,11 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
+  /streamsearch/1.1.0:
+    resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
+    engines: {node: '>=10.0.0'}
+    dev: false
+
   /string-width/4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
@@ -4587,6 +4993,14 @@ packages:
 
   /strnum/1.0.5:
     resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
+    dev: false
+
+  /strtok3/7.0.0:
+    resolution: {integrity: sha512-pQ+V+nYQdC5H3Q7qBZAz/MO6lwGhoC2gOAjuouGf/VO0m7vQRh8QNMl2Uf6SwAtzZ9bOw3UIeBukEGNJl5dtXQ==}
+    engines: {node: '>=14.16'}
+    dependencies:
+      '@tokenizer/token': 0.3.0
+      peek-readable: 5.0.0
     dev: false
 
   /supports-color/5.5.0:
@@ -4629,10 +5043,12 @@ packages:
       stable: 0.1.8
     dev: true
 
-  /tailwindcss/3.2.4:
+  /tailwindcss/3.2.4_postcss@8.4.21:
     resolution: {integrity: sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==}
     engines: {node: '>=12.13.0'}
     hasBin: true
+    peerDependencies:
+      postcss: ^8.0.9
     dependencies:
       arg: 5.0.2
       chokidar: 3.5.3
@@ -4704,6 +5120,14 @@ packages:
     engines: {node: '>=0.6'}
     dev: false
 
+  /token-types/5.0.1:
+    resolution: {integrity: sha512-Y2fmSnZjQdDb9W4w4r1tswlMHylzWIeOKpx0aZH9BgGtACHhrk3OkT52AzwcuqTRBZtvvnTjDBh8eynMulu8Vg==}
+    engines: {node: '>=14.16'}
+    dependencies:
+      '@tokenizer/token': 0.3.0
+      ieee754: 1.2.1
+    dev: false
+
   /touch/3.1.0:
     resolution: {integrity: sha512-WBx8Uy5TLtOSRtIq+M03/sKDrXCLHxwDcquSP2c43Le03/9serjQBIztjRz6FkJez9D/hleyAXTBGLwwZUw9lA==}
     hasBin: true
@@ -4723,13 +5147,13 @@ packages:
     hasBin: true
     dev: true
 
+  /ts-mixer/6.0.3:
+    resolution: {integrity: sha512-k43M7uCG1AkTyxgnmI5MPwKoUvS/bRvLvUb7+Pgpdlmok8AoqmUaZxUUw8zKM5B1lqZrt41GjYgnvAi0fppqgQ==}
+    dev: false
+
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: false
-
-  /tslib/2.4.1:
-    resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
-    dev: true
 
   /tslib/2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
@@ -4768,6 +5192,13 @@ packages:
   /undefsafe/2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
     dev: true
+
+  /undici/5.21.2:
+    resolution: {integrity: sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==}
+    engines: {node: '>=12.18'}
+    dependencies:
+      busboy: 1.6.0
+    dev: false
 
   /unpipe/1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
@@ -4862,6 +5293,19 @@ packages:
 
   /ws/8.12.1:
     resolution: {integrity: sha512-1qo+M9Ba+xNhPB+YTWUlK6M17brTut5EXbcBaMRN5pH5dFrXz7lzz1ChFSUq3bOUl8yEvSenhHmYUNJxFzdJew==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
+
+  /ws/8.13.0:
+    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -4983,256 +5427,3 @@ packages:
     dependencies:
       use-sync-external-store: 1.2.0
     dev: true
-
-  registry.npmjs.org/@lmdb/lmdb-darwin-arm64/2.5.2:
-    resolution: {integrity: sha512-+F8ioQIUN68B4UFiIBYu0QQvgb9FmlKw2ctQMSBfW2QBrZIxz9vD9jCGqTCPqZBRbPHAS/vG1zSXnKqnS2ch/A==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@lmdb/lmdb-darwin-arm64/-/lmdb-darwin-arm64-2.5.2.tgz}
-    name: '@lmdb/lmdb-darwin-arm64'
-    version: 2.5.2
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@lmdb/lmdb-darwin-x64/2.5.2:
-    resolution: {integrity: sha512-KvPH56KRLLx4KSfKBx0m1r7GGGUMXm0jrKmNE7plbHlesZMuPJICtn07HYgQhj1LNsK7Yqwuvnqh1QxhJnF1EA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@lmdb/lmdb-darwin-x64/-/lmdb-darwin-x64-2.5.2.tgz}
-    name: '@lmdb/lmdb-darwin-x64'
-    version: 2.5.2
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@lmdb/lmdb-linux-arm/2.5.2:
-    resolution: {integrity: sha512-5kQAP21hAkfW5Bl+e0P57dV4dGYnkNIpR7f/GAh6QHlgXx+vp/teVj4PGRZaKAvt0GX6++N6hF8NnGElLDuIDw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@lmdb/lmdb-linux-arm/-/lmdb-linux-arm-2.5.2.tgz}
-    name: '@lmdb/lmdb-linux-arm'
-    version: 2.5.2
-    cpu: [arm]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@lmdb/lmdb-linux-arm64/2.5.2:
-    resolution: {integrity: sha512-aLl89VHL/wjhievEOlPocoefUyWdvzVrcQ/MHQYZm2JfV1jUsrbr/ZfkPPUFvZBf+VSE+Q0clWs9l29PCX1hTQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@lmdb/lmdb-linux-arm64/-/lmdb-linux-arm64-2.5.2.tgz}
-    name: '@lmdb/lmdb-linux-arm64'
-    version: 2.5.2
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@lmdb/lmdb-linux-x64/2.5.2:
-    resolution: {integrity: sha512-xUdUfwDJLGjOUPH3BuPBt0NlIrR7f/QHKgu3GZIXswMMIihAekj2i97oI0iWG5Bok/b+OBjHPfa8IU9velnP/Q==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@lmdb/lmdb-linux-x64/-/lmdb-linux-x64-2.5.2.tgz}
-    name: '@lmdb/lmdb-linux-x64'
-    version: 2.5.2
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@lmdb/lmdb-win32-x64/2.5.2:
-    resolution: {integrity: sha512-zrBczSbXKxEyK2ijtbRdICDygRqWSRPpZMN5dD1T8VMEW5RIhIbwFWw2phDRXuBQdVDpSjalCIUMWMV2h3JaZA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@lmdb/lmdb-win32-x64/-/lmdb-win32-x64-2.5.2.tgz}
-    name: '@lmdb/lmdb-win32-x64'
-    version: 2.5.2
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-arm64/2.2.0:
-    resolution: {integrity: sha512-Z9LFPzfoJi4mflGWV+rv7o7ZbMU5oAU9VmzCgL240KnqDW65Y2HFCT3MW06/ITJSnbVLacmcEJA8phywK7JinQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-arm64/-/msgpackr-extract-darwin-arm64-2.2.0.tgz}
-    name: '@msgpackr-extract/msgpackr-extract-darwin-arm64'
-    version: 2.2.0
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-x64/2.2.0:
-    resolution: {integrity: sha512-vq0tT8sjZsy4JdSqmadWVw6f66UXqUCabLmUVHZwUFzMgtgoIIQjT4VVRHKvlof3P/dMCkbMJ5hB1oJ9OWHaaw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-x64/-/msgpackr-extract-darwin-x64-2.2.0.tgz}
-    name: '@msgpackr-extract/msgpackr-extract-darwin-x64'
-    version: 2.2.0
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm/2.2.0:
-    resolution: {integrity: sha512-SaJ3Qq4lX9Syd2xEo9u3qPxi/OB+5JO/ngJKK97XDpa1C587H9EWYO6KD8995DAjSinWvdHKRrCOXVUC5fvGOg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm/-/msgpackr-extract-linux-arm-2.2.0.tgz}
-    name: '@msgpackr-extract/msgpackr-extract-linux-arm'
-    version: 2.2.0
-    cpu: [arm]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm64/2.2.0:
-    resolution: {integrity: sha512-hlxxLdRmPyq16QCutUtP8Tm6RDWcyaLsRssaHROatgnkOxdleMTgetf9JsdncL8vLh7FVy/RN9i3XR5dnb9cRA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm64/-/msgpackr-extract-linux-arm64-2.2.0.tgz}
-    name: '@msgpackr-extract/msgpackr-extract-linux-arm64'
-    version: 2.2.0
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-x64/2.2.0:
-    resolution: {integrity: sha512-94y5PJrSOqUNcFKmOl7z319FelCLAE0rz/jPCWS+UtdMZvpa4jrQd+cJPQCLp2Fes1yAW/YUQj/Di6YVT3c3Iw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-x64/-/msgpackr-extract-linux-x64-2.2.0.tgz}
-    name: '@msgpackr-extract/msgpackr-extract-linux-x64'
-    version: 2.2.0
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/@msgpackr-extract/msgpackr-extract-win32-x64/2.2.0:
-    resolution: {integrity: sha512-XrC0JzsqQSvOyM3t04FMLO6z5gCuhPE6k4FXuLK5xf52ZbdvcFe1yBmo7meCew9B8G2f0T9iu9t3kfTYRYROgA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@msgpackr-extract/msgpackr-extract-win32-x64/-/msgpackr-extract-win32-x64-2.2.0.tgz}
-    name: '@msgpackr-extract/msgpackr-extract-win32-x64'
-    version: 2.2.0
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/events/3.3.0:
-    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/events/-/events-3.3.0.tgz}
-    name: events
-    version: 3.3.0
-    engines: {node: '>=0.8.x'}
-
-  registry.npmjs.org/fsevents/2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz}
-    name: fsevents
-    version: 2.3.2
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-darwin-arm64/1.18.0:
-    resolution: {integrity: sha512-OqjydwtiNPgdH1ByIjA1YzqvDG/OMR6L3LPN6wRl1729LB0y4Mik7L06kmZaTb+pvUHr+NmDd2KCwnlrQ4zO3w==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.18.0.tgz}
-    name: lightningcss-darwin-arm64
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-darwin-x64/1.18.0:
-    resolution: {integrity: sha512-mNiuPHj89/JHZmJMp+5H8EZSt6EL5DZRWJ31O6k3DrLLnRIQjXuXdDdN8kP7LoIkeWI5xvyD60CsReJm+YWYAw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.18.0.tgz}
-    name: lightningcss-darwin-x64
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-linux-arm-gnueabihf/1.18.0:
-    resolution: {integrity: sha512-S+25JjI6601HiAVoTDXW6SqH+E94a+FHA7WQqseyNHunOgVWKcAkNEc2LJvVxgwTq6z41sDIb9/M3Z9wa9lk4A==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.18.0.tgz}
-    name: lightningcss-linux-arm-gnueabihf
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-linux-arm64-gnu/1.18.0:
-    resolution: {integrity: sha512-JSqh4+21dCgBecIQUet35dtE4PhhSEMyqe3y0ZNQrAJQ5kyUPSQHiw81WXnPJcOSTTpG0TyMLiC8K//+BsFGQA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.18.0.tgz}
-    name: lightningcss-linux-arm64-gnu
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-linux-arm64-musl/1.18.0:
-    resolution: {integrity: sha512-2FWHa8iUhShnZnqhn2wfIcK5adJat9hAAaX7etNsoXJymlliDIOFuBQEsba2KBAZSM4QqfQtvRdR7m8i0I7ybQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.18.0.tgz}
-    name: lightningcss-linux-arm64-musl
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-linux-x64-gnu/1.18.0:
-    resolution: {integrity: sha512-plCPGQJtDZHcLVKVRLnQVF2XRsIC32WvuJhQ7fJ7F6BV98b/VZX0OlX05qUaOESD9dCDHjYSfxsgcvOKgCWh7A==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.18.0.tgz}
-    name: lightningcss-linux-x64-gnu
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-linux-x64-musl/1.18.0:
-    resolution: {integrity: sha512-na+BGtVU6fpZvOHKhnlA0XHeibkT3/46nj6vLluG3kzdJYoBKU6dIl7DSOk++8jv4ybZyFJ0aOFMMSc8g2h58A==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.18.0.tgz}
-    name: lightningcss-linux-x64-musl
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/lightningcss-win32-x64-msvc/1.18.0:
-    resolution: {integrity: sha512-5qeAH4RMNy2yMNEl7e5TI6upt/7xD2ZpHWH4RkT8iJ7/6POS5mjHbXWUO9Q1hhDhqkdzGa76uAdMzEouIeCyNw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.18.0.tgz}
-    name: lightningcss-win32-x64-msvc
-    version: 1.18.0
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  registry.npmjs.org/msgpackr-extract/2.2.0:
-    resolution: {integrity: sha512-0YcvWSv7ZOGl9Od6Y5iJ3XnPww8O7WLcpYMDwX+PAA/uXLDtyw94PJv9GLQV/nnp3cWlDhMoyKZIQLrx33sWog==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/msgpackr-extract/-/msgpackr-extract-2.2.0.tgz}
-    name: msgpackr-extract
-    version: 2.2.0
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      node-gyp-build-optional-packages: 5.0.3
-    optionalDependencies:
-      '@msgpackr-extract/msgpackr-extract-darwin-arm64': registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-arm64/2.2.0
-      '@msgpackr-extract/msgpackr-extract-darwin-x64': registry.npmjs.org/@msgpackr-extract/msgpackr-extract-darwin-x64/2.2.0
-      '@msgpackr-extract/msgpackr-extract-linux-arm': registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm/2.2.0
-      '@msgpackr-extract/msgpackr-extract-linux-arm64': registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-arm64/2.2.0
-      '@msgpackr-extract/msgpackr-extract-linux-x64': registry.npmjs.org/@msgpackr-extract/msgpackr-extract-linux-x64/2.2.0
-      '@msgpackr-extract/msgpackr-extract-win32-x64': registry.npmjs.org/@msgpackr-extract/msgpackr-extract-win32-x64/2.2.0
-    dev: true
-    optional: true
-
-  registry.npmjs.org/saslprep/1.0.3:
-    resolution: {integrity: sha512-/MY/PEMbk2SuY5sScONwhUDsV2p77Znkb/q3nSVstq/yQzYJOH/Azh29p9oJLsl3LnQwSvZDKagDGBsBwSooag==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/saslprep/-/saslprep-1.0.3.tgz}
-    name: saslprep
-    version: 1.0.3
-    engines: {node: '>=6'}
-    requiresBuild: true
-    dependencies:
-      sparse-bitfield: 3.0.3
-    dev: false
-    optional: true
