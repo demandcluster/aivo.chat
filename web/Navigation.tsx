@@ -92,11 +92,10 @@ const UserNavigation: Component = () => {
       <Item href="/chats">
         <MessageCircle /> Chats
       </Item>
-      <Show when={user.user?.admin}>
       <Item href="/memory">
         <Book /> Memory
       </Item>
-      </Show>
+     
       <Item href="/invites">
         <MailPlus /> Invites <InviteBadge />
       </Item>

@@ -17,6 +17,7 @@ import { handleLuminAI } from './luminai'
 import { handleNovel } from './novel'
 import { handleOoba } from './ooba'
 import { handleOAI } from './openai'
+import { handleClaude } from './claude'
 import { GenerateRequestV2, ModelAdapter } from './type'
 import { createPromptWithParts, getAdapter } from '../../common/prompt'
 import { handleScale } from './scale'
@@ -31,6 +32,7 @@ const handlers: { [key in AIAdapter]: ModelAdapter } = {
   luminai: handleLuminAI,
   openai: handleOAI,
   scale: handleScale,
+  claude: handleClaude,
 }
 
 export async function createTextStreamV2(
@@ -39,6 +41,8 @@ export async function createTextStreamV2(
   guestSocketId?: string
 ) {
   /**
+   * N.b.: The front-end sends the `lines` and `history` in TIME-ASCENDING order. I.e. Oldest -> Newest
+   *
    * We need to ensure the prompt is always generated using the correct version of the memory book.
    * If a non-owner initiates generation, they will not have the memory book.
    *
@@ -61,6 +65,7 @@ export async function createTextStreamV2(
   const gen = opts.settings || getFallbackPreset(adapter)
   const settings = mapPresetsToAdapter(gen, adapter)
   const stream = handler({
+    kind: opts.kind,
     char: opts.char,
     chat: opts.chat,
     gen: opts.settings || {},

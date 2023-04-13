@@ -66,7 +66,7 @@ const CharacterList: Component = () => {
             )}
           </For>
         </div>
-        {chars.list.length === 0 ? <NoCharacters /> : null}
+        {!chars.list?.length ? <NoCharacters /> : null}
       </Show>
       <Show when={user?.admin}>
       <ImportCharacterModal show={showImport()} close={() => setImport(false)} onSave={onImport} />

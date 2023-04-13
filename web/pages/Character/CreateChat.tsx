@@ -27,7 +27,10 @@ const CreateChatModal: Component<{
   const nav = useNavigate()
   const user = userStore()  
   const [selectedChar, setChar] = createSignal<AppSchema.Character>()
-  const state = characterStore((s) => ({ chars: s.characters.list, loaded: s.characters.loaded }))
+  const state = characterStore((s) => ({
+    chars: s.characters?.list || [],
+    loaded: s.characters.loaded,
+  }))
 
   const char = createMemo(() => {
     const curr = selectedChar() || props.char

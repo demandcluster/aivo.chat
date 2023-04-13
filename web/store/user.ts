@@ -1,12 +1,11 @@
 import { AppSchema } from '../../srv/db/schema'
+import { EVENTS, events } from '../emitter'
 import { FileInputResult } from '../shared/FileInput'
 import { api, clearAuth, getAuth, setAuth } from './api'
 import { createStore } from './create'
 import { data } from './data'
 import { local } from './data/storage'
 import { publish,subscribe } from './socket'
-import { settingStore } from './settings'
-
 import { toastStore } from './toasts'
 
 const UI_KEY = 'ui-settings'
@@ -58,6 +57,10 @@ export type UserState = {
   user?: AppSchema.User
   ui: UISettings
   background?: string
+  metadata: {
+    openaiUsage?: number
+  }
+  oaiUsageLoading: boolean
 }
 
 export type ThemeColor = (typeof UI_THEME)[number]
@@ -71,10 +74,12 @@ export const userStore = createStore<UserState>(
   'user',
   init()
 )((get, set) => {
-  settingStore.subscribe(({ init }, prev) => {
-    if (init && !prev.init) {
-      userStore.setState({ user: init.user, profile: init.profile })
-    }
+  events.on('session-expired', () => {
+    userStore.logout()
+  })
+
+  events.on('init', (init) => {
+    userStore.setState({ user: init.user, profile: init.profile })
   })
 
   return {
@@ -140,6 +145,8 @@ export const userStore = createStore<UserState>(
         jwt: res.result.token,
       }
 
+      events.emit(EVENTS.loggedOut)
+
       onSuccess?.()
       publish({ type: 'login', token: res.result.token })
     },
@@ -170,10 +177,9 @@ export const userStore = createStore<UserState>(
       publish({ type: 'login', token: res.result.token })
     },
     logout() {
+      events.emit(EVENTS.loggedOut)
       clearAuth()
       publish({ type: 'logout' })
-      settingStore.setState({ init: undefined })
-      settingStore.init()
       return { jwt: '', profile: undefined, user: undefined, loggedIn: false }
     },
 
@@ -193,7 +199,7 @@ export const userStore = createStore<UserState>(
       return { background: file.content }
     },
 
-    async deleteKey({ user }, kind: 'novel' | 'horde' | 'openai' | 'scale') {
+    async deleteKey({ user }, kind: 'novel' | 'horde' | 'openai' | 'scale' | 'claude') {
       const res = await data.user.deleteApiKey(kind)
       if (res.error) return toastStore.error(`Failed to update settings: ${res.error}`)
 
@@ -204,6 +210,10 @@ export const userStore = createStore<UserState>(
 
       if (kind === 'horde') {
         return { user: { ...user, hordeKey: '', hordeName: '' } }
+      }
+
+      if (kind === 'claude') {
+        return { user: { ...user, claudeApiKey: '', claudeApiKeySet: false } }
       }
     },
 
@@ -219,7 +229,26 @@ export const userStore = createStore<UserState>(
       }
 
       toastStore.error(`Guest state successfully reset`)
-      settingStore.init()
+      userStore.logout()
+    },
+    async *openaiUsage({ metadata, user }) {
+      yield { oaiUsageLoading: true }
+      const res = await api.post('/user/services/openai-usage', { key: user?.oaiKey })
+      yield { oaiUsageLoading: false }
+      if (res.error) {
+        toastStore.error(`Could not retrieve usage: ${res.error}`)
+        yield { metadata: { ...metadata, openaiUsage: -1 } }
+      }
+
+      if (res.result) {
+        yield {
+          metadata: {
+            ...metadata,
+            openaiUsage: res.result.total_usage,
+            openaiCosts: res.result.daily_costs,
+          },
+        }
+      }
     },
   }
 })
@@ -238,6 +267,8 @@ function init(): UserState {
       loggedIn: false,
       ui,
       background,
+      oaiUsageLoading: false,
+      metadata: {},
     }
   }
 
@@ -247,6 +278,8 @@ function init(): UserState {
     jwt: existing,
     ui,
     background,
+    oaiUsageLoading: false,
+    metadata: {},
   }
 }
 

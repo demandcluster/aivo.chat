@@ -43,16 +43,22 @@ export namespace AppSchema {
     hordeKey: string
     hordeModel: string
     hordeName?: string
+    hordeUseTrusted?: boolean
     hordeWorkers?: string[]
 
     scaleUrl?: string
     scaleApiKey?: string
     scaleApiKeySet?: boolean
 
+    claudeApiKey?: string
+    claudeApiKeySet?: boolean
+
     defaultAdapter: AIAdapter
     defaultPresets?: { [key in AIAdapter]?: string }
 
     createdAt?: string
+
+    // adapterConfig?: { [key in AIAdapter]?: Record<string, any> }
   }
 
   export interface Chat {
@@ -189,17 +195,24 @@ export namespace AppSchema {
     frequencyPenalty?: number
     presencePenalty?: number
     oaiModel?: string
+    claudeModel?: string
 
     memoryDepth?: number
     memoryContextLimit?: number
     memoryReverseWeight?: boolean
     src?: string
+
+    images?: {
+      adapter: string
+    }
   }
 
   export interface AppConfig {
     adapters: AIAdapter[]
     version: string
     canAuth: boolean
+    assetPrefix: string
+    selfhosting: boolean
   }
 
   export interface MemoryBook {

@@ -1,10 +1,13 @@
 import { HordeModel, HordeWorker } from '../../common/adapters'
 import { AppSchema } from '../../srv/db/schema'
+import { EVENTS, events } from '../emitter'
+import { setAssetPrefix } from '../shared/util'
 import { api } from './api'
 import { createStore } from './create'
 import { data } from './data'
 
-type SettingStore = {
+type SettingState = {
+  initLoading: boolean
   showMenu: boolean
   fullscreen: boolean
   config: AppSchema.AppConfig
@@ -21,44 +24,64 @@ type SettingStore = {
 
 const HORDE_URL = `https://horde.aivo.chat/api/v2`
 
-export const settingStore = createStore<SettingStore>('settings', {
+const initState: SettingState = {
+  initLoading: true,
   showMenu: false,
   fullscreen: false,
   models: [],
   workers: [],
-  config: { adapters: [], canAuth: true, version: '...' },
-})((_) => ({
-  async init() {
-    const res = await data.user.getInit()
-    if (res.result) {
-      return { init: res.result, config: res.result.config }
-    }
-  },
-  menu({ showMenu }) {
-    return { showMenu: !showMenu }
-  },
-  closeMenu: () => {
-    return { showMenu: false }
-  },
-  fullscreen(_, next: boolean) {
-    return { fullscreen: next }
-  },
-  async getConfig() {
-    const res = await api.get('/settings')
-    if (res.result) {
-      return { config: res.result }
-    }
-  },
-  async getHordeModels() {
-    const res = await api.get<{ models: HordeModel[] }>('/horde/models')
-    if (res.result) {
-      return { models: res.result.models }
-    }
-  },
-  async getHordeWorkers() {
-    const res = await fetch(`${HORDE_URL}/workers?type=text`)
-    const json = await res.json()
+  config: { adapters: [], canAuth: true, version: '...', assetPrefix: '', selfhosting: false },
+}
 
-    return { workers: json }
-  },
-}))
+export const settingStore = createStore<SettingState>(
+  'settings',
+  initState
+)((_) => {
+  events.on(EVENTS.loggedOut, () => {
+    settingStore.setState(initState)
+    settingStore.init()
+  })
+
+  return {
+    async *init() {
+      yield { initLoading: true }
+      const res = await data.user.getInit()
+      yield { initLoading: false }
+
+      if (res.result) {
+        setAssetPrefix(res.result.config.assetPrefix)
+        events.emit(EVENTS.init, res.result)
+        yield { init: res.result, config: res.result.config }
+      }
+    },
+    menu({ showMenu }) {
+      return { showMenu: !showMenu }
+    },
+    closeMenu: () => {
+      return { showMenu: false }
+    },
+    fullscreen(_, next: boolean) {
+      return { fullscreen: next }
+    },
+    async getConfig() {
+      const res = await api.get('/settings')
+      if (res.result) {
+        return { config: res.result }
+      }
+    },
+    async getHordeModels() {
+      const res = await api.get<{ models: HordeModel[] }>('/horde/models')
+      if (res.result) {
+        return { models: res.result.models }
+      }
+    },
+    async getHordeWorkers() {
+      const res = await fetch(`${HORDE_URL}/workers?type=text`)
+      const json = await res.json()
+
+      return { workers: json }
+    },
+
+    async *guestMigrate() {},
+  }
+})

@@ -46,7 +46,7 @@ if (!process.env.JWT_SECRET) {
 export const config = {
   jwtSecret: env('JWT_SECRET'),
   port: +env('PORT', '3001'),
-  assetFolder: env('ASSET_FOLDER', resolve(process.cwd(), 'dist', 'assets')),
+  assetFolder: env('ASSET_FOLDER', resolve(__dirname, '..', 'dist', 'assets')),
   db: {
     name: env('DB_NAME', 'agnai'),
     host: env('DB_HOST', '127.0.0.1'),
@@ -71,6 +71,9 @@ export const config = {
     uid: env('CHAI_UID', ''),
     key: env('CHAI_KEY', ''),
   },
+  horde: {
+    maxWaitSecs: +env('HORDE_WAIT_SECS', '120'),
+  },
   classifyUrl: env('CLASSIFY_URL', 'http://localhost:5001'),
   init: {
     username: env('INITIAL_USER', 'admin'),
@@ -82,10 +85,19 @@ export const config = {
   discordToken: env('DISCORD_TOKEN', ''),
   discordId: env('DISCORD_ID', ''),
   hordeKeyPremium: env('HORDE_KEY_PREMIUM', ''),
-  adapters: env('ADAPTERS', 'novel,horde,kobold,chai,luminai,openai,scale')
+  adapters: env('ADAPTERS', 'novel,horde,kobold,luminai,openai,scale,claude')
     .split(',')
     .filter((i) => !!i) as AIAdapter[],
   
+  storage: {
+    enabled: !!env('USE_S3', ''),
+    id: env('AWS_ACCESS_KEY_ID', ''),
+    key: env('AWS_SECRET_ACCESS_KEY', ''),
+    bucket: env('BUCKET_NAME', ''),
+    endpoint: env('BUCKET_ENDPOINT', ''),
+  },
+  jsonStorage: !!env('JSON_STORAGE', ''),
+  jsonFolder: env('JSON_FOLDER', resolve(__dirname, '..', 'db')),
 }
 
 function env(key: string, fallback?: string): string {

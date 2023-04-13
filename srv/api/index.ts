@@ -12,6 +12,8 @@ import freeCredits from './freecredits'
 import scenario from './scenario'
 import memory from './memory'
 import cart from './cart'
+import selfhost from './json'
+import { config } from '../config'
 
 const router = Router()
 
@@ -28,5 +30,9 @@ router.use('/freecredits', freeCredits)
 router.use('/scenarios',scenario)
 router.use('/memory', memory)
 router.use('/shop', cart)
+
+if (config.jsonStorage) {
+  router.use('/json', selfhost)
+}
 
 export default router

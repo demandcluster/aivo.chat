@@ -1,5 +1,6 @@
 import { Check, Pencil, RefreshCw, Terminal, ThumbsDown, ThumbsUp, Trash, X } from 'lucide-solid'
 import showdown from 'showdown'
+import { Accessor } from 'solid-js'
 import { Component, createMemo, createSignal, For, Show } from 'solid-js'
 import { BOT_REPLACE, SELF_REPLACE } from '../../../../common/prompt'
 import { AppSchema } from '../../../../srv/db/schema'
@@ -23,6 +24,7 @@ type MessageProps = {
   cancelSwipe?: () => void
   onRemove: () => void
   editing: boolean
+  anonymize?: boolean
 }
 
 const Message: Component<MessageProps> = (props) => {
@@ -51,6 +53,7 @@ const Message: Component<MessageProps> = (props) => {
           cancelSwipe={props.cancelSwipe}
           original={props.msg}
           editing={props.editing}
+          anonymize={props.anonymize}
         />
       )}
     </For>
@@ -96,13 +99,28 @@ const SingleMessage: Component<
     chatStore.showPrompt(user.user, props.msg)
   }
 
-  const msgText = createMemo(() => {
-    if (props.last && props.swipe) return props.swipe
-    return props.msg.msg
-  })
-
   const isBot = createMemo(() => !!props.msg.characterId)
   const isUser = createMemo(() => !!props.msg.userId)
+
+  const uncensoredHandle = members[props.msg.userId!]?.handle
+  const userNumber = Object.keys(members).findIndex((m) => m === props.msg.userId) + 1
+
+  const handleToShow = () => (props.anonymize ? 'User #' + userNumber : uncensoredHandle)
+
+  const msgText = createMemo(() => {
+    if (props.last && props.swipe) return props.swipe
+    if (props.anonymize) {
+      return Object.values(members)
+        .reduce(
+          (censoredTxt, mem, i) =>
+            censoredTxt.replace(new RegExp(mem.handle.trim(), 'g'), 'User ' + (i + 1)),
+          props.msg.msg
+        )
+        .replace(SELF_REPLACE, 'User 1')
+    } else {
+      return props.msg.msg
+    }
+  })
 
   let ref: HTMLDivElement | undefined
 
@@ -112,7 +130,6 @@ const SingleMessage: Component<
   }))
 
   const bgStyles = createMemo((prev) => {
-    if (!user.background) return {}
     user.ui.mode
     const hex = getRootVariable('bg-800')
     if (!hex) return {}
@@ -142,7 +159,11 @@ const SingleMessage: Component<
           <AvatarIcon avatarUrl={props.char?.avatar} bot={true} format={format()} />
         </Show>
         <Show when={!props.msg.characterId}>
-          <AvatarIcon avatarUrl={members[props.msg.userId!]?.avatar} format={format()} />
+          <AvatarIcon
+            avatarUrl={members[props.msg.userId!]?.avatar}
+            format={format()}
+            anonymize={props.anonymize}
+          />
         </Show>
       </div>
 
@@ -154,7 +175,7 @@ const SingleMessage: Component<
               data-bot-name={isBot()}
               data-user-name={isUser()}
             >
-              {props.msg.characterId ? props.char?.name! : members[props.msg.userId!]?.handle}
+              {props.msg.characterId ? props.char?.name! : handleToShow()}
             </b>
             <span
               class="message-date text-600 flex items-center text-xs leading-none"
@@ -163,12 +184,6 @@ const SingleMessage: Component<
             >
               {new Date(props.msg.createdAt).toLocaleString()}
             </span>
-            <Show when={props.msg.characterId && user.user?._id === props.chat?.userId && false}>
-              <div class="text-200 ml-2 flex flex-row items-center gap-2">
-                <ThumbsUp size={14} class="hover:text-100 mt-[-0.15rem] cursor-pointer" />
-                <ThumbsDown size={14} class="hover:text-100 cursor-pointer" />
-              </div>
-            </Show>
           </div>
           <Show when={!edit() && !props.swipe && user.user?._id === props.chat?.userId}>
             <div
@@ -237,6 +252,11 @@ const SingleMessage: Component<
               )}
             />
           </Show>
+          <Show when={props.msg._id === ''}>
+            <div class="my-2 ml-4">
+              <div class="dot-flashing bg-[var(--hl-700)]"></div>
+            </div>
+          </Show>
           <Show when={edit()}>
             <div
               ref={ref}
@@ -245,6 +265,12 @@ const SingleMessage: Component<
                 if (ev.key === 'Escape') cancelEdit()
               }}
             ></div>
+          </Show>
+          <Show when={false}>
+            <div class="text-900 mt-2 flex flex-row items-center gap-2">
+              <ThumbsUp size={14} class="hover:text-600 mt-[-0.15rem] cursor-pointer" />
+              <ThumbsDown size={14} class="hover:text-600 cursor-pointer" />
+            </div>
           </Show>
         </div>
       </div>

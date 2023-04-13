@@ -21,10 +21,14 @@ export async function getChat(id: string) {
   const chat = loadItem('chats').find((ch) => ch._id === id)
   const character = loadItem('characters').find((ch) => ch._id === chat?.characterId)
   const profile = loadItem('profile')
-  const messages = local.getMessages(id)
+  const messages = await local.getMessages(id)
 
-  if (!chat || !character) {
-    return local.error(`Chat or character not found`)
+  if (!chat) {
+    return local.error(`Chat not found in data`)
+  }
+
+  if (!character) {
+    return local.error(`Character not found in data`)
   }
 
   return local.result({ chat, character, messages, members: [profile], active: [] })
@@ -120,7 +124,7 @@ export async function getAllChats() {
   const characters = loadItem('characters')
   const chats = loadItem('chats') as AllChat[]
 
-  if (!chats.length) {
+  if (!chats?.length) {
     const [char] = characters
     const { chat, msg } = createNewChat(char, { ...char, overrides: char.persona })
     local.saveChats([chat])

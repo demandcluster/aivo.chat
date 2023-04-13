@@ -1,30 +1,20 @@
-import { Component, createEffect, createMemo, createSignal, Show } from 'solid-js'
-import { AlertTriangle, RefreshCw, Save, X } from 'lucide-solid'
+import { Component, createMemo, createSignal } from 'solid-js'
+import { AlertTriangle, Save } from 'lucide-solid'
 import Button from '../../shared/Button'
 import PageHeader from '../../shared/PageHeader'
-import TextInput from '../../shared/TextInput'
-import { adaptersToOptions, getFormEntries, getStrictForm } from '../../shared/util'
-import Select, { Option } from '../../shared/Select'
-import {
-  CHAT_ADAPTERS,
-  ChatAdapter,
-  HordeModel,
-  HordeWorker,
-  AIAdapter,
-} from '../../../common/adapters'
-import { settingStore, userStore } from '../../store'
-import Divider from '../../shared/Divider'
-import MultiDropdown from '../../shared/MultiDropdown'
-import Modal from '../../shared/Modal'
-import { DefaultPresets } from './DefaultPresets'
+import { getFormEntries, getStrictForm } from '../../shared/util'
+import { CHAT_ADAPTERS, ChatAdapter, AIAdapter } from '../../../common/adapters'
+import { userStore } from '../../store'
 import { AppSchema } from '../../../srv/db/schema'
 import UISettings from './UISettings'
 import Tabs from '../../shared/Tabs'
+import AISettings from './AISettings'
+import { Show } from 'solid-js'
 
 const settingTabs = {
   ai: 'AI Settings',
   ui: 'UI Settings',
-  service: 'Presets',
+  guest: 'Guest Data',
 }
 
 type Tab = keyof typeof settingTabs
@@ -35,35 +25,27 @@ const adapterOptions = CHAT_ADAPTERS.filter((adp) => adp !== 'default') as Defau
 
 const Settings: Component = () => {
   const state = userStore()
-  const cfg = settingStore()
 
-  createEffect(() => {
-    refreshHorde()
-  })
-
-  const [workers, setWorkers] = createSignal<Option[]>()
-  const [show, setShow] = createSignal(false)
   const [tab, setTab] = createSignal(0)
+  const [workers, setWorkers] = createSignal<string[]>(state.user?.hordeWorkers || [])
 
-  const tabs = [ 'ui','ai'] satisfies Tab[]
+  const tabs: Tab[] = ['ui']
+  if (!state.loggedIn) tabs.push('guest')
   const currentTab = createMemo(() => tabs[tab()])
-
-  const refreshHorde = () => {
-    settingStore.getHordeModels()
-    settingStore.getHordeWorkers()
-  }
 
   const onSubmit = (evt: Event) => {
     const body = getStrictForm(evt, {
       koboldUrl: 'string?',
       novelApiKey: 'string?',
       novelModel: 'string?',
+      hordeUseTrusted: 'boolean?',
       hordeKey: 'string?',
       hordeModel: 'string?',
       luminaiUrl: 'string?',
       oaiKey: 'string?',
       scaleApiKey: 'string?',
       scaleUrl: 'string?',
+      claudeApiKey: 'string?',
       defaultAdapter: adapterOptions,
     } as const)
 
@@ -79,30 +61,10 @@ const Settings: Component = () => {
 
     userStore.updateConfig({
       ...body,
-      hordeWorkers: workers()?.map((w) => w.value) || state.user?.hordeWorkers || [],
+      hordeWorkers: workers(),
+      defaultPresets,
     })
   }
-
-  const hordeName = createMemo(
-    () => {
-      if (state.user?.hordeName) return `Logged in as ${state.user.hordeName}.`
-      return `Currently using anonymous access.`
-    },
-    { equals: false }
-  )
-
-  const novelVerified = createMemo(
-    () => (state.user?.novelVerified ? 'API Key has been verified' : ''),
-    { equals: false }
-  )
-
-  const HordeHelpText = (
-    <>
-      <span>{hordeName()}</span>
-      <br />
-   
-    </>
-  )
 
   const tabClass = `flex flex-col gap-4`
 
@@ -114,265 +76,35 @@ const Settings: Component = () => {
       </div>
       <form onSubmit={onSubmit} autocomplete="off">
         <div class="flex flex-col gap-4">
+          <div class={currentTab() === 'ai' ? tabClass : 'hidden'}>
+            <AISettings onHordeWorkersChange={setWorkers} />
+          </div>
+
           <div class={currentTab() === 'ui' ? tabClass : 'hidden'}>
             <UISettings />
           </div>
 
-          <div class={currentTab() === 'service' ? tabClass : 'hidden'}>
-            <DefaultPresets />
-          </div>
-
-          <div class={currentTab() === 'ai' ? tabClass : 'hidden'}>
-            <Select
-              fieldName="defaultAdapter"
-              label="Default AI Service"
-              items={adaptersToOptions(cfg.config.adapters)}
-              helperText="The default service conversations will use unless otherwise configured"
-              value={state.user?.defaultAdapter}
-            />
-
-            <Show when={cfg.config.adapters.includes('horde')}>
-              <Divider />
-              <h3 class="text-lg font-bold">AI Horde settings</h3>
-              <TextInput
-                fieldName="hordeKey"
-                
-                class="hidden"
-               
-                placeholder={
-                  state.user?.hordeName || state.user?.hordeKey ? 'API key has been verified' : ''
-                }
-                type="password"
-                value={state.user?.hordeKey}
-              />
-
-              
-
-              <div class="flex justify-between">
-                <div class="w-fit">
-                  <Select
-                    fieldName="hordeModel"
-                    helperText={<span>Currently set to: {state.user?.hordeModel || 'None'}</span>}
-                    label="Horde Model"
-                    value={state.user?.hordeModel}
-                    items={[{ label: 'Any', value: 'any' }].concat(...cfg.models.map(toItem))}
-                  />
-                </div>
-                <div class="icon-button flex items-center" onClick={refreshHorde}>
-                  <RefreshCw />
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <Button onClick={() => setShow(true)}>Select Specific Workers</Button>
-                <div>
-                  Workers selected: {workers()?.length ?? state.user?.hordeWorkers?.length ?? '0'}
-                </div>
-              </div>
-            </Show>
-
-            <Show when={cfg.config.adapters.includes('kobold')}>
-              <Divider />
-              <TextInput
-                fieldName="koboldUrl"
-                
-                class="hidden"
-                placeholder="E.g. https://local-tunnel-url-10-20-30-40.loca.lt"
-                value={state.user?.koboldUrl}
-              />
-            </Show>
-
-            <Show when={cfg.config.adapters.includes('openai')}>
-              <Divider />
-              <TextInput
-                fieldName="oaiKey"
-                label="OpenAI Key"
-                helperText="Valid OpenAI Key."
-                placeholder={
-                  state.user?.oaiKeySet
-                    ? 'OpenAI key is set'
-                    : 'E.g. sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-                }
-                type="password"
-                value={state.user?.oaiKey}
-              />
-              <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('openai')}>
-                Delete OpenAI Key
+          <div class={currentTab() === 'guest' ? tabClass : 'hidden'}>
+            <div class="mt-8 mb-4 flex w-full flex-col items-center justify-center">
+              <div>This cannot be undone!</div>
+              <Button class="bg-red-600" onClick={userStore.clearGuestState}>
+                <AlertTriangle /> Delete Guest State <AlertTriangle />
               </Button>
-            </Show>
-
-            <Show when={cfg.config.adapters.includes('scale')}>
-              <Divider />
-              <TextInput
-                fieldName="scaleUrl"
-                label="Scale URL"
-                helperText="Fully qualified Scale URL."
-                placeholder={'E.g. https://dashboard.scale.com/spellbook/api/v2/deploy/a1b2c3'}
-                value={state.user?.scaleUrl}
-              />
-              <TextInput
-                fieldName="scaleApiKey"
-                label="Scale API Key"
-                placeholder={
-                  state.user?.scaleApiKeySet
-                    ? 'Scale API key is set'
-                    : 'E.g. 9rv440nv7ogj6s7j312flqijd'
-                }
-                type="password"
-                value={state.user?.scaleApiKey}
-              />
-              <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('scale')}>
-                Delete Scale API Key
-              </Button>
-            </Show>
-
-            <Show when={cfg.config.adapters.includes('novel')}>
-              <Divider />
-              <h3 class="text-xl">NovelAI settings</h3>
-              <Select
-                fieldName="novelModel"
-                label="NovelAI Model"
-                items={[
-                  { label: 'Euterpe', value: 'euterpe-v2' },
-                  { label: 'Krake', value: 'krake-v2' },
-                ]}
-                value={state.user?.novelModel}
-              />
-              <TextInput
-                fieldName="novelApiKey"
-                label="Novel API Key"
-                type="password"
-                value={state.user?.novelApiKey}
-                helperText={
-                  <>
-                    NEVER SHARE THIS WITH ANYBODY! The token from the NovelAI request authorization.
-                    Please note that this token expires periodically. You will occasionally need to
-                    re-enter this token. headers.{' '}
-                    <a
-                      class="link"
-                      target="_blank"
-                      href="https://github.com/luminai-companion/agn-ai/blob/dev/instructions/novel.md"
-                    >
-                      Instructions
-                    </a>
-                    .
-                  </>
-                }
-                placeholder={novelVerified()}
-              />
-              <Show when={state.user?.novelVerified}>
-                <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('novel')}>
-                  Delete Novel API Key
-                </Button>
-              </Show>
-            </Show>
-
-            <Show when={cfg.config.adapters.includes('luminai')}>
-              <Divider />
-              <TextInput
-                fieldName="luminaiUrl"
-                label="LuminAI URL"
-                helperText="Fully qualified URL. This URL must be publicly accessible."
-                placeholder="E.g. https://local-tunnel-url-10-20-30-40.loca.lt"
-                value={state.user?.luminaiUrl}
-              />
-            </Show>
-            <Show when={!state.loggedIn}>
-              <div class="mt-8 mb-4 flex w-full flex-col items-center justify-center">
-                <div>This cannot be undone!</div>
-                <Button class="bg-red-600" onClick={userStore.clearGuestState}>
-                  <AlertTriangle /> Delete Guest State <AlertTriangle />
-                </Button>
-              </div>
-            </Show>
+            </div>
           </div>
         </div>
 
-        <div class="flex justify-end gap-2 pt-4">
-          <Button type="submit">
-            <Save />
-            Update Settings
-          </Button>
-        </div>
-        <WorkerModal show={show()} close={() => setShow(false)} save={setWorkers} />
+        <Show when={currentTab() !== 'guest'}>
+          <div class="flex justify-end gap-2 pt-4">
+            <Button type="submit">
+              <Save />
+              Update Settings
+            </Button>
+          </div>
+        </Show>
       </form>
     </>
   )
 }
 
 export default Settings
-
-const WorkerModal: Component<{
-  show: boolean
-  close: () => void
-  save: (items: Option[]) => void
-}> = (props) => {
-  const cfg = settingStore((s) => ({
-    workers: s.workers.slice().sort(sortWorkers).map(toWorkerItem),
-  }))
-
-  const state = userStore()
-
-  const [selected, setSelected] = createSignal<Option[]>()
-
-  const save = () => {
-    if (selected()) {
-      props.save(selected()!)
-    } else if (state.user?.hordeWorkers) {
-      props.save(cfg.workers.filter((w) => state.user?.hordeWorkers!.includes(w.value)))
-    }
-
-    props.close()
-  }
-
-  return (
-    <Modal
-      show={props.show}
-      close={props.close}
-      title="Specify AI Horde Workers"
-      footer={
-        <>
-          <Button schema="secondary" onClick={props.close}>
-            <X /> Cancel
-          </Button>
-          <Button onClick={save}>
-            <Save /> Select Workers
-          </Button>
-        </>
-      }
-    >
-      <div class="flex flex-col gap-4 text-sm">
-        <MultiDropdown
-          fieldName="workers"
-          items={cfg.workers}
-          label="Select Workers"
-          helperText="To use any worker de-select all workers"
-          onChange={setSelected}
-          values={selected()?.map((s) => s.value) || state.user?.hordeWorkers || []}
-        />
-        <div class="flex items-center justify-between gap-4">
-          <div>
-            Workers selected: {selected()?.length || state.user?.hordeWorkers?.length || '0'}
-          </div>
-          <Button schema="gray" class="w-max" onClick={() => setSelected([])}>
-            De-select All
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  )
-}
-
-function toItem(model: HordeModel) {
-  return {
-    label: `${model.name} - (queue: ${model.queued}, eta: ${model.eta}, count: ${model.count})`,
-    value: model.name,
-  }
-}
-
-function sortWorkers({ models: l }: HordeWorker, { models: r }: HordeWorker) {
-  return l[0] > r[0] ? 1 : l[0] === r[0] ? 0 : -1
-}
-
-function toWorkerItem(wkr: HordeWorker): Option {
-  return { label: `${wkr.name} - ${wkr.models[0]}`, value: wkr.id }
-}

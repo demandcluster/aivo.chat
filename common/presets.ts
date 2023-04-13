@@ -27,6 +27,7 @@ export const chatGenSettings = {
   presencePenalty: 'number',
   gaslight: 'string',
   oaiModel: 'string',
+  claudeModel: 'string',
   useGaslight: 'boolean?',
   ultimeJailbreak: 'string?',
   antiBond: 'boolean?',
@@ -127,7 +128,7 @@ export const serviceGenMap: Record<Exclude<ChatAdapter, 'default'>, GenMap> = {
     topP: 'top_p',
     typicalP: 'typical_p',
     topA: 'top_a',
-    order: 'order',
+    order: '',
   },
   chai: {
     repetitionPenalty: 'repetition_penalty',
@@ -199,6 +200,20 @@ export const serviceGenMap: Record<Exclude<ChatAdapter, 'default'>, GenMap> = {
     gaslight: 'gaslight',
     oaiModel: 'oaiModel',
   },
+  claude: {
+    maxTokens: 'max_tokens_to_sample',
+    repetitionPenalty: '',
+    repetitionPenaltyRange: '',
+    repetitionPenaltySlope: '',
+    tailFreeSampling: '',
+    temp: 'temperature',
+    topK: '',
+    topP: '',
+    typicalP: '',
+    topA: '',
+    gaslight: 'gaslight',
+    claudeModel: 'claudeModel',
+  },
   scale: {
     maxTokens: '',
     repetitionPenalty: '',
@@ -225,9 +240,11 @@ export function isDefaultPreset(value?: string): value is GenerationPreset {
 
 export function getFallbackPreset(adapter: AIAdapter) {
   switch (adapter) {
+    case 'horde':
+      return defaultPresets.horde
+
     case 'chai':
     case 'kobold':
-    case 'horde':
     case 'luminai':
     case 'ooba':
       return defaultPresets.basic
@@ -240,5 +257,11 @@ export function getFallbackPreset(adapter: AIAdapter) {
 
     case 'scale':
       return defaultPresets.scale
+
+    case 'claude':
+      return defaultPresets.claude
+
+    default:
+      throw new Error(`Unknown adapter: ${adapter}`)
   }
 }
