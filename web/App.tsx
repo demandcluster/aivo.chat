@@ -66,12 +66,12 @@ const App: Component = () => {
                 <Route path="/chat" component={ChatDetail} />
                 <Route path="/chat/:id" component={ChatDetail} />
                 <Route path="/" component={HomePage} />
-                <MatchRoutes />
                 <Route path="/profile" component={ProfilePage} />
                 <Route path="/settings" component={Settings} />
                 <Route path="/memory" component={MemoryPage} />
                 <Route path="/memory/:id" component={EditMemoryPage} />
                 <Show when={state.loggedIn}>
+                  <MatchRoutes />
                   <Route path="/invites" component={InvitesPage} />
                   <Show when={state.user?.admin}>
                     <Route path="/admin/metrics" component={MetricsPage} />
