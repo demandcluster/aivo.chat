@@ -41,12 +41,10 @@ export const matchStore = createStore<Matchesstate>('Match', {
         }
         return { characters: { 
           // ids: res.result.characters.map((i) => i._id),
-          ids: res.result.characters,
-          list: res.result.characters, loaded: true } }
+          // ids: res.result.characters,
+          list: res.result.characters, loaded: true } 
       }
-    },
- 
-    
+    }},
     
     getMatch: async (_,char: AppSchema.Character) => {
        

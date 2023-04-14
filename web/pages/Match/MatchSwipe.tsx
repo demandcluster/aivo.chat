@@ -16,9 +16,19 @@ const MatchList: Component = () => {
   let curApiref;
   let totalSwipes = [];
   let tmpSwipes = [];
-  
-  const [chars, setChar] = createStore( matchStore((s) => s.characters));
-  const [charsIDS, setCharIDS] = createSignal([]);
+
+  createEffect(() => {
+    curApiref = '';
+    totalSwipes = [];
+    tmpSwipes = [];
+    swipeStore.getSwipe();
+    matchStore.getMatches( swipeCount.lastid);
+  });
+
+  const matchItems = matchStore((s) => s.characters)
+  const [charsList, setCharList] = createSignal(matchItems);
+  const [charsIds, setCharIds] = createSignal(matchItems);
+
   const showZindex = {min: 1000000, plus: 2000000};
   const [undoDisabled, setUndo] = createSignal('disabled')
   const [colorSwipeMove, setSwipeMove] = createSignal(
@@ -35,17 +45,9 @@ const MatchList: Component = () => {
   const user = userStore()
   const navigate=useNavigate()
 
-  createEffect(() => {
-    curApiref = '';
-    totalSwipes = [];
-    tmpSwipes = [];
-    swipeStore.getSwipe();
-    matchStore.getMatches( swipeCount.lastid);
-  })
   
   const createMatch=async (charId: string) => {
-    const char = chars.list.find((c) => c._id === charId)
-    //matchStore.createMatch(char).then(() => navigate('/character/list'))
+    const char = charsList().list.find((c) => c._id === charId)
     matchStore.createMatch(char);
   }
   
@@ -57,45 +59,33 @@ const MatchList: Component = () => {
       case 'right':
         createMatch(this.id);
         this.apiRef.remove();
-        // const objWithIdIndex = totalSwipes.findIndex((obj) => obj.id === this.id);
-        // if (objWithIdIndex > -1) {
-        //   totalSwipes.splice(objWithIdIndex, 1);
-        // }
-        // console.log(this.id,totalSwipes);
-        // swipeCount.count--;
         break;
       case 'up':
         showProfile();
         break;
     }
     if(direction === 'right' || direction === 'left'){
-      // swipeStore.setSwipe(swipeNowAmount+swipeCount.count);
-      swipeStore.setSwipe(chars.ids[chars.ids.length-1]._id);
-      // (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
+      swipeStore.setSwipe(charsIds().list[charsIds().list.length-1]._id);
       if(direction === 'left'){
-        const test = chars.ids.splice(0,chars.ids.length-1);
-        test.unshift(chars.ids[chars.ids.length-1])
-        setChar({loaded:true,ids:test});
-        tmpSwipes[this.apiRef.id]=test;
+        const test = charsIds().list.splice(0,charsIds().list.length-1);
+        test.unshift(charsIds().list[charsIds().list.length-1])
+        setCharIds({loaded:true,list:test});
+        tmpSwipes[this.apiRef.id]=[...test];
         setTimeout(() => {
           if(tmpSwipes[this.apiRef.id] && !tmpSwipes[this.apiRef.id].deleted){
             this.apiRef.restoreBack(5);
-            setChar({loaded:true,list: tmpSwipes[this.apiRef.id]});
+            setCharList({loaded:true,list: tmpSwipes[this.apiRef.id]});
             tmpSwipes[this.apiRef.id].deleted = 1 ;
-            // delete tmpSwipes[this.apiRef.id];
           }
-          // totalSwipes[chars.ids[chars.ids.length-1]].toFront(8);
         }, 2500);
         setUndo('');
       }else{
-        const test = chars.ids.splice(0,chars.list.length-1);
-        setChar({loaded:true,ids:test});
+        const test = charsIds().list.splice(0,charsIds().list.length-1);
+        setCharIds({loaded:true,list:test});
         tmpSwipes[this.apiRef.id] = test;
         setTimeout(() => {
-          // const test = chars.list.splice(0,chars.list.length-1);
-          // test.unshift(chars.list[chars.list.length-1])
           if(tmpSwipes[this.apiRef.id]){
-            setChar({loaded:true,list:tmpSwipes[this.apiRef.id]});
+            setCharList({loaded:true,list:tmpSwipes[this.apiRef.id]});
             tmpSwipes[this.apiRef.id].deleted = 1 ;
             // delete tmpSwipes[this.apiRef.id];
           }
@@ -150,73 +140,47 @@ const MatchList: Component = () => {
     }
   }
   function showProfile (){
-    navigate(`/likes/${chars.ids[chars.ids.length-1]._id}/profile`)
+    navigate(`/likes/${charsIds().list[charsIds().list.length-1]._id}/profile`)
   }
   function SwipeUndo (){
     setUndo('disabled');
-    totalSwipes[chars.ids[0]._id].snapBack(6);
-    const tmpChar = chars.ids;
+    totalSwipes[charsIds().list[0]._id].snapBack(6);
+    const tmpChar = charsIds().list;
     const firstElement = tmpChar.shift();
     tmpChar.push(firstElement);
-    setChar({loaded:true,ids:tmpChar});
-    tmpSwipes[chars.ids[0]._id]=tmpChar;
-    swipeStore.setSwipe(chars.ids[0]._id);
-    //loop tmpSwipes and set the list to the last element
+    setCharIds({loaded:true,list:tmpChar});
+    tmpSwipes[charsIds().list[0]._id]=tmpChar;
+    swipeStore.setSwipe(charsIds().list[0]._id);
     Object.keys(tmpSwipes).forEach(key => {
-      if(tmpSwipes[key][tmpSwipes[key].length -1]._id  !==chars.ids[0]._id ){
+      if(tmpSwipes[key][tmpSwipes[key].length -1]._id  !==charsIds().list[charsIds().list.length-1]._id ){
         if(!tmpSwipes[key].deleted){
           totalSwipes[key].restoreBack(5);
-          setChar({loaded:true,list:tmpSwipes[key]});
+          setCharList({loaded:true,list:tmpSwipes[key]});
         }
         delete tmpSwipes[key];
       }else{
         setTimeout(() => {
-          setChar({loaded:true,list:tmpSwipes[key]});
-          setChar({loaded:true,ids:tmpSwipes[key]});
+          setCharList({loaded:true,list:tmpSwipes[key]});
+          setCharIds({loaded:true,list:tmpSwipes[key]});
           delete tmpSwipes[key];
-        }, 20);
+        }, 200);
       }
     });
     
-    // setTimeout(() => {
-    //   console.log(tmpSwipes);
-    //     // console.log(chars.list);
-    //     // const tmpChar = [...chars.list];
-    //     // const firstElement = tmpChar.shift();
-    //     // tmpChar.push(firstElement);
-    //     // console.log(tmpChar,chars.ids);
-    //     // chars.list.push(firstElement);
-    //     console.log(tmpSwipes[chars.ids[0]._id]);
-    //     setChar({loaded:true,list:tmpSwipes[chars.ids[0]._id]});
-    //     delete tmpSwipes[chars.ids[0]._id];
-    // }, 1000);
-    // const highestId = window.setTimeout(() => {
-    //   console.log('highestId',highestId);
-    //   for (let i = highestId-4; i >= 0; i--) {
-    //     console.log(i);
-    //   }
-    // }, 0);
-
-    // swipeStore.setSwipe(showSwipes()-1);
-    // setSwipe(showSwipes()-1);
-    // (showSwipes()> 0 ) ?  setUndo(''): setUndo('disabled');
   }
   function buttonSwipe (direction){
-    // if((totalSwipes.length-swipeCount.count-1-showSwipes())<0){
-    //  setSwipe(showSwipes()-totalSwipes.length);
-    // }
-    totalSwipes[chars.ids[chars.ids.length-1]._id].swipe(direction);
+    totalSwipes[charsIds().list[charsIds().list.length-1]._id].swipe(direction);
   }
   
   return (
     <>
       <PageHeader title="Likes" subtitle="" />
-      <Show when={!chars.loaded || !swipeCount.loaded}>
-        <div>Loading...</div>
+      <Show when={!charsList().loaded || !swipeCount.loaded}>
+        <div>Loading ...</div>
       </Show>
-      <Show when={chars.loaded && swipeCount.loaded} >
+      <Show when={charsList().loaded && swipeCount.loaded} >
         <div class="flex w-full flex-col gap-2 ">
-          <For each={chars.list}>{(char, i) =>
+          <For each={charsList().list}>{(char, i) =>
             <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount}  showZindex={i} />
           }</For>
         </div>
@@ -234,7 +198,7 @@ const MatchList: Component = () => {
                   <Heart size={40} class={`${colorSwipeMove().right}  " icon-button inline-block fill-emerald-400 "`}/>
                 </button>
           </div>
-        {chars.list?.length === 0 ? <NoMatches /> : null}
+        {charsList().list?.length === 0 ? <NoMatches /> : null}
       </Show>
     </>
   )

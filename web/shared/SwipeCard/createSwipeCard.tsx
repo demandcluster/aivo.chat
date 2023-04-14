@@ -79,7 +79,6 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
         }, 100)
         await new Promise<void>((resolve) =>
             setTimeout(() => {
-                console.log("zindex",zindex);
                 setStyle({
                     'z-index': zindex,
                     transform: 'none',
