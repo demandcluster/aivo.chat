@@ -20,7 +20,7 @@ const ProfileCard: Component<{ character: AppSchema.Character; href: string }> =
       <div class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg  bg-[var(--bg-700)] border-[var(--hl-900)] text-900 ">
           <ChevronsLeft class="absolute w-20 h-20 hover:cursor-pointer"  onclick={()=> props.navBack() } />
           <img alt="..." src={props.character.avatar} class="w-full align-middle rounded-t-lg min-h-[100px]"/>
-            <div class="z-10 w-full text-right relative -mt-16 sm:text-5xl p-2 text-3xl text-white text-shadow -bottom-6 right-4">
+            <div class="z-10 w-full text-right relative md:-mt-16 -mt-12 sm:text-5xl p-2 text-3xl text-white text-shadow -bottom-6 right-4">
               <span class=" font-black ">{props.character?.name}</span> {((props.character.persona?.attributes?.age) ? props.character?.persona?.attributes?.age[0].split(" ")[0] : '')}</div>
           <blockquote class="relative p-8 mb-4">
             <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="absolute left-0 w-full block" style="height:95px;top:-94px">
