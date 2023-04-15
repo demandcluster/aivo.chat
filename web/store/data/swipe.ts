@@ -3,11 +3,11 @@ import { loadItem, local } from './storage'
 
 export async function getSwipe() {
   const swipe = loadItem('swipe');
-  return { count:  swipe , loaded:true, error: undefined }
+  return { lastid:  swipe , loaded:true, error: undefined }
 }
 
-export async function setSwipe(count: int) {
-  local.saveSwipe(count)
+export async function setSwipe(lastid: string) {
+  local.saveSwipe(lastid)
   return { result: true, error: undefined }
 }
 

@@ -407,22 +407,6 @@ body {
   }
 
   
-  @media (min-width: 450px) and (max-width: 767px) {
-    .likes-middle{
-      left: 10% !important;
-      right: 10% !important;
-    }
-  }
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .likes-middle{
-      right: calc(50% - 18.5rem) !important;
-    }
-  }
-  @media (min-width: 1024px) {
-    .likes-middle{
-      right: calc(50% - 24rem) !important;
-    }
-  }
   .text-shadow {
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   }

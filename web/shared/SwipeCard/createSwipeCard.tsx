@@ -60,14 +60,23 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
             });   
         }, 2000)
     }
+
+    const toFront = async (zindex) => {
+        setTimeout(() => {
+            setStyle({
+                'z-index': zindex,
+            });   
+        }, 2000)
+    }
     
     const restoreBack = async (zindex) => {
         element.setAttribute("zindex",zindex);
         setTimeout(() => {
             setStyle({
                 'z-index': zindex,
+                transform: 'none',
             });
-        }, 1000)
+        }, 100)
         await new Promise<void>((resolve) =>
             setTimeout(() => {
                 setStyle({
@@ -78,15 +87,15 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
                     'transition-duration': '40ms'
                 });
                 resolve();
-            }, 2000)
+            }, 200)
         );
     }
 
-    const snapBack = async () => {
+    const snapBack = async (zIndex) => {
         // if (swiped()) {
             // setSwiped(false);
             setStyle({
-                "z-index": '3000000',
+                "z-index": zIndex,
                 transform: `translate(${lastPosition.x * -props.bouncePower}px, ${
                     lastPosition.y * -props.bouncePower
                 }px)
@@ -102,7 +111,7 @@ export const _createSwipeCard = (initialProps: ParentProps<_SwipeCardProps>) => 
             await new Promise<void>((resolve) =>
                 setTimeout(() => {
                     setStyle({
-                        "z-index": '3000000',
+                        "z-index": zIndex,
                         transform: 'none',
                         'transition-property': 'all',
                         'transition-timing-function': 'cubic-bezier(0.4, 0, 0.2, 1)',
