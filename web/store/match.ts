@@ -31,13 +31,15 @@ export const matchStore = createStore<Matchesstate>('Match', {
     logout() {
       return { Matches: { loaded: false, list: [] } }
     },
-    getMatches: async (a, lastid) => {
+    getMatches: async (_, lastid) => {
       const res = await api.get('/match')
       if (res.error) toastStore.error('Failed to retrieve Matches')
       else {
-        const ss = res.result.characters.findIndex((i)=>i._id===lastid);
-        if(ss){
-          res.result.characters = [...res.result.characters.splice(ss), ...res.result.characters.splice(0,ss)];
+        if(lastid){
+          const ss = res.result.characters.findIndex((i)=>i._id===lastid);
+          if(ss){
+            res.result.characters = [...res.result.characters.splice(ss), ...res.result.characters.splice(0,ss)];
+          }
         }
         return { characters: { 
           // ids: res.result.characters.map((i) => i._id),
