@@ -100,12 +100,12 @@ const Character: Component<{
       relative z-0 overflow-hidden min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[var(--bg-800)] border-[var(--hl-900)] text-900 max-w-[210px] sm:max-w-[250px] xl:max-w-[93%]      ">
         <a href={`/character/${props.character._id}/chats`}>
           <img alt="..." src={props.character.avatar} class="w-full align-middle rounded-t-lg min-h-[30px] p-1 object-contain max-h-[13rem] xl:max-h-[19rem] 2xl:max-h-[15rem] "/>
-          <div class="z-10 w-full text-right relative md:-mt-16 -mt-12 p-2 text-2xl md:text-3xl text-white text-shadow -bottom-6 right-0 md:right-1">
+          <div class="z-10 w-full text-right relative md:-mt-12 -mt-12 p-2 text-2xl md:text-3xl text-white text-shadow -bottom-6 right-0 md:right-1">
             <span class=" font-black ">{props.character?.name}</span> {((props.character.persona?.attributes?.age) ? props.character?.persona?.attributes?.age[0].split(" ")[0] : '')}
           </div>
         </a>
-        <blockquote class="relative pt-6 p-1 md:p-8 mb-4">
-          <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="absolute left-0 w-full block h-24 top-[-96px] md:top-[-82px] p-1 z-0">
+        <blockquote class="relative pt-8 p-1 md:px-4 mb-8">
+          <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="absolute left-0 w-full block h-24 top-[-96px] p-1 z-0">
               <polygon points="-30,95 583,95 583,65" class="text-[var(--bg-800)] fill-current"></polygon>
           </svg>
           <Show when={props.character.name!=="Aiva"}>

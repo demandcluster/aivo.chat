@@ -19,7 +19,7 @@ const ProfileCard: Component<{ character: AppSchema.Character; href: string }> =
             <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="absolute left-0 w-full block" style="height:95px;top:-94px">
                 <polygon points="-30,95 583,95 583,65" class="text-[var(--bg-800)] fill-current"></polygon>
             </svg>
-            <p class="text-md font-light mt-2 mb-4">{props.character?.summary}</p>
+            <p class="text-md font-light mt-2 mb-4">{props.character?.summary}{props.character?.description}</p>
             
               <hr class=" mt-8 opacity-40 w-[calc(100%-8rem)] ml-32"/>
               <div class=" relative -ml-3 -top-4  text-shadow inline-block mr-3  "><Leaf class="inline mr-1 w-10 text text-[var(--hl-200)]"/>Sexuality</div>
