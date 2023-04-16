@@ -212,13 +212,13 @@ const DSwipeCard: Component<{ character: AppSchema.Character;match: Any  }> = (p
   const age = (props.character.persona.attributes.age) ? props.character.persona.attributes.age[0].split(" ")[0] : '';
   return (
     <div class="absolute w-full max-w-5xl"> 
-    <SwipeCard zindex="5" class="bg-[var(--bg-800)] fixed w-96 h-96 right-[10%] left-[10%] sm:w-9/12 sm:h-3/4 sm:max-w-[550px] sm:max-h-[550px] lg:right-[calc(14%-18.5rem)]  m-auto shadow-lg max-w-[90%] max-h-[90%] border-white border-solid border-[10px] md:border-[20px] rounded-lg"
+    <SwipeCard zindex="5" class="bg-[var(--bg-800)] border-[var(--bg-800)] fixed w-96 h-96 right-[5%] left-[5%] md:right-[10%] md:left-[10%] sm:w-9/12 sm:h-3/4 sm:max-w-[550px] sm:max-h-[550px] lg:right-[calc(14%-18.5rem)]  m-auto shadow-lg max-w-[90%] max-h-[90%]  border-solid border-[10px] md:border-[20px] rounded-lg"
     threshold="300" rotationmultiplier="7.5" maxrotation="90" snapbackduration="300" bouncepower="0.1" id={props.character._id} apiRef={apiRef} onSwipe={props.swipeAction} onMove={props.swipeMovement}>
       <div class="absolute bg-cover max-w-full max-h-full w-full h-full" style={{ "background-image": `url(${props.character.avatar})` }}  >
         <div class="w-full absolute size bottom-4 sm:bottom-10 sm:text-5xl p-2 text-3xl text-white text-shadow"><span class=" font-black ">{props.character.name}</span> {age}</div>
         <div class="absolute bottom-1 h-6 overflow-hidden sm:h-10">
           <For each={props.character.persona.attributes.likes}>
-              {(attr) => <div class="  capitalize float-left px-2 py-1 rounded-md bg-[var(--hl-900)] bg-opacity-80 m-1 text-[8px] sm:text-[12px] sm:py-2">{attr}</div>}
+              {(attr) => <div class=" border capitalize float-left px-2 py-1 rounded-md bg-[var(--hl-900)] bg-opacity-80 m-1 text-[8px] sm:text-[12px] sm:py-2">{attr}</div>}
           </For>
         </div>
       </div>

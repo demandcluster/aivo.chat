@@ -103,7 +103,7 @@ const UserNavigation: Component = () => {
         <Settings /> Settings
       </Item>
 
-    <Show when={user.user?.Admin}>
+    <Show when={user.user?.admin}>
       <Item href="/presets">
         <Sliders /> Presets
       </Item>
