@@ -2,7 +2,7 @@ import { Component,For, Show } from 'solid-js'
 import { A, useNavigate } from "@solidjs/router"
 import { AppSchema } from '../../srv/db/schema'
 import { characterStore } from '../../store'
-import { PersonStanding, GraduationCap, Heart, Hash, User } from 'lucide-solid'
+import { PersonStanding, GraduationCap, Heart, Moon, Dumbbell, Briefcase, Leaf, Globe2, Hash, User, ChevronsLeft } from 'lucide-solid'
 import { getAssetUrl} from './util'
 
 
