@@ -3,6 +3,7 @@ import { A } from '@solidjs/router'
 import { AppSchema } from '../../srv/db/schema'
 import { characterStore } from '../../store'
 import { PersonStanding, GraduationCap, Heart, Hash, User } from 'lucide-solid'
+import { getAssetUrl} from './util'
 
 
 const ProfileCard: Component<{ character: AppSchema.Character; href: string }> = (props) =>(
@@ -11,7 +12,7 @@ const ProfileCard: Component<{ character: AppSchema.Character; href: string }> =
   <div class="flex flex-col flex-wrap xl:flex-nowrap xl:flex-row">
   <div class="hover:scale-150 min-w-max mx-auto xl:mx-0  grow focusable-card">
     <div
-      style={{ 'background-image': `url(${props.character.avatar})` }}
+      style={{ 'background-image': `url(${getAssetUrl(props.character.avatar)})` }}
       class="h-80 w-80 rounded-t-md bg-cover "
 
     >

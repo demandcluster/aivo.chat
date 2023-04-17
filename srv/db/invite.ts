@@ -8,7 +8,7 @@
 
 import { v4 } from 'uuid'
 import { errors, StatusError } from '../api/wrap'
-import { publishMany } from '../api/ws/handle'
+import { sendMany } from '../api/ws'
 import { getChat } from './chats'
 import { db } from './client'
 import { AppSchema } from './schema'
@@ -22,16 +22,20 @@ export type NewInvite = {
 export async function list(userId: string) {
   const invites = await db('chat-invite').find({ kind: 'chat-invite', invitedId: userId }).toArray()
 
-  const ids = invites.reduce<string[]>((prev, curr) => {
-    return prev.concat(curr.invitedId, curr.byUserId, curr.chatId, curr.characterId)
-  }, [])
+  const userIds = Array.from(new Set(invites.map((i) => i.byUserId)))
+  const chatIds = Array.from(new Set(invites.map((i) => i.chatId)))
+  const characterIds = Array.from(new Set(invites.map((i) => i.characterId)))
 
   const [profiles, chats, characters] = await Promise.all([
     db('profile')
-      .find({ userId: { $in: ids } })
+      .find({ userId: { $in: userIds } })
       .toArray(),
-    db('chat').find({ userId }).toArray(),
-    db('character').find({ userId }).toArray(),
+    db('chat')
+      .find({ _id: { $in: chatIds } })
+      .toArray(),
+    db('character')
+      .find({ _id: { $in: characterIds } })
+      .toArray(),
   ])
 
   return {
@@ -126,7 +130,7 @@ export async function answer(userId: string, inviteId: string, accept: boolean) 
       { $set: { memberIds: chat.memberIds.concat(userId) } }
     )
     const profile = await db('profile').findOne({ userId })
-    publishMany([chat.userId, ...chat.memberIds.concat(userId)], {
+    sendMany([chat.userId, ...chat.memberIds.concat(userId)], {
       type: 'member-added',
       chatId: chat._id,
       profile,
@@ -147,7 +151,7 @@ export async function removeMember(chatId: string, requestedBy: string, memberId
   }
 
   if (chat.memberIds.includes(memberId)) {
-    publishMany([requestedBy, ...chat.memberIds], { type: 'member-removed', chatId, memberId })
+    sendMany([requestedBy, ...chat.memberIds], { type: 'member-removed', chatId, memberId })
   }
 
   await db('chat-member').deleteMany({ chatId, userId: memberId })

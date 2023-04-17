@@ -63,9 +63,12 @@ export const OPENAI_MODELS = {
  * <https://console.anthropic.com/docs/api/reference#-v1-complete>
  */
 export const CLAUDE_MODELS = {
-  ClaudeV1: 'claude-v1.0',
+  ClaudeV1: 'claude-v1 ',
+  ClaudeV1_0: 'claude-v1.0',
   ClaudeV1_2: 'claude-v1.2',
-  ClaudeInstantV1: 'claude-instant-v1.0',
+  ClaudeV1_3: 'claude-v1.3',
+  ClaudeInstantV1: 'claude-instant-v1',
+  ClaudeInstantV1_0: 'claude-instant-v1.0',
 } as const
 
 export const NOVEL_MODELS = {
@@ -114,7 +117,7 @@ export type HordeWorker = {
 
 export const ADAPTER_LABELS: Record<AIAdapter, string> = {
   chai: 'Chai',
-  horde: 'Horde',
+  horde: 'AIVO Horde',
   kobold: 'AIVOai',
   novel: 'NovelAI',
   ooba: 'Text-Generation-WebUI',

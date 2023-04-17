@@ -33,7 +33,8 @@ export async function ensureInitialUser() {
 }
 
 export async function getMetrics() {
-  const totalUsers = await db('user').countDocuments()
+  const [totalUsers] = await Promise.all([db('user').countDocuments()])
+
   return { totalUsers }
 }
 
@@ -94,7 +95,8 @@ export async function createUser(newUser: NewUser, admin?: boolean) {
     credits: 200,
     nextCredits: 0,
     defaultAdapter: 'horde',
-    koboldUrl: 'https://ai.aivo.chat',
+    koboldUrl: '',
+    thirdPartyFormat: 'kobold',
     novelModel: NOVEL_MODELS.euterpe,
     luminaiUrl: '',
     oobaUrl: '',

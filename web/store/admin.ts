@@ -14,7 +14,11 @@ type UserInfo = {
 type AdminState = {
   users: AppSchema.User[]
   info?: UserInfo
-  metrics?: { totalUsers: number; connected: number }
+  metrics?: {
+    totalUsers: number
+    connected: number
+    maxLiveCount: number
+  }
 }
 
 export const adminStore = createStore<AdminState>('admin', { users: [] })((_) => {

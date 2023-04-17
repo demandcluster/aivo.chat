@@ -10,7 +10,6 @@ import { A } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
 import { matchStore,characterStore } from '../../store'
 
-
 const MatchProfile: Component = () => {
     const { id } = useParams()
    

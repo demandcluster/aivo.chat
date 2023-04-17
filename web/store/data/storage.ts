@@ -14,7 +14,7 @@ const emptyCfg: AppSchema.AppConfig = {
   canAuth: false,
   version: '',
   assetPrefix: '',
-  selfhosting: false,
+  selfhosting: true,
 }
 
 let SELF_HOSTING = false
@@ -82,7 +82,8 @@ const fallbacks: { [key in StorageKey]: LocalStorage[key] } = {
     hordeKey: '',
     hordeModel: 'PygmalionAI/pygmalion-2.7b',
     defaultAdapter: 'horde',
-    koboldUrl: 'https://ai.aivo.chat',
+    koboldUrl: '',
+    thirdPartyFormat: 'kobold',
     luminaiUrl: '',
   },
   profile: { _id: '', kind: 'profile', userId: ID, handle: 'You' },
