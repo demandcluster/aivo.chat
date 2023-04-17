@@ -406,6 +406,12 @@ body {
     @apply bg-[var(--hl-900)];
   }
 
+  @keyframes rotate {
+    100% {
+      transform: rotate(1turn);
+    }
+  }
+  
   @keyframes hideDrawer {
     to {
       visibility: hidden;
