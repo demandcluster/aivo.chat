@@ -71,10 +71,9 @@ export const handleHordeImage: ImageAdapter = async ({ user, prompt }, log, gues
   //     : decryptText(user.hordeKey)
   //   : HORDE_GUEST_KEY 0000000000
   //
-  //const key = 'DfuoWZKStiqcyMSmVz9T8g'
   //const key ='0000000000'
   const key = config.hordeKeyImages
-  
+
   const headers = { apikey: key }
 
   const init = await needle('post', `${baseUrl}/generate/async`, payload, {
