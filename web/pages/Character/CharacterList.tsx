@@ -91,19 +91,19 @@ const Character: Component<{
   const iconSize = { size: 'lg', corners: 'circle' };
   return (
     <div class="flex w-full gap-2">
-      <div
-              class="flex h-12 w-full cursor-pointer flex-row items-center gap-2 rounded-xl bg-[var(--bg-800)] hover:bg-[var(--bg-700)]"
-              onClick={() => nav(`/chat/${chat._id}`)}
-            >
-              <div class="flex w-1/2 items-center gap-2 sm:w-5/12">
-                <AvatarIcon avatarUrl={chars.map[chat.characterId]?.avatar} class="ml-2" />
-                {chat.character?.name || chars.map[chat.characterId]?.name}
-              </div>
-              <div class="w-5/12 px-4">{chat.name || 'Untitled'}</div>
-              <div class="hidden w-1/2  justify-between sm:flex sm:w-2/12">
-                <div class="text-sm">{toDuration(new Date(chat.updatedAt))} ago</div>
-              </div>
-            </div>
+     
+     <div class="flex h-12 w-full flex-row items-center gap-4 rounded-xl bg-[var(--bg-800)]">
+        <A
+          class="ml-4 flex h-3/4 cursor-pointer items-center rounded-2xl  sm:w-9/12"
+          href={`/character/${props.character._id}/chats`}
+        >
+          <AvatarIcon avatarUrl={props.character.avatar} class="mx-4" />
+          <div class="text-lg">
+            <span class="font-bold">{props.character.name}</span>
+            <span class="ml-2">{props.character.description}</span>
+          </div>
+        </A>
+      </div>
       <div class="flex flex-row items-center justify-center gap-2 sm:w-3/12">
        <Show when={props.user?.admin}>
         <a onClick={props.download}>

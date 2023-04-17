@@ -14,7 +14,7 @@ const emptyCfg: AppSchema.AppConfig = {
   canAuth: false,
   version: '',
   assetPrefix: '',
-  selfhosting: true,
+  selfhosting: false,
 }
 
 let SELF_HOSTING = false
