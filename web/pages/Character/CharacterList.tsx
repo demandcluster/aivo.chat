@@ -12,7 +12,7 @@ import Modal from '../../shared/Modal'
 import Select from '../../shared/Select'
 import { exportCharacter } from '../../../common/prompt'
 import {userStore, scenarioStore} from '../../store'
-
+import {getAssetUrl} from '../../shared/util'	
 import Gauge from '../../shared/Gauge'
 
 const CharacterList: Component = () => {

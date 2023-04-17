@@ -26,15 +26,17 @@ const getUserInfo = handle(async ({ params }) => {
 })
 
 const getMetrics = handle(async () => {
-  const counts = getLiveCounts()
+  const { entries: counts, maxLiveCount } = getLiveCounts()
   const metrics = await store.users.getMetrics()
 
   const connected = counts.map((count) => count.count).reduce((prev, curr) => prev + curr, 0)
 
+  const threshold = Date.now() - 30000
   return {
     ...metrics,
     connected,
-    each: counts.map((count) => ({ ...count, date: count.date.toISOString() })),
+    maxLiveCount,
+    each: counts.filter((c) => c.date.valueOf() >= threshold),
   }
 })
 

@@ -33,6 +33,7 @@ import { devCycleAvatarSettings, isDevCommand } from './dev-util'
 import ChatOptions, { ChatModal } from './ChatOptions'
 import MemberModal from './MemberModal'
 import { AppSchema } from '../../../srv/db/schema'
+import { ImageModal } from './ImageModal'
 
 const EDITING_KEY = 'chat-detail-settings'
 
@@ -41,13 +42,14 @@ const ChatDetail: Component = () => {
   const nav = useNavigate()
   const user = userStore()
   const cfg = settingStore()
-  const chats = chatStore((s) => ({ ...s.active, lastId: s.lastChatId, members: s.activeMembers }))
+  const chats = chatStore((s) => ({ ...s.active, lastId: s.lastChatId, members: s.chatProfiles }))
   const msgs = msgStore((s) => ({
     msgs: s.msgs,
     partial: s.partial,
     waiting: s.waiting,
     retries: s.retries,
   }))
+  const [screenshotInProgress, setScreenshotInProgress] = createSignal(false)
 
   const retries = createMemo(() => {
     const last = msgs.msgs.slice(-1)[0]
@@ -63,7 +65,6 @@ const ChatDetail: Component = () => {
   const [showOpts, setShowOpts] = createSignal(false)
   const [modal, setModal] = createSignal<ChatModal>()
   const [editing, setEditing] = createSignal(getEditingState().editing ?? false)
-  const [anonymize, setAnonymize] = createSignal(false)
 
   const isOwner = createMemo(() => chats.chat?.userId === user.profile?.userId)
   const headerBg = createMemo(() => getHeaderBg(user.ui.mode))
@@ -86,8 +87,6 @@ const ChatDetail: Component = () => {
     saveEditingState(next)
   }
 
-  const toggleAnonymize = () => setAnonymize(!anonymize())
-
   const showModal = (modal: ChatModal) => {
     setModal(modal)
     setShowOpts(false)
@@ -108,6 +107,8 @@ const ChatDetail: Component = () => {
 
   const adapter = createMemo(() => {
     if (!chats.chat || !user.user) return ''
+    if (chats.chat.userId !== user.user._id) return ''
+
     const { adapter, preset } = getAdapter(chats.chat!, user.user!)
     const label = `${ADAPTER_LABELS[adapter]} - ${preset}`
     return label
@@ -144,6 +145,12 @@ const ChatDetail: Component = () => {
     msgStore.confirmSwipe(msgId, swipe(), () => setSwipe(0))
   }
 
+  // When html2canvas grabs this element to make a screenshot out
+  // of it, we need to set the background otherwise it will render
+  // as white/transparent resulting in unreadable message contents
+  // if message background is set to 0 opacity
+  const chatBg = () => (screenshotInProgress() ? 'bg-[var(--bg-900)]' : '')
+
   return (
     <>
       <Show when={!chats.chat || !chats.char || !user.profile}>
@@ -155,7 +162,7 @@ const ChatDetail: Component = () => {
         <div class={`mx-auto flex h-full ${chatWidth()} flex-col justify-between sm:py-2`}>
           <div class="flex h-8 items-center justify-between rounded-md" style={headerBg()}>
             <div class="flex cursor-pointer flex-row items-center justify-between gap-4 text-lg font-bold">
-              <Show when={!cfg.fullscreen}>
+              <Show when={!cfg.fullscreen && isOwner()}>
                 <A href={`/character/${chats.char?._id}/chats`}>
                   <ChevronLeft />
                 </A>
@@ -187,8 +194,8 @@ const ChatDetail: Component = () => {
                     show={showModal}
                     editing={editing()}
                     toggleEditing={toggleEditing}
-                    anonymizeOn={anonymize()}
-                    toggleAnonymize={toggleAnonymize}
+                    screenshotInProgress={screenshotInProgress()}
+                    setScreenshotInProgress={setScreenshotInProgress}
                   />
                 </DropMenu>
               </div>
@@ -228,7 +235,7 @@ const ChatDetail: Component = () => {
               </div>
             </Show>
             <div class="flex flex-col-reverse gap-4 overflow-y-scroll pr-2 sm:pr-4">
-              <div id="chat-messages" class="flex flex-col gap-2">
+              <div id="chat-messages" class={`flex flex-col gap-2 ${chatBg()}`}>
                 <For each={msgs.msgs}>
                   {(msg, i) => (
                     <Message
@@ -236,7 +243,7 @@ const ChatDetail: Component = () => {
                       chat={chats.chat!}
                       char={chats.char!}
                       editing={editing()}
-                      anonymize={anonymize()}
+                      anonymize={cfg.anonymize}
                       last={i() >= 1 && i() === msgs.msgs.length - 1}
                       onRemove={() => setRemoveId(msg._id)}
                       swipe={
@@ -254,7 +261,7 @@ const ChatDetail: Component = () => {
                     chat={chats.chat!}
                     onRemove={() => {}}
                     editing={editing()}
-                    anonymize={anonymize()}
+                    anonymize={cfg.anonymize}
                   />
                 </Show>
               </div>
@@ -291,6 +298,8 @@ const ChatDetail: Component = () => {
       <Show when={modal() === 'members'}>
         <MemberModal show={true} close={setModal} />
       </Show>
+
+      <ImageModal />
 
       <PromptModal />
       <Show when={modal() === 'ui'}>
@@ -435,7 +444,7 @@ function emptyMsg(characterId: string, message: string): AppSchema.ChatMessage {
     _id: '',
     chatId: '',
     characterId,
-    msg: message,
+    msg: message || '',
     updatedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
   }

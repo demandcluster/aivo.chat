@@ -10,6 +10,7 @@ type LiveCount = {
   count: number
   hostname: string
   date: Date
+  max: number
 }
 
 let liveCounts: Record<string, LiveCount> = {}
@@ -22,18 +23,33 @@ export const clients = {
   sub: redis.createClient({ url: getUri() }),
 }
 
+let nonBusMaxCount = 0
+
 export function getLiveCounts() {
-  if (!connected) return [{ hostname: os.hostname(), count: getAllCount(), date: new Date() }]
+  if (!connected)
+    return {
+      entries: [
+        {
+          hostname: `${os.hostname()}-${process.pid}`,
+          count: getAllCount(),
+          date: new Date(),
+          max: nonBusMaxCount,
+        },
+      ],
+      maxLiveCount: nonBusMaxCount,
+    }
 
   const entries: LiveCount[] = []
   const now = Date.now()
+  let maxLiveCount = 0
   for (const [hostname, entry] of Object.entries(liveCounts)) {
     const diff = now - entry.date.valueOf()
     if (diff > 15000) continue
+    maxLiveCount += entry.max
     entries.push(entry)
   }
 
-  return entries
+  return { entries, maxLiveCount }
 }
 
 export function isConnected() {
@@ -51,19 +67,24 @@ export async function initMessageBus() {
   try {
     await clients.pub.connect()
     await clients.sub.connect()
+
     logger.info('Connected to message bus')
+    handleErrors()
 
     setInterval(() => {
+      const count = getAllCount()
       clients.pub.publish(
         COUNT_EVENT,
-        JSON.stringify({ count: getAllCount(), hostname: os.hostname() })
+        JSON.stringify({ count, hostname: `${os.hostname()}-${process.pid}` })
       )
     }, 10000)
 
     clients.sub.subscribe(COUNT_EVENT, (msg) => {
       try {
         const json = JSON.parse(msg)
-        liveCounts[json.hostname] = { ...json, date: new Date() }
+        const prevMax = liveCounts[json.hostname]?.max ?? 0
+        const max = Math.max(prevMax, json.count)
+        liveCounts[json.hostname] = { ...json, max, date: new Date() }
       } catch (ex) {}
     })
 
@@ -77,10 +98,19 @@ export async function initMessageBus() {
 
     connected = true
   } catch (ex) {
+    setInterval(() => {
+      nonBusMaxCount = Math.max(getAllCount(), nonBusMaxCount)
+    }, 5000)
     logger.warn(
       `Message bus not connected - Running in non-distributed mode. If you are self-hosting you can ignore this warning.`
     )
   }
+}
+
+function handleErrors() {
+  clients.pub.on('error', (error) => {})
+
+  clients.sub.on('error', (error) => {})
 }
 
 function getUri() {

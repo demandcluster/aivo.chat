@@ -41,7 +41,10 @@ export const SELF_REPLACE = /\{\{user\}\}/g
  * @returns
  */
 export function createPrompt(opts: PromptOpts) {
-  const sortedMsgs = opts.messages.slice().sort(sortMessagesDesc)
+  const sortedMsgs = opts.messages
+    .filter((msg) => msg.adapter !== 'image')
+    .slice()
+    .sort(sortMessagesDesc)
   opts.messages = sortedMsgs
 
   /**
@@ -375,12 +378,24 @@ function sortMessagesDesc(l: AppSchema.ChatMessage, r: AppSchema.ChatMessage) {
   return l.createdAt > r.createdAt ? -1 : l.createdAt === r.createdAt ? 0 : 1
 }
 
+const THIRD_PARTY_ADAPTERS: { [key in AIAdapter]?: boolean } = {
+  openai: true,
+  claude: true,
+}
+
 export function getAdapter(
   chat: AppSchema.Chat,
   config: AppSchema.User,
   preset?: Partial<AppSchema.GenSettings>
 ) {
-  let adapter = !chat.adapter || chat.adapter === 'default' ? config.defaultAdapter : chat.adapter
+  const chatAdapter =
+    !chat.adapter || chat.adapter === 'default' ? config.defaultAdapter : chat.adapter
+
+  const adapter =
+    chatAdapter === 'kobold' && THIRD_PARTY_ADAPTERS[config.thirdPartyFormat]
+      ? config.thirdPartyFormat
+      : chatAdapter
+
   let model = ''
   let presetName = 'Fallback Preset'
 
@@ -419,8 +434,10 @@ function getContextLimit(
   adapter: AIAdapter,
   model: string
 ): number {
-  const configuredMax = gen?.maxContextLength || getFallbackPreset(adapter).maxContextLength
-  const genAmount = gen?.maxTokens || getFallbackPreset(adapter).maxTokens
+  const configuredMax =
+    gen?.maxContextLength || getFallbackPreset(adapter)?.maxContextLength || 2048
+
+  const genAmount = gen?.maxTokens || getFallbackPreset(adapter)?.maxTokens || 80
 
   switch (adapter) {
     case 'chai':

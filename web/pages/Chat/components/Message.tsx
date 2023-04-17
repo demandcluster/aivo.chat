@@ -1,13 +1,12 @@
 import { Check, Pencil, RefreshCw, Terminal, ThumbsDown, ThumbsUp, Trash, X } from 'lucide-solid'
 import showdown from 'showdown'
-import { Accessor } from 'solid-js'
 import { Component, createMemo, createSignal, For, Show } from 'solid-js'
 import { BOT_REPLACE, SELF_REPLACE } from '../../../../common/prompt'
 import { AppSchema } from '../../../../srv/db/schema'
 import AvatarIcon from '../../../shared/AvatarIcon'
-import { getRootVariable, hexToRgb, toDuration } from '../../../shared/util'
+import { getRootVariable, hexToRgb } from '../../../shared/util'
 import { chatStore, userStore } from '../../../store'
-import { MsgState, msgStore } from '../../../store'
+import { msgStore } from '../../../store'
 
 const showdownConverter = new showdown.Converter()
 // Ensure single newlines are turned into <br> instead of left as plaintext
@@ -64,13 +63,35 @@ const SingleMessage: Component<
   MessageProps & { original: AppSchema.ChatMessage; lastSplit: boolean }
 > = (props) => {
   const user = userStore()
-  const members = chatStore((s) => s.memberIds)
+  const state = chatStore()
 
   const [edit, setEdit] = createSignal(false)
+  const isBot = createMemo(() => !!props.msg.characterId)
+  const isUser = createMemo(() => !!props.msg.userId)
+  const isImage = createMemo(() => props.original.adapter === 'image')
 
-  const cancelEdit = () => {
-    setEdit(false)
-  }
+  const format = createMemo(() => ({ size: user.ui.avatarSize, corners: user.ui.avatarCorners }))
+
+  const bgStyles = createMemo(() => {
+    user.ui.mode
+    const hex = getRootVariable('bg-800')
+    if (!hex) return {}
+
+    const rgb = hexToRgb(hex)
+    if (!rgb) return {}
+
+    return {
+      background: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${user.ui.msgOpacity.toString()})`,
+    }
+  })
+  const msgText = createMemo(() => {
+    if (props.last && props.swipe) return props.swipe
+    if (!props.anonymize) {
+      return props.msg.msg
+    }
+
+    return state.chatProfiles.reduce(anonymizeText, props.msg.msg).replace(SELF_REPLACE, 'User #1')
+  })
 
   const saveEdit = () => {
     if (!ref) return
@@ -78,12 +99,15 @@ const SingleMessage: Component<
     setEdit(false)
   }
 
-  const resendMessage = () => {
-    msgStore.resend(props.msg.chatId, props.msg._id)
-  }
-
+  const cancelEdit = () => setEdit(false)
+  const resendMessage = () => msgStore.resend(props.msg.chatId, props.msg._id)
+  const visibilityClass = () => (props.anonymize ? 'invisible' : '')
   const retryMessage = () => {
-    msgStore.retry(props.msg.chatId)
+    if (props.original.adapter !== 'image') {
+      msgStore.retry(props.msg.chatId)
+    } else {
+      msgStore.createImage(props.msg._id)
+    }
   }
 
   const startEdit = () => {
@@ -99,28 +123,12 @@ const SingleMessage: Component<
     chatStore.showPrompt(user.user, props.msg)
   }
 
-  const isBot = createMemo(() => !!props.msg.characterId)
-  const isUser = createMemo(() => !!props.msg.userId)
+  const handleToShow = () => {
+    if (props.anonymize) return getAnonName(state.chatProfiles, props.msg.userId!)
 
-  const uncensoredHandle = members[props.msg.userId!]?.handle
-  const userNumber = Object.keys(members).findIndex((m) => m === props.msg.userId) + 1
-
-  const handleToShow = () => (props.anonymize ? 'User #' + userNumber : uncensoredHandle)
-
-  const msgText = createMemo(() => {
-    if (props.last && props.swipe) return props.swipe
-    if (props.anonymize) {
-      return Object.values(members)
-        .reduce(
-          (censoredTxt, mem, i) =>
-            censoredTxt.replace(new RegExp(mem.handle.trim(), 'g'), 'User ' + (i + 1)),
-          props.msg.msg
-        )
-        .replace(SELF_REPLACE, 'User 1')
-    } else {
-      return props.msg.msg
-    }
-  })
+    const handle = state.memberIds[props.msg.userId!]?.handle || props.msg.handle || 'You'
+    return handle
+  }
 
   let ref: HTMLDivElement | undefined
 
@@ -161,7 +169,7 @@ const SingleMessage: Component<
       style={props.msg.characterId ? bgStylesBot() : bgStylesUser()} 
       data-sender={props.msg.characterId ? 'bot' : 'user'}
       data-bot={props.msg.characterId ? props.char?.name : ''}
-      data-user={props.msg.userId ? members[props.msg.userId]?.handle : ''}
+      data-user={props.msg.userId ? state.memberIds[props.msg.userId]?.handle : ''}
     >
       <div
         class="flex items-start justify-center pr-4"
@@ -173,7 +181,7 @@ const SingleMessage: Component<
         </Show>
         <Show when={!props.msg.characterId}>
           <AvatarIcon
-            avatarUrl={members[props.msg.userId!]?.avatar}
+            avatarUrl={state.memberIds[props.msg.userId!]?.avatar}
             format={format()}
             anonymize={props.anonymize}
           />
@@ -191,7 +199,15 @@ const SingleMessage: Component<
               {props.msg.characterId ? props.char?.name! : handleToShow()}
             </b>
             <span
-              class="message-date text-600 flex items-center text-xs leading-none"
+              class={`
+                message-date
+                text-600
+                flex
+                items-center
+                text-xs
+                leading-none
+                ${visibilityClass()}
+              `}
               data-bot-time={isBot}
               data-user-time={isUser()}
             >
@@ -205,14 +221,16 @@ const SingleMessage: Component<
               data-user-editing={isUser()}
             >
               <Show when={props.editing && (!props.msg.split || props.lastSplit)}>
-                <Show when={!!props.msg.characterId}>
+                <Show when={!!props.msg.characterId && !isImage()}>
                   <div onClick={showPrompt} class="icon-button">
                     <Terminal size={16} />
                   </div>
                 </Show>
-                <div class="icon-button" onClick={startEdit}>
-                  <Pencil size={18} />
-                </div>
+                <Show when={!isImage()}>
+                  <div class="icon-button" onClick={startEdit}>
+                    <Pencil size={18} />
+                  </div>
+                </Show>
                 <div class="icon-button" onClick={props.onRemove}>
                   <Trash size={18} />
                 </div>
@@ -255,13 +273,22 @@ const SingleMessage: Component<
           </Show>
         </div>
         <div class="break-words">
-          <Show when={!edit()}>
+          <Show when={isImage()}>
+            <div class="flex justify-start">
+              <img
+                class="max-h-32 cursor-pointer rounded-md"
+                src={props.msg.msg}
+                onClick={() => msgStore.showImage(props.original)}
+              />
+            </div>
+          </Show>
+          <Show when={!edit() && !isImage()}>
             <div
               class="rendered-markdown pr-1 sm:pr-3"
               data-bot-message={isBot()}
               data-user-message={isUser()}
               innerHTML={showdownConverter.makeHtml(
-                parseMessage(msgText(), props.char!, user.profile!)
+                parseMessage(msgText(), props.char!, user.profile!, props.msg.adapter)
               )}
             />
           </Show>
@@ -293,14 +320,23 @@ const SingleMessage: Component<
 
 export default Message
 
-function parseMessage(msg: string, char: AppSchema.Character, profile: AppSchema.Profile) {
+function parseMessage(
+  msg: string,
+  char: AppSchema.Character,
+  profile: AppSchema.Profile,
+  adapter?: string
+) {
+  if (adapter === 'image') {
+    return msg.replace(BOT_REPLACE, char.name).replace(SELF_REPLACE, profile?.handle || 'You')
+  }
+
   return msg
     .replace(BOT_REPLACE, char.name)
     .replace(SELF_REPLACE, profile?.handle || 'You')
     .replace(/(<|>)/g, '*')
 }
 
-export type SplitMessage = AppSchema.ChatMessage & { split?: boolean }
+export type SplitMessage = AppSchema.ChatMessage & { split?: boolean; handle?: string }
 
 function splitMessage(
   char: AppSchema.Character,
@@ -361,4 +397,16 @@ function splitMessage(
   if (!next.length || next.length === 1) return [msg]
   const newSplits = next.map((next) => ({ ...next, split: true }))
   return newSplits
+}
+
+function getAnonName(members: AppSchema.Profile[], id: string) {
+  for (let i = 0; i < members.length; i++) {
+    if (members[i].userId === id) return `User #${i + 1}`
+  }
+
+  return `User ??`
+}
+
+function anonymizeText(text: string, profile: AppSchema.Profile, i: number) {
+  return text.replace(new RegExp(profile.handle.trim(), 'gi'), 'User ' + (i + 1))
 }

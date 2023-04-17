@@ -10,10 +10,12 @@ import UISettings from './UISettings'
 import Tabs from '../../shared/Tabs'
 import AISettings from './AISettings'
 import { Show } from 'solid-js'
+import { ImageSettings } from './Image/ImageSettings'
 
 const settingTabs = {
   ai: 'AI Settings',
   ui: 'UI Settings',
+  image: 'Image Settings',
   guest: 'Guest Data',
 }
 
@@ -36,6 +38,7 @@ const Settings: Component = () => {
   const onSubmit = (evt: Event) => {
     const body = getStrictForm(evt, {
       koboldUrl: 'string?',
+      thirdPartyFormat: ['kobold', 'openai', 'claude'],
       novelApiKey: 'string?',
       novelModel: 'string?',
       hordeUseTrusted: 'boolean?',
@@ -47,6 +50,21 @@ const Settings: Component = () => {
       scaleUrl: 'string?',
       claudeApiKey: 'string?',
       defaultAdapter: adapterOptions,
+
+      imageType: ['horde', 'sd', 'novel'],
+      imageSteps: 'number',
+      imageCfg: 'number',
+      imageWidth: 'number',
+      imageHeight: 'number',
+
+      novelImageModel: 'string',
+      novelSampler: 'string',
+
+      hordeSampler: 'string',
+      hordeImageModel: 'string',
+
+      sdUrl: 'string',
+      sdSampler: 'string',
     } as const)
 
     const defaultPresets = getFormEntries(evt)
@@ -59,10 +77,44 @@ const Settings: Component = () => {
         return prev
       }, {} as AppSchema.User['defaultPresets'])
 
+    const {
+      imageCfg,
+      imageHeight,
+      imageSteps,
+      imageType,
+      imageWidth,
+      sdSampler,
+      sdUrl,
+      hordeImageModel,
+      hordeSampler,
+      novelImageModel,
+      novelSampler,
+      ...base
+    } = body
+
     userStore.updateConfig({
-      ...body,
+      ...base,
       hordeWorkers: workers(),
       defaultPresets,
+      images: {
+        type: imageType,
+        cfg: imageCfg,
+        height: imageHeight,
+        width: imageWidth,
+        steps: imageSteps,
+        horde: {
+          sampler: hordeSampler,
+          model: hordeImageModel,
+        },
+        novel: {
+          model: novelImageModel,
+          sampler: novelSampler,
+        },
+        sd: {
+          sampler: sdSampler,
+          url: sdUrl,
+        },
+      },
     })
   }
 
@@ -82,6 +134,10 @@ const Settings: Component = () => {
 
           <div class={currentTab() === 'ui' ? tabClass : 'hidden'}>
             <UISettings />
+          </div>
+
+          <div class={currentTab() === 'image' ? tabClass : 'hidden'}>
+            <ImageSettings />
           </div>
 
           <div class={currentTab() === 'guest' ? tabClass : 'hidden'}>

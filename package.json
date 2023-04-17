@@ -1,6 +1,6 @@
 {
   "name": "aivo.chat",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "private": true,
   "description": "AIVO.CHAT based on AGNAI",
   "keywords": [],
@@ -10,8 +10,12 @@
     "agnai": "./srv/bin.js"
   },
   "files": [
+    "poetry.lock",
+    "pyproject.toml",
     "srv/**",
     "srv/**/*.map",
+    "model/**/*.py",
+    "model/**/*.yml",
     "common/*",
     "dist/index.*",
     "db/.gitkeep"
@@ -27,8 +31,9 @@
     "build:server:watch": "tsc -p srv.tsconfig.json -w",
     "format": "prettier --check \"web/**/*.tsx\" \"web/**/*.ts\" \"web/**/*.css\" \"web/**/*.html\" && prettier --check \"srv/**/*.ts\"",
     "format:fix": "prettier web --write && prettier srv --write",
-    "init": "cp -r web/assets/* dist/assets/",
-    "model": "python -m flask --app model/app.py run --host 0.0.0.0 -p 5001",
+    "model:init": "python3 -m venv ./.model && .model/bin/pip install poetry==1.4.1 && .model/bin/poetry config virtualenvs.in-project true",
+    "model:deps": ".model/bin/poetry install --no-interaction --no-ansi",
+    "model:start": ".model/bin/poetry run python -m flask --app model/app.py run --host 0.0.0.0 -p 5001",
     "model:watch": "nodemon -e py --watch model --exec \"python -m flask --app model/app.py run --host 0.0.0.0 -p 5001\"",
     "server": "concurrently -c auto -n aivo,discord \"node srv/start.js\" \"npm run start:bot\"",
     "server:watch": "nodemon -e js --delay 1 --watch srv --watch common --exec \"node --inspect srv/start.js\" --watch \".env\"",
@@ -63,6 +68,7 @@
     "@types/node": "^18.13.0",
     "@types/uuid": "^9.0.0",
     "@types/ws": "^8.5.4",
+    "adm-zip": "^0.5.10",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "crc-32": "^1.2.2",
@@ -72,6 +78,7 @@
     "express": "^4.18.2",
     "frisker": "1.6.2",
     "gpt-3-encoder": "^1.1.4",
+    "html2canvas": "^1.4.1",
     "jsonwebtoken": "^9.0.0",
     "minimist": "^1.2.8",
     "mkdirp": "^2.1.4",
@@ -89,6 +96,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@solidjs/router": "^0.6.0",
+    "@types/adm-zip": "^0.5.0",
     "@types/chai": "^4.3.4",
     "@types/crypto-js": "^4.1.1",
     "@types/mocha": "^10.0.1",

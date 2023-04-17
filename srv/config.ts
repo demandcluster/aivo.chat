@@ -58,9 +58,6 @@ export const config = {
     user: env('REDIS_USER', ''),
     pass: env('REDIS_PASSWORD', ''),
   },
-  kobold: {
-    maxLength: +env('KOBOLD_MAX_LENGTH', '200'),
-  },
   limits: {
     upload: +env('IMAGE_SIZE_LIMIT', '2'),
     payload: +env('JSON_SIZE_LIMIT', '2'),
@@ -73,6 +70,7 @@ export const config = {
   },
   horde: {
     maxWaitSecs: +env('HORDE_WAIT_SECS', '120'),
+    imageWaitSecs: +env('HORDE_IMAGE_WAIT_SECS', '320'),
   },
   classifyUrl: env('CLASSIFY_URL', 'http://localhost:5001'),
   init: {
@@ -85,6 +83,7 @@ export const config = {
   discordToken: env('DISCORD_TOKEN', ''),
   discordId: env('DISCORD_ID', ''),
   hordeKeyPremium: env('HORDE_KEY_PREMIUM', ''),
+  hordeKeyImages: env("HORDE_KEY_IMAGES",''),
   adapters: env('ADAPTERS', 'novel,horde,kobold,luminai,openai,scale,claude')
     .split(',')
     .filter((i) => !!i) as AIAdapter[],
@@ -95,6 +94,7 @@ export const config = {
     key: env('AWS_SECRET_ACCESS_KEY', ''),
     bucket: env('BUCKET_NAME', ''),
     endpoint: env('BUCKET_ENDPOINT', ''),
+    saveImages: !!env('SAVE_IMAGES', ''),
   },
   jsonStorage: !!env('JSON_STORAGE', ''),
   jsonFolder: env('JSON_FOLDER', resolve(__dirname, '..', 'db')),

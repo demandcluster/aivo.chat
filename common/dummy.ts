@@ -36,7 +36,7 @@ export function toProfile(name: string): AppSchema.Profile {
 }
 
 export function toUser(name: string): AppSchema.User {
-  return {
+  const user: AppSchema.User = {
     _id: name,
     username: name,
     hordeKey: '',
@@ -46,6 +46,7 @@ export function toUser(name: string): AppSchema.User {
     hash: '',
     kind: 'user',
     koboldUrl: '',
+    thirdPartyFormat: 'kobold',
     luminaiUrl: '',
     novelApiKey: '',
     novelModel: NOVEL_MODELS.krake,
@@ -54,6 +55,7 @@ export function toUser(name: string): AppSchema.User {
     premium: false,
     credits: 200
   }
+  return user
 }
 
 export function toBotMsg(
