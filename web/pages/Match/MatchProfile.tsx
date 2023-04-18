@@ -23,14 +23,14 @@ const MatchProfile: Component = () => {
     })
 
     createEffect(() => {
-      let searchChar={}
+      let searchChar=false
       if (matches.loaded&&matches.list?.length>0){
       searchChar = matches?.list?.find((c) => c._id === params?.id) || false
       }
       if(searchChar){
         setChar(searchChar)
       }else{
-        setChar(chars.list.find((c) => c._id === params?.id))
+        setChar(chars.list.find((c) => c._id === params?.id)||null)
       }
       }, [chars,matches])
 
