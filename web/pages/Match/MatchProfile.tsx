@@ -41,7 +41,7 @@ const MatchProfile: Component = () => {
           <Show when={!chars.loaded}>
             <div>Loading...</div>
           </Show>
-          <Show when={chars.loaded && char}>
+          <Show when={chars.loaded && char()}>
            <div class="flex flex-row min-w-full"> 
           <ProfileCard href={`/likes/${char()._id}/profile}`} navBack={navigate(-1)} character={char()}/>
             </div>
