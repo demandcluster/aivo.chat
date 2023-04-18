@@ -94,46 +94,46 @@ const Character: Component<{
   return (
     <div class="w-full">
       <Suspense>
-      <div class="conic hover:before:content-[''] hover:before:absolute hover:before:-z-20 hover:before:-left-1/2 hover:before:-top-1/2 hover:before:w-[200%] hover:before:h-[200%] hover:before:bg-[var(--bg-800)] hover:before:bg-no-repeat 
+      <div class="conic h-72 md:h-[18.5rem] xl:h-96 2xl:h-80 hover:before:content-[''] hover:before:absolute hover:before:-z-20 hover:before:-left-1/2 hover:before:-top-1/2 hover:before:w-[200%] hover:before:h-[200%] hover:before:bg-[var(--bg-800)] hover:before:bg-no-repeat 
       hover:before:bg-left-top hover:before:bg-[conic-gradient(transparent,var(--hl-900),transparent_30%)] hover:before:animate-[rotate_3s_linear_infinite]
       hover:after:content-[''] hover:after:absolute hover:after:-z-10 hover:after:left-1 hover:after:top-1 hover:after:w-[calc(100%-8px)] hover:after:h-[calc(100%-8px)] bg hover:after:bg-[var(--bg-800)] hover:after:rounded-md
       relative z-0 overflow-hidden min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[var(--bg-800)] border-[var(--hl-900)] text-900 max-w-[210px] sm:max-w-[250px] xl:max-w-[93%]      ">
         <a href={`/character/${props.character._id}/chats`}>
-          <img alt="..." src={props.character.avatar} class="w-full align-middle rounded-t-lg min-h-[30px] p-1 object-contain max-h-[13rem] xl:max-h-[19rem] 2xl:max-h-[15rem] "/>
+          <img alt="..." src={getAssetUrl(props.character.avatar)} class="w-full align-middle rounded-t-lg min-h-[30px] p-1 object-contain max-h-[13rem] xl:max-h-[19rem] 2xl:max-h-[15rem] "/>
           <div class="z-10 w-full text-right relative md:-mt-12 -mt-12 p-2 text-2xl md:text-3xl text-white text-shadow -bottom-6 right-0 md:right-1">
             <span class=" font-black ">{props.character?.name}</span> {((props.character.persona?.attributes?.age) ? props.character?.persona?.attributes?.age[0].split(" ")[0] : '')}
           </div>
+            <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="left-0 w-full block h-24 mt-[-96px] top-[-96px] p-1 z-0">
+                <polygon points="-30,95 583,95 583,65" class="text-[var(--bg-800)] fill-current"></polygon>
+            </svg>
         </a>
-        <blockquote class="relative pt-8 p-1 md:px-4 mb-8">
-          <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="absolute left-0 w-full block h-24 top-[-96px] p-1 z-0">
-              <polygon points="-30,95 583,95 583,65" class="text-[var(--bg-800)] fill-current"></polygon>
-          </svg>
-          <Show when={props.character.name!=="Aiva"}>
-            <div><Gauge currentXP={props.character.xp} /></div>
-          </Show>
-          <div class="flex flex-row items-end justify-end  gap-2 -mt-10 w-full" style="justify-content:right">
-            <Show when={props.user?.admin}>
-              <a onClick={props.download}>
-                <Download class="icon-button" />
-              </a>
-              <A href={`/character/${props.character._id}/edit`}>
-                <Edit class="icon-button" />
-              </A>
-
-              <A href={`/character/create/${props.character._id}`}>
-                <Copy class="icon-button" />
-              </A>
-              </Show>
-              <Show when={props.character.name!=="Aiva"}>
-              <Trash class="icon-button" onClick={props.delete} />
-              
-              <A href={`/likes/${props.character.parent}/profile`}>
-                <User  class="icon-button" />
-              </A>
+          <blockquote class="relative pt-8 p-1 md:px-4 mb-8">
+            <Show when={props.character.name!=="Aiva"}>
+              <div><Gauge currentXP={props.character.xp} /></div>
             </Show>
-            
-          </div >
-        </blockquote>
+            <div class="flex flex-row items-end justify-end  gap-2 -mt-10 w-full" style="justify-content:right">
+              <Show when={props.user?.admin}>
+                <a onClick={props.download}>
+                  <Download class="icon-button" />
+                </a>
+                <A href={`/character/${props.character._id}/edit`}>
+                  <Edit class="icon-button" />
+                </A>
+
+                <A href={`/character/create/${props.character._id}`}>
+                  <Copy class="icon-button" />
+                </A>
+                </Show>
+                <Show when={props.character.name!=="Aiva"}>
+                <Trash class="icon-button" onClick={props.delete} />
+                
+                <A href={`/likes/${props.character.parent}/profile`}>
+                  <User  class="icon-button" />
+                </A>
+              </Show>
+              
+            </div >
+          </blockquote>
       </div>
       </Suspense>
     </div>

@@ -132,10 +132,6 @@ const SingleMessage: Component<
 
   let ref: HTMLDivElement | undefined
 
-  const format = createMemo(() => ({
-    size: user.ui.avatarSize,
-    corners: user.ui.avatarCorners,
-  }))
 
   const bgStylesBot = createMemo((prev) => {
     user.ui.mode

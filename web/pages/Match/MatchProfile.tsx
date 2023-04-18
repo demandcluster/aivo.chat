@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, For, Show } from 'solid-js'
+import { Component, createEffect, createSignal, For, Show,createMemo } from 'solid-js'
 import {useParams} from '@solidjs/router'
 import Button from '../../shared/Button'
 import ProfileCard from '../../shared/ProfileCard'
@@ -8,16 +8,21 @@ import { Check } from 'lucide-solid'
 import { AppSchema } from '../../../srv/db/schema'
 import { A, useNavigate } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
-import { matchStore,characterStore } from '../../store'
+import {characterStore } from '../../store'
 
 const MatchProfile: Component = () => {
     const { id } = useParams()
    
-    const chars = matchStore((s) => s.characters)
+    const chars = characterStore((s) => s.characters)
    
     createEffect(() => {
-      matchStore.getMatch(id)
+     characterStore.getCharacters()
     })
+
+    const char = createMemo(() => {
+        return chars.list.find((c) => c._id === id)
+      }, [chars, id])
+
     const navigate=useNavigate()
   
     return (
@@ -27,9 +32,9 @@ const MatchProfile: Component = () => {
           <Show when={!chars.loaded}>
             <div>Loading...</div>
           </Show>
-          <Show when={chars.loaded}>
+          <Show when={chars.loaded && char}>
            <div class="flex flex-row min-w-full"> 
-          <ProfileCard href={`/likes/${chars.list._id}/profile}`} navBack={navigate(-1)} character={chars.list}/>
+          <ProfileCard href={`/likes/${char()._id}/profile}`} navBack={navigate(-1)} character={char()}/>
             </div>
             
           </Show>
