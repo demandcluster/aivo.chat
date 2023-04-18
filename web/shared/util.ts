@@ -19,14 +19,9 @@ const PREFIX_CACHE_KEY = 'aivo-asset-prefix'
 let assetPrefix: string = localStorage.getItem(PREFIX_CACHE_KEY) || ''
 
 export function getAssetUrl(filename: string) {
-  if (isLoggedIn()) {
-    console.log('filename',filename)
+ 
     const infix = assetPrefix.endsWith('/') || filename.startsWith('/') ? '' : '/'
-    console.log('asset url ',assetPrefix)
     return `https://cdn.aivo.chat${infix}${filename}`
-  }
-
-  return filename
 }
 
 export function setAssetPrefix(prefix: string) {
