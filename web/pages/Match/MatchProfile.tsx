@@ -8,20 +8,27 @@ import { Check } from 'lucide-solid'
 import { AppSchema } from '../../../srv/db/schema'
 import { A, useNavigate } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
-import {characterStore } from '../../store'
+import {characterStore,matchStore } from '../../store'
 
 const MatchProfile: Component = () => {
-    const { id } = useParams()
+    const  params = useParams()
    
     const chars = characterStore((s) => s.characters)
-   
+    const matches = matchStore((s) => s.characters)
     createEffect(() => {
      characterStore.getCharacters()
+     matchStore.getMatches()
     })
 
     const char = createMemo(() => {
-        return chars.list.find((c) => c._id === id)
-      }, [chars, id])
+      let searchChar={}
+        searchChar = matches.list.find((c) => c._id === params?.id)
+      if(searchChar){
+        return searchChar
+      }else{
+        return chars.list.find((c) => c._id === params?.id)
+      }
+      }, [chars,matches])
 
     const navigate=useNavigate()
   
