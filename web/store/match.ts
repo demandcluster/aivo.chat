@@ -48,17 +48,19 @@ export const matchStore = createStore<Matchesstate>('Match', {
       }
     }},
     
-    getMatch: async (_,char: AppSchema.Character) => {
+    // get match by ID
+    getMatch: async (_,id:string) => {
        
         const res = await api.get('/match')
        
         if (res.error) toastStore.error('Failed to retrieve Match')
         else {
-          const chx = res.result.characters.filter((i)=>i._id===char)[0]
+          const chx = res.result.characters.filter((i)=>i._id===id)
+          console.log('chx',id)
           return { characters: { list: chx, loaded: true } }
         }
       },
-    createMatch: async (_, char: AppSchema.Chat, onSuccess?: () => void) => {
+    createMatch: async (_, char: AppSchema.Character, onSuccess?: () => void) => {
      
       const form = new FormData()
       form.append('name', char.name)

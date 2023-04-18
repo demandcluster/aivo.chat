@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, For, Show } from 'solid-js'
+import { Component, createEffect, createSignal, For, Show,createMemo } from 'solid-js'
 import {useParams} from '@solidjs/router'
 import Button from '../../shared/Button'
 import ProfileCard from '../../shared/ProfileCard'
@@ -16,8 +16,14 @@ const MatchProfile: Component = () => {
     const chars = matchStore((s) => s.characters)
    
     createEffect(() => {
-      matchStore.getMatch(id)
+     matchStore.getMatches(id)
     })
+
+    const char = createMemo(() => {
+      console.log('chara',chars)
+        return chars.list.find((c) => c._id === id)
+      }, [chars, id])
+
     const navigate=useNavigate()
   
     return (
@@ -27,9 +33,9 @@ const MatchProfile: Component = () => {
           <Show when={!chars.loaded}>
             <div>Loading...</div>
           </Show>
-          <Show when={chars.loaded}>
+          <Show when={chars.loaded && char}>
            <div class="flex flex-row min-w-full"> 
-          <ProfileCard href={`/likes/${chars.list._id}/profile}`} navBack={navigate(-1)} character={chars.list}/>
+          <ProfileCard href={`/likes/${char()._id}/profile}`} navBack={navigate(-1)} character={char()}/>
             </div>
             
           </Show>
