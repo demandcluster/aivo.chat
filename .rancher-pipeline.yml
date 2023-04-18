@@ -8,4 +8,7 @@ stages:
       pushRemote: true
       registry: harbor.demandcluster.com
 timeout: 60
+branch:
+  include:
+  - aivo
 notification: {}
