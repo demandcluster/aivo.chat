@@ -15,20 +15,22 @@ const MatchProfile: Component = () => {
    
     const chars = characterStore((s) => s.characters)
     const matches = matchStore((s) => s.characters)
+    const [char, setChar] = createSignal<AppSchema.Character>()
+
     createEffect(() => {
      characterStore.getCharacters()
      matchStore.getMatches()
     })
 
-    const char = createMemo(() => {
+    createEffect(() => {
       let searchChar={}
       if (matches.loaded&&matches.list?.length>0){
       searchChar = matches?.list?.find((c) => c._id === params?.id) || false
       }
       if(searchChar){
-        return searchChar
+        setChar(searchChar)
       }else{
-        return chars.list.find((c) => c._id === params?.id)
+        setChar(chars.list.find((c) => c._id === params?.id))
       }
       }, [chars,matches])
 
