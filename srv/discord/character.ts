@@ -1,4 +1,4 @@
-import { SlashCommandBuilder,Role,PermissionFlagsBits } from 'discord.js';
+import { SlashCommandBuilder,Role,PermissionFlagsBits,MessageAttachment } from 'discord.js';
 import {store} from '../db'
 
 
@@ -20,7 +20,8 @@ module.exports = {
         if(!character) await interaction.reply({content:"Character does not exist", ephemeral: true })
         if(character){
            
-            await interaction.reply({content:`**${character.name}**\n${character.description}`, ephemeral: false })
+            const attachment = new MessageAttachment(`https://cdn.aivo.chat${character.avatar}`);
+            await interaction.reply({content:`**${character.name}**\n${character.description}`, files: [attachment], ephemeral: false }) 
         }
     },
 };
