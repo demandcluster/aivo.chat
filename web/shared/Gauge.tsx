@@ -25,19 +25,20 @@ function calculateLevelAndPercent(xp) {
 
 const Gauge = (props: Props) => {
   const { currentXP } = props;
-  const {percent,level} = calculateLevelAndPercent(currentXP)
-
+  let {percent,level} = calculateLevelAndPercent(currentXP)
+  if(level==0){percent = "0";}
+  const highbox = 25-Math.round(percent /4);
   return ( 
     <>
-    <Show when = {level>0}>
-     <div class="flex">
-    <div class="relative my-auto h-7 w-6 rounded-full overflow-hidden bg-gray-300">
-      <div class={`absolute bottom-0 bg-red-500 w-full`} style={{ height: `${percent}%` }}>
-      <Heart class="absolute  text-white bottom-0 left-1/2 transform -translate-x-1/2" /></div>
+      <div class="flex justify-between mb-1">
+        <div class="text-base font-medium   "> 
+          <div><Heart class="absolute inline-block transform " /><Heart class="absolute transform hearttest fill-red-600" viewBox={`0 ${highbox} 24 24`} style={`top: ${(32+highbox)}px`} /></div>
+          <div class=" ml-8 inline-block">Level: {level}</div>
+        </div>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+        <div class= {`bg-[var(--hl-900)] h-2.5 rounded-full` } style={`width: ${Math.round(percent)}%`}></div>
     </div>
-      <div class="text-2xl opacity-60 text-teal-300 m-2">{level}</div>
-    </div>
-    </Show>
     </>
   );
 };
