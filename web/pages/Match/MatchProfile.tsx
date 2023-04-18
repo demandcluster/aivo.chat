@@ -8,20 +8,31 @@ import { Check } from 'lucide-solid'
 import { AppSchema } from '../../../srv/db/schema'
 import { A, useNavigate } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
-import {characterStore } from '../../store'
+import {characterStore,matchStore } from '../../store'
 
 const MatchProfile: Component = () => {
-    const { id } = useParams()
+    const  params = useParams()
    
     const chars = characterStore((s) => s.characters)
-   
+    const matches = matchStore((s) => s.characters)
+    const [char, setChar] = createSignal<AppSchema.Character>()
+
     createEffect(() => {
      characterStore.getCharacters()
+     matchStore.getMatches()
     })
 
-    const char = createMemo(() => {
-        return chars.list.find((c) => c._id === id)
-      }, [chars, id])
+    createEffect(() => {
+      let searchChar={}
+      if (matches.loaded&&matches.list?.length>0){
+      searchChar = matches?.list?.find((c) => c._id === params?.id) || false
+      }
+      if(searchChar){
+        setChar(searchChar)
+      }else{
+        setChar(chars.list.find((c) => c._id === params?.id))
+      }
+      }, [chars,matches])
 
     const navigate=useNavigate()
   
@@ -32,7 +43,7 @@ const MatchProfile: Component = () => {
           <Show when={!chars.loaded}>
             <div>Loading...</div>
           </Show>
-          <Show when={chars.loaded && char}>
+          <Show when={chars.loaded && char()}>
            <div class="flex flex-row min-w-full"> 
           <ProfileCard href={`/likes/${char()._id}/profile}`} navBack={navigate(-1)} character={char()}/>
             </div>

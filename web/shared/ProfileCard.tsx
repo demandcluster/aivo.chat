@@ -13,7 +13,7 @@ const ProfileCard: Component<{ character: AppSchema.Character; href: string }> =
     
     <div class=" max-w-3xl  w-full md:w-3/4 px-4 mr-auto ml-auto">
       <div class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg  bg-[var(--bg-800)] border-[var(--hl-900)] text-900 ">
-          <ChevronsLeft class="absolute w-20 h-20 hover:cursor-pointer  text-white"  onclick={()=> props.navBack() } />
+          <ChevronsLeft class="absolute w-20 h-20 hover:cursor-pointer  text-[var(--hl-900)]"  onclick={()=> props.navBack() } />
           <img alt="..." src={getAssetUrl(props.character?.avatar)} class="w-full align-middle rounded-t-lg min-h-[100px]"/>
             <div class="z-10 w-full text-right relative md:-mt-16 -mt-12 sm:text-5xl p-2 text-3xl text-white text-shadow -bottom-6 right-4">
               <span class=" font-black ">{props.character?.name}</span> {((props.character.persona?.attributes?.age) ? props.character?.persona?.attributes?.age[0].split(" ")[0] : '')}</div>
