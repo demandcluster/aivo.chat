@@ -1,4 +1,4 @@
-import { SlashCommandBuilder,Role,PermissionFlagsBits,MessageAttachment } from 'discord.js';
+import { SlashCommandBuilder,Role,PermissionFlagsBits,AttachmentBuilder } from 'discord.js';
 import {store} from '../db'
 
 
@@ -25,7 +25,7 @@ module.exports = {
             } 
         
             // Async rendering... 
-            const attachment = new MessageAttachment(`https://cdn.aivo.chat${character.avatar}`); 
+            const attachment = new AttachmentBuilder(`https://cdn.aivo.chat${character.avatar}`); 
         
                 
             interaction.editReply({ content: `**${character.name}**\n${character.description}`,  files: [attachment], ephemeral: false }); 
