@@ -22,7 +22,7 @@ const MatchProfile: Component = () => {
 
     const char = createMemo(() => {
       let searchChar={}
-        searchChar = matches.list.find((c) => c._id === params?.id)
+        searchChar = matches?.list.find((c) => c._id === params?.id) || false
       if(searchChar){
         return searchChar
       }else{
