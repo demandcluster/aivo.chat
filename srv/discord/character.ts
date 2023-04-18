@@ -25,10 +25,16 @@ module.exports = {
             } 
         
             // Async rendering... 
-            const attachment = new AttachmentBuilder(`https://cdn.aivo.chat${character.avatar}`); 
-        
+          const embed = {
+            "title": character.name,
+            "description": character.description,
+            "image":{
+                "url": `https://cdn.aivo.chat${character.avatar}`
+                }
+          }
                 
-            interaction.editReply({ content: `**${character.name}**\n${character.description}`,  files: [attachment], ephemeral: false }); 
+            await interaction.reply({embeds: [embed], ephemeral: true });
+        
         },
         
 };
