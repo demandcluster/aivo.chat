@@ -406,10 +406,12 @@ body {
     @apply bg-[var(--hl-900)];
   }
 
-  
-  .text-shadow {
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  @keyframes rotate {
+    100% {
+      transform: rotate(1turn);
+    }
   }
+  
   @keyframes hideDrawer {
     to {
       visibility: hidden;
