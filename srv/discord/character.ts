@@ -28,7 +28,7 @@ module.exports = {
             const attachment = new MessageAttachment(`https://cdn.aivo.chat${character.avatar}`); 
         
                 
-            interaction.editReply({ content: `**${character.name}**\n${character.description}`,  files: [attachment], ephemeral: true }); 
+            interaction.editReply({ content: `**${character.name}**\n${character.description}`,  files: [attachment], ephemeral: false }); 
         },
         
 };
