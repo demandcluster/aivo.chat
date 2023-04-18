@@ -11,17 +11,24 @@ module.exports = {
                 .setDescription('The name of the character you are lookig for')
                 .setRequired(true))
         .setDMPermission(false),
-    async execute(interaction: any) {
-        const char = interaction.options.getString('name')
        
-        const character = await store.characters.getPublicCharacter(char)
-    
-
-        if(!character) await interaction.reply({content:"Character does not exist", ephemeral: true })
-        if(character){
+        async execute(interaction: any) { 
+            const char = interaction.options.getString('name') 
+            const interactionId = interaction.id;  
+            
+            const character = await store.characters.getPublicCharacter(char) 
            
-            const attachment = new MessageAttachment(`https://cdn.aivo.chat${character.avatar}`);
-            await interaction.reply({content:`**${character.name}**\n${character.description}`, files: [attachment], ephemeral: false }) 
-        }
-    },
+        
+            if(!character) { 
+                await interaction.reply({content:"Character does not exist", ephemeral: true }); 
+                return; 
+            } 
+        
+            // Async rendering... 
+            const attachment = new MessageAttachment(`https://cdn.aivo.chat${character.avatar}`); 
+        
+                
+            interaction.editReply({ content: `**${character.name}**\n${character.description}`,  files: [attachment], ephemeral: true }); 
+        },
+        
 };
