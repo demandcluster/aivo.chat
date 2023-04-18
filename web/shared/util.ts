@@ -16,12 +16,20 @@ type FormRef = {
 
 const PREFIX_CACHE_KEY = 'aivo-asset-prefix'
 
-let assetPrefix: string = localStorage.getItem(PREFIX_CACHE_KEY) || ''
+let assetPrefix: string = "https://cdn.aivo.chat" // localStorage.getItem(PREFIX_CACHE_KEY) || ''
 
 export function getAssetUrl(filename: string) {
- 
-    const infix = assetPrefix.endsWith('/') || filename.startsWith('/') ? '' : '/'
-    return `https://cdn.aivo.chat${infix}${filename}`
+  const isFile =
+    filename.startsWith('/assets') ||
+    filename.startsWith('assets/') ||
+    filename.endsWith('.png') ||
+    filename.endsWith('.jpg') ||
+    filename.endsWith('.jpeg')
+
+  if (!isFile) return filename
+
+  const infix = assetPrefix.endsWith('/') || filename.startsWith('/') ? '' : '/'
+  return `${assetPrefix}${infix}${filename}`
 }
 
 export function setAssetPrefix(prefix: string) {
