@@ -25,8 +25,6 @@ module.exports = {
                 return; 
             } 
         
-
-            const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
          const persona:any = character?.persona?.attributes
          const {age="Unknown",gender="Prefers not to say"} = persona?? {}
          const summary = character.description ? character.description:''
