@@ -27,9 +27,8 @@ module.exports = {
 
             const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
          const persona = character?.persona
-         const age = persona.attributes?.age ? persona.attributes?.age[0].split(" ")[0]:''
-         const gender = persona?.attributes?.gender ? persona.attributes?.gender : 'Prefer not to say'
-         const summary = character.summary ? character.summary:''
+         const {age,gender} = persona.attributes
+         const summary = character.description ? character.description:''
             // Async rendering... 
           const embed = {
             "title": character.name,
