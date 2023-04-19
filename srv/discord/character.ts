@@ -38,7 +38,7 @@ module.exports = {
             "title": character.name,
             "description": summary,
             "type": "rich",
-            "url": `https://aivo.chat/likes/${character._id}/profile}`,
+            "url": `https://aivo.chat/likes/${character._id}/profile`,
             "color": 0x00FFFF,
             "fields": [
                 {
@@ -48,7 +48,8 @@ module.exports = {
                 },
                 {
                 "name": `Gender`,
-                "value": charGender
+                "value": charGender.toUpperCase(),
+                "inline": true
                 }
              ],
             "image":{
