@@ -24,16 +24,80 @@ module.exports = {
                 return; 
             } 
         
+
+            const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
+
+await lib.discord.channels['@0.3.2'].messages.create({
+  "channel_id": `${context.params.event.channel_id}`,
+  "content": `This is the bot you wanted`,
+  "tts": false,
+  "allowed_mentions": {
+    "replied_user": true,
+    "parse": [
+      "users"
+    ]
+  },
+  "embeds": [
+    {
+      "type": "rich",
+      "title": `Botname`,
+      "description": `The description`,
+      "color": 0x00FFFF,
+      "fields": [
+        {
+          "name": `Body`,
+          "value": `12`,
+          "inline": true
+        },
+        {
+          "name": `Age`,
+          "value": `24`,
+          "inline": true
+        }
+      ],
+      "image": {
+        "url": `https://yt3.googleusercontent.com/r1CCbxgxs0mEVSm7fnjPHPmyOcC_9s9P9dhKzI3hMsH6FOrNQ0UbkiTEKcUOqibrN7G-9qgg_Ig=s176-c-k-c0x00ffffff-no-rj`,
+        "height": 0,
+        "width": 0
+      },
+      
+      "url": `https://profileurl.url`
+    }
+  ]
+});
             // Async rendering... 
           const embed = {
             "title": character.name,
-            "description": character.description,
+            "description": character.summary,
+            "type": "rich",
+            "url": `https://aivo.chat/likes/${character._id}/profile}`
+            "color": 0x00FFFF,
+            "fields": [
+                {
+                "name": `Age`,
+                "value": character?.persona?.attributes?.age[0].split(" ")[0] || '',
+                "inline": true
+                },
+                {
+                "name": `Gender`,
+                "value": character?.persona?.attributes?.gender || ''
+                }
+             ],
             "image":{
                 "url": `https://cdn.aivo.chat${character.avatar}`
-                }
+                },
+            "footer": {
+                    "text": `AIVO.CHAT Character`,
+                    "icon_url": `https://aivo.chat/favicon.d0653b67.ico`
+                  },
           }
                 
-            await interaction.reply({embeds: [embed], ephemeral: false });
+            await interaction.reply({ "allowed_mentions": {
+                "replied_user": true,
+                "parse": [
+                  "users"
+                ]
+              },embeds: [embed], ephemeral: false });
         
         },
         
