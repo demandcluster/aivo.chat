@@ -26,13 +26,14 @@ module.exports = {
         
 
             const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
-          const age = character?.persona?.attributes?.age[0].split(" ")[0] || ''
-          const gender = character?.persona?.attributes?.gender|| 'Prefer not to say'
-
+         const persona = character?.persona
+         const age = persona.attributes?.age[0].split(" ")[0] || ''
+         const gender = persona?.attributes?.gender|| 'Prefer not to say'
+         const summary = character.summary||''
             // Async rendering... 
           const embed = {
             "title": character.name,
-            "description": character.summary||'',
+            "description": summary,
             "type": "rich",
             "url": `https://aivo.chat/likes/${character._id}/profile}`,
             "color": 0x00FFFF,
