@@ -27,7 +27,7 @@ export type UISettings = {
 
 const defaultUIsettings: UISettings = {
   theme: 'teal', 
-  mode: 'dark',
+  mode: 'light',
   avatarSize: 'md',
   avatarCorners: 'circle',
   input: 'single',
@@ -37,7 +37,7 @@ const defaultUIsettings: UISettings = {
 }
 
 const fontFaces: { [key in FontSetting]: string } = {
-  bai: 'Bai Jamjuree, sans-serif',
+  lato: 'Lato, sans-serif',
   default: 'unset',
 }
 
