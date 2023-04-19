@@ -32,7 +32,7 @@ module.exports = {
             "title": character.name,
             "description": character.summary,
             "type": "rich",
-            "url": `https://aivo.chat/likes/${character._id}/profile}`
+            "url": `https://aivo.chat/likes/${character._id}/profile}`,
             "color": 0x00FFFF,
             "fields": [
                 {
