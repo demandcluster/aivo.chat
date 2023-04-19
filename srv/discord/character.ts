@@ -26,7 +26,11 @@ module.exports = {
             } 
         
          const persona:any = character?.persona?.attributes
-         const {age="Unknown",gender="Prefers not to say"} = persona?? {}
+         const {age=[],gender="Prefers not to say"} = persona?? {}
+         let charAge=age
+         if(age[0]){
+             charAge=age[0].split(' ')[0]
+         }
          const summary = character.description ? character.description:''
             // Async rendering... 
           const embed = {
@@ -38,7 +42,7 @@ module.exports = {
             "fields": [
                 {
                 "name": `Age`,
-                "value": age,
+                "value": charAge,
                 "inline": true
                 },
                 {
