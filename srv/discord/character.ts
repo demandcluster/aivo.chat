@@ -13,10 +13,7 @@ module.exports = {
         .setDMPermission(false),
        
         async execute(interaction: any) { 
-            interface Person {
-                age?: string
-                gender?: string
-            }
+            
             const char = interaction.options.getString('name') 
             const interactionId = interaction.id;  
             
@@ -30,7 +27,7 @@ module.exports = {
         
 
             const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
-         const persona:Person = character?.persona?.attributes
+         const persona:any = character?.persona?.attributes
          const {age="Unknown",gender="Prefers not to say"} = persona?? {}
          const summary = character.description ? character.description:''
             // Async rendering... 
