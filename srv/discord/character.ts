@@ -26,23 +26,25 @@ module.exports = {
         
 
             const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
+          const age = character?.persona?.attributes?.age[0].split(" ")[0] || ''
+          const gender = character?.persona?.attributes?.gender|| 'Prefer not to say'
 
             // Async rendering... 
           const embed = {
             "title": character.name,
-            "description": character.summary,
+            "description": character.summary||'',
             "type": "rich",
             "url": `https://aivo.chat/likes/${character._id}/profile}`,
             "color": 0x00FFFF,
             "fields": [
                 {
                 "name": `Age`,
-                "value": character?.persona?.attributes?.age[0].split(" ")[0] || '',
+                "value": age,
                 "inline": true
                 },
                 {
                 "name": `Gender`,
-                "value": character?.persona?.attributes?.gender || ''
+                "value": gender
                 }
              ],
             "image":{
