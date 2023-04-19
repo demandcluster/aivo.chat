@@ -66,7 +66,7 @@ module.exports = {
                 "parse": [
                   "users"
                 ]
-              },embeds: [embed], ephemeral: false });
+              },content: "Here is the AIVO profile you asked for:",embeds: [embed], ephemeral: false });
         
         },
         
