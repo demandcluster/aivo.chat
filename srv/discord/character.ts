@@ -26,8 +26,9 @@ module.exports = {
             } 
         
          const persona:any = character?.persona?.attributes
-         const {age=[],gender="Prefers not to say"} = persona?? {}
+         const {age=[],gender=["Prefers not to say"]} = persona?? {}
          let charAge=age
+         let charGender=gender[0]
          if(age[0]){
              charAge=age[0].split(' ')[0]
          }
@@ -47,7 +48,7 @@ module.exports = {
                 },
                 {
                 "name": `Gender`,
-                "value": gender
+                "value": charGender
                 }
              ],
             "image":{
