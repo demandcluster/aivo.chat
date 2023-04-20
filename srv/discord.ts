@@ -55,7 +55,7 @@ for (const file of commandFiles) {
 	 // shuffle greeting
 	 const greeting = greetings[Math.floor(Math.random() * greetings.length)]
 
-	  await member.guild.addRole('1091916813736095754')
+	  await member.roles.add('1091916813736095754')
 	  const code = await store.invitecode.getInviteCode()
 	  if(!code) await member.send("No codes available")
 	  await member.send(`Your AIVO.CHAT Early Access code is: **${code}**. The code is not exclusive to you and can be used by anyone. Please use it as soon as possible.`)
