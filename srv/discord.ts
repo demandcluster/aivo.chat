@@ -51,14 +51,17 @@ for (const file of commandFiles) {
 				"text": `You got an early access code, just in case you needed it...`,
 			  },
 	  }
+	  const greetings=["We have great news","We are happy to have you here","Welcome to the server","So nice you are here","We are happy to see you"]
+	 // shuffle greeting
+	 const greeting = greetings[Math.floor(Math.random() * greetings.length)]
+
 	  await member.addRole('1091916813736095754')
 	  const code = await store.invitecode.getInviteCode()
 	  if(!code) await member.send("No codes available")
 	  await member.send(`Your AIVO.CHAT Early Access code is: **${code}**. The code is not exclusive to you and can be used by anyone. Please use it as soon as possible.`)
-	  
-  message.channel.find((r) => r.name.toLowerCase() === 'welcome').send({ // Send the embed to the defined channel
-    embed
-  });
+	  const channel = await <client>.channels.fetch('1091959187195559946')
+	  channel.send({content: greeting,embeds: [embed], ephemeral: false })
+  
 });
 
 
