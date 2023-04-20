@@ -2,7 +2,7 @@ import {logger} from './logger'
 import {store} from './db'
 import fs from 'node:fs'
 import path from 'node:path'
-import { Client, Collection, Events, GatewayIntentBits,Embed } from 'discord.js'
+import { Client, Collection, Events, GatewayIntentBits,Embed,TextChannel } from 'discord.js'
 import { config } from './config'
 import { connect } from './db/client'
 
@@ -59,7 +59,7 @@ for (const file of commandFiles) {
 	  const code = await store.invitecode.getInviteCode()
 	  if(!code) await member.send("No codes available")
 	  await member.send(`Your AIVO.CHAT Early Access code is: **${code}**. The code is not exclusive to you and can be used by anyone. Please use it as soon as possible.`)
-	  const channel = await client.channels.fetch('1091959187195559946')
+	  const channel: TextChannel = discordClient.channels.cache.get('1091959187195559946') as TextChannel
 	  await channel.send({content: greeting,embeds: [embed], ephemeral: false })
   
 });
