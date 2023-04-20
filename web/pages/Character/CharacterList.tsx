@@ -93,14 +93,15 @@ const Character: Component<{
   const iconSize = { size: 'lg', corners: 'circle' };
   return (
     <div class="w-full">
-     
       <div class="conic h-72 md:h-[18.5rem] xl:h-96 2xl:h-80 hover:before:content-[''] hover:before:absolute hover:before:-z-20 hover:before:-left-1/2 hover:before:-top-1/2 hover:before:w-[200%] hover:before:h-[200%] hover:before:bg-[var(--bg-800)] hover:before:bg-no-repeat 
       hover:before:bg-left-top hover:before:bg-[conic-gradient(transparent,var(--hl-900),transparent_30%)] hover:before:animate-[rotate_3s_linear_infinite]
       hover:after:content-[''] hover:after:absolute hover:after:-z-10 hover:after:left-1 hover:after:top-1 hover:after:w-[calc(100%-8px)] hover:after:h-[calc(100%-8px)] bg hover:after:bg-[var(--bg-800)] hover:after:rounded-md
       relative z-0 overflow-hidden min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[var(--bg-800)] border-[var(--hl-900)] text-900 max-w-[210px] sm:max-w-[250px] xl:max-w-[93%]      ">
         <a href={`/character/${props.character._id}/chats`}>
           <img alt="..." src={getAssetUrl(props.character.avatar)} class="w-full align-middle rounded-t-lg min-h-[30px] p-1 object-contain max-h-[13rem] xl:max-h-[19rem] 2xl:max-h-[15rem] "/>
-          <div class="z-10 w-full text-right relative md:-mt-12 -mt-12 p-2 text-2xl md:text-3xl text-white text-shadow -bottom-6 right-0 md:right-1">
+          <div class=" h-14 -mt-14 z-10 bg-gradient-to-b from-transparent to-[var(--bg-800)] relative bg-cover max-w-full max-h-full w-full "   >
+          </div>
+          <div class="z-10 w-full text-right relative p-2 text-2xl -mt-8 md:text-3xl text-white text-shadow -bottom-6 right-0 md:right-1">
             <span class=" font-black ">{props.character?.name}</span> {((props.character.persona?.attributes?.age) ? props.character?.persona?.attributes?.age[0].split(" ")[0] : '')}
           </div>
             <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="left-0 w-full block h-24 mt-[-96px] top-[-96px] p-1 z-0">
