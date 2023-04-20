@@ -59,8 +59,8 @@ for (const file of commandFiles) {
 	  const code = await store.invitecode.getInviteCode()
 	  if(!code) await member.send("No codes available")
 	  await member.send(`Your AIVO.CHAT Early Access code is: **${code}**. The code is not exclusive to you and can be used by anyone. Please use it as soon as possible.`)
-	  const channel = await <client>.channels.fetch('1091959187195559946')
-	  channel.send({content: greeting,embeds: [embed], ephemeral: false })
+	  const channel = await client.channels.fetch('1091959187195559946')
+	  await channel.send({content: greeting,embeds: [embed], ephemeral: false })
   
 });
 
