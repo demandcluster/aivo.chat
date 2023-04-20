@@ -13,7 +13,7 @@ const negative_prompt = `disfigured, ugly, deformed, poorly, censor, censored, b
 const defaultSettings: HordeSettings = {
   type: 'horde',
   sampler: SD_SAMPLER['DPM++ 2M'],
-  model: 'Deliberate',
+  model: 'AbyssOrangeMix-AfterDark',
 }
 
 const baseUrl = 'https://horde.koboldai.net/api/v2'
