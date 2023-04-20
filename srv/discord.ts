@@ -45,7 +45,6 @@ for (const file of commandFiles) {
 		const embed = {
 		"title": `Welcome to the server, ${member.user.username}!`,
 		"description": `${member} ${member.guild.memberCount}rd to join, may many follow this great example..`,
-		"type": "rich",
 		"color": 0x00FFFF,
 		"footer": {
 				"text": `You got an early access code, just in case you needed it...`,
