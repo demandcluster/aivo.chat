@@ -2,9 +2,11 @@ import {logger} from './logger'
 import {store} from './db'
 import fs from 'node:fs'
 import path from 'node:path'
-import { Client, Collection, Events, GatewayIntentBits } from 'discord.js'
+import { Client, Collection, Events, GatewayIntentBits,RichEmbed } from 'discord.js'
 import { config } from './config'
 import { connect } from './db/client'
+import {store} from '../db'
+
 
 const {discordToken} = config
 
@@ -41,6 +43,26 @@ for (const file of commandFiles) {
 }
 
 
+	client.on('guildMemberAdd', async (member) => { // guildmemberadd is the event which gets triggered if somebody joins your Discord server
+		const embed = {
+		"title": `Welcome to the server, ${member.user.username}!`,
+		"description": `${member} ${member.guild.members.size}rd to join, may many follow this great example..`,
+		"type": "rich",
+		"color": 0x00FFFF,
+		"footer": {
+				"text": `You got an early access code, just in case you needed it...`,
+			  },
+	  }
+	  await member.addRole('1091916813736095754')
+	  const code = await store.invitecode.getInviteCode()
+	  if(!code) await member.send("No codes available")
+	  await member.send(`Your AIVO.CHAT Early Access code is: **${code}**. The code is not exclusive to you and can be used by anyone. Please use it as soon as possible.`)
+	  
+  message.channel.find((r) => r.name.toLowerCase() === 'welcome').send({ // Send the embed to the defined channel
+    embed
+  });
+});
+
 
 
 // When the client is ready, run this code (only once)
@@ -52,6 +74,7 @@ client.once(Events.ClientReady, async c => {
     logger.info( false,'Database connected')
     
 });
+
 
 
 client.on(Events.InteractionCreate, async interaction => {
