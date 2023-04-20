@@ -2,11 +2,9 @@ import {logger} from './logger'
 import {store} from './db'
 import fs from 'node:fs'
 import path from 'node:path'
-import { Client, Collection, Events, GatewayIntentBits,RichEmbed } from 'discord.js'
+import { Client, Collection, Events, GatewayIntentBits,Embed } from 'discord.js'
 import { config } from './config'
 import { connect } from './db/client'
-import {store} from '../db'
-
 
 const {discordToken} = config
 
