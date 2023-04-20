@@ -2,7 +2,7 @@ import {logger} from './logger'
 import {store} from './db'
 import fs from 'node:fs'
 import path from 'node:path'
-import { Client, Collection, Events, GatewayIntentBits,Embed,TextChannel } from 'discord.js'
+import { Client, Collection, Events, GatewayIntentBits,TextChannel } from 'discord.js'
 import { config } from './config'
 import { connect } from './db/client'
 
@@ -44,7 +44,7 @@ for (const file of commandFiles) {
 	client.on('guildMemberAdd', async (member) => { // guildmemberadd is the event which gets triggered if somebody joins your Discord server
 		const embed = {
 		"title": `Welcome to the server, ${member.user.username}!`,
-		"description": `${member} ${member.guild.members.size}rd to join, may many follow this great example..`,
+		"description": `${member} ${member.guild.memberCount}rd to join, may many follow this great example..`,
 		"type": "rich",
 		"color": 0x00FFFF,
 		"footer": {
@@ -55,7 +55,7 @@ for (const file of commandFiles) {
 	 // shuffle greeting
 	 const greeting = greetings[Math.floor(Math.random() * greetings.length)]
 
-	  await member.addRole('1091916813736095754')
+	  await member.guild.addRole('1091916813736095754')
 	  const code = await store.invitecode.getInviteCode()
 	  if(!code) await member.send("No codes available")
 	  await member.send(`Your AIVO.CHAT Early Access code is: **${code}**. The code is not exclusive to you and can be used by anyone. Please use it as soon as possible.`)
