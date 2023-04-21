@@ -34,7 +34,8 @@ export function handle(handler: Handler): express.RequestHandler {
       }
     } catch (ex) {
       req.log.error({ err: ex }, 'Error occurred handling request')
-      if (!res.headersSent) next(ex)
+      ///if (!res.headersSent) next(ex)
+      res.status(500).json({ error: 'Internal server error' })
     }
   }
  
