@@ -26,6 +26,8 @@ const checkRedis=async ()=>{
 if( checkRedis()==='1'){
 	logger.error('Discord bot already running')
 	process.exit()
+}else{
+	logger.info('checkredis '+checkRedis())
 }
 
 
