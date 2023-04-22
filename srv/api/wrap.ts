@@ -9,10 +9,7 @@ export function handle(handler: Handler): express.RequestHandler {
       nextCalled = true
       next(err)
     } 
-   
-    try {
- 
-      let ip = '';
+    let ip = '';
       if (req.headers && req.headers['x-forwarded-for']) {
         if (typeof req.headers['x-forwarded-for'] === 'string') {
           ip = req.headers['x-forwarded-for'];
@@ -26,16 +23,17 @@ export function handle(handler: Handler): express.RequestHandler {
           ...req,
           ip: ip
         }
-
-
+        
+    try {
+ 
       const result = await handler(req as any, res, wrappedNext)
       if (!res.headersSent && !nextCalled && !!result) {
         res.json(result)
       }
     } catch (ex) {
       req.log.error({ err: ex }, 'Error occurred handling request')
-      ///if (!res.headersSent) next(ex)
-      res.status(500).json({ error: 'Internal server error' })
+    if (!res.headersSent) next(ex)
+    //  res.status(500).json({ error: 'Internal server error' })
     }
   }
  

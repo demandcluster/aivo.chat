@@ -6,7 +6,7 @@ import { Client, Collection, Events, GatewayIntentBits,TextChannel } from 'disco
 import { config } from './config'
 import { connect } from './db/client'
 import * as redis from 'redis'
-
+ 
 function getUri() {
 	let creds = config.redis.user || ''
 	if (creds && config.redis.pass) creds += `:${config.redis.pass}`
@@ -20,10 +20,10 @@ const checkRedis=async ()=>{
 	await redisClient.connect()
 	const result=await redisClient.get('discordBot')
 	console.log(result)
-	if(result===1) return true
-	return false
+	if(result==='1') return '1'
+	return '0'
 }
-if(checkRedis()){
+if( checkRedis()==='1'){
 	logger.error('Discord bot already running')
 	process.exit()
 }
@@ -92,7 +92,8 @@ for (const file of commandFiles) {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, async c => {
-	await redisClient.set("discordBot", 1, 'EX', 300 )
+	
+	await redisClient.setex("discordBot",300,'1')
 	await redisClient.disconnect()
 	console.log(`Ready! Logged in as ${c.user?.tag}`);
     logger.info( false,'Discord bot ready')
