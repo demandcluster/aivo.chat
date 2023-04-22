@@ -19,7 +19,8 @@ const redisClient=redis.createClient({ url: getUri() })
 const checkRedis=async ()=>{
 	await redisClient.connect()
 	const result=await redisClient.get('discordBot')
-	if(result) return true
+	console.log(result)
+	if(result===1) return true
 	return false
 }
 if(checkRedis()){
@@ -91,7 +92,7 @@ for (const file of commandFiles) {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, async c => {
-	await redisClient.set("discordBot", true, 'EX', 300 )
+	await redisClient.set("discordBot", 1, 'EX', 300 )
 	await redisClient.disconnect()
 	console.log(`Ready! Logged in as ${c.user?.tag}`);
     logger.info( false,'Discord bot ready')
