@@ -23,13 +23,18 @@ const checkRedis=async ()=>{
 	if(result==='1') return '1'
 	return result
 }
-if( checkRedis()==='1'){
-	logger.error('Discord bot already running')
+checkRedis().then((result) => {
+	if (result === '1') {
+	  logger.error('Discord bot already running')
+	  process.exit()
+	} else {
+	  logger.info('checkredis ' + result)
+	}
+  }).catch((error) => {
+	// Handle any errors that occur during the Redis operation or Promise resolution
+	logger.error('Error occurred while checking Redis: ' + error)
 	process.exit()
-}else{
-	logger.info('checkredis '+checkRedis())
-}
-
+  })
 
 const {discordToken} = config
 
