@@ -21,7 +21,7 @@ const checkRedis=async ()=>{
 	const result=await redisClient.get('discordBot')
 	console.log(result)
 	if(result==='1') return '1'
-	return '0'
+	return result
 }
 if( checkRedis()==='1'){
 	logger.error('Discord bot already running')
