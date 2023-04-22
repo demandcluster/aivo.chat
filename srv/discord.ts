@@ -5,6 +5,27 @@ import path from 'node:path'
 import { Client, Collection, Events, GatewayIntentBits,TextChannel } from 'discord.js'
 import { config } from './config'
 import { connect } from './db/client'
+import * as redis from 'redis'
+
+function getUri() {
+	let creds = config.redis.user || ''
+	if (creds && config.redis.pass) creds += `:${config.redis.pass}`
+	if (creds) creds += '@'
+  
+	return `redis://${creds}${config.redis.host}:${config.redis.port}`
+  }
+const redisClient=redis.createClient({ url: getUri() })
+ 
+const checkRedis=async ()=>{
+	const result=await redisClient.get('discordBot')
+	if(result) return true
+	return false
+}
+if(checkRedis){
+	logger.error('Discord bot already running')
+	process.exit()
+}
+
 
 const {discordToken} = config
 
@@ -14,6 +35,7 @@ declare module 'discord.js' {
     }
   }
  
+
 const client = new Client({ 
     intents: [
 		GatewayIntentBits.Guilds,
@@ -68,6 +90,7 @@ for (const file of commandFiles) {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, async c => {
+	redisClient.set("discordBot", true, 'EX', 300 )
 	console.log(`Ready! Logged in as ${c.user?.tag}`);
     logger.info( false,'Discord bot ready')
     await initDb()
