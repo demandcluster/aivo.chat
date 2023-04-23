@@ -8,10 +8,9 @@ import { A,useNavigate } from '@solidjs/router'
 import AvatarIcon from '../../shared/AvatarIcon'
 import { matchStore,userStore, swipeStore } from '../../store'
 
+import { getAssetUrl } from '../../shared/util'
 import {SwipeCard} from '../../shared/Swipe'
 import type { SwipeCardRef} from '../../shared/Swipe'
-
-import { getAssetUrl } from '../../shared/util'
 
 const MatchList: Component = () => {
   const swipeCount = swipeStore();
@@ -38,7 +37,7 @@ const MatchList: Component = () => {
       left: ' text-red-500 fill-red-500 ',
       right: ' text-emerald-400 fill-emerald-400',
       up: ' text-cyan-300 fill-cyan-300',
-      down: ' text-orange-300 '
+      down: '  '
     }
   );
 
@@ -96,7 +95,13 @@ const MatchList: Component = () => {
       }
     }
   }
-
+  let timerBounce;
+  function debounce(func, timeout = 10){
+    return (...args) => {
+      clearTimeout(timerBounce);
+      timerBounce = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
   function swipeMovement (a){
     switch (a) {
       case 'left':
@@ -104,7 +109,7 @@ const MatchList: Component = () => {
           left: 'bg-red-500 text-white scale-100',
           right: ' text-emerald-400 fill-emerald-400 scale-80',
           up: ' text-cyan-300 fill-cyan-300 scale-100',
-          down: ' text-orange-300 '
+          down: ' '
         });
         break;
       case 'right':
@@ -112,7 +117,7 @@ const MatchList: Component = () => {
           left: ' text-red-500 fill-red-800 scale-80',
           right: 'bg-emerald-400 text-white scale-100',
           up: ' text-cyan-300 fill-cyan-300 scale-100',
-          down: ' text-orange-300 '
+          down: '   '
         });
         break;
       case 'up':
@@ -120,7 +125,7 @@ const MatchList: Component = () => {
           left: ' text-red-500 fill-red-800',
           right: ' text-emerald-400 fill-emerald-400 scale-100',
           up: 'bg-cyan-400 text-white scale-100',
-          down: ' text-orange-300 '
+          down: '   '
         });
         break;
       case 'down':
@@ -128,7 +133,7 @@ const MatchList: Component = () => {
           left: 'bg-red-500 text-white scale-100',
           right: ' text-emerald-400 fill-emerald-400 scale-80',
           up: ' text-cyan-300 fill-cyan-300 scale-100',
-          down: ' text-orange-300 '
+          down: ' '
         });
         break;
       case 'restore':
@@ -136,7 +141,7 @@ const MatchList: Component = () => {
           left: ' text-red-500 fill-red-800',
           right: ' text-emerald-400 fill-emerald-400 scale-100',
           up: ' text-cyan-300 fill-cyan-300 scale-100',
-          down: ' text-orange-300 '
+          down: '  '
         });
         break;
     }
@@ -183,21 +188,23 @@ const MatchList: Component = () => {
       <Show when={charsList().loaded && swipeCount.loaded} >
         <div class="flex w-full flex-col gap-2 ">
           <For each={charsList().list}>{(char, i) =>
-            <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={swipeMovement} swipeCount={swipeCount}  showZindex={i} />
+            <DSwipeCard character={char} match={createMatch} totalSwipes={totalSwipes} swipeAction={swipeAction} swipeMovement={debounce(swipeMovement)} swipeCount={swipeCount}  showZindex={i} />
           }</For>
         </div>
-          <div class=" sm:mt-[36em] pl-6 md:pl-1 mx-auto m-[26em] mb-4 w-96 max-w-5xl md:w-[26rem] pb-2">
-               <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeMove().left} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-red-500 border-solid border-2 "`}> 
-                  <X size={40} class={`${colorSwipeMove().left} "  icon-button inline-block "`}/>
+        <div zindex="5" class=" opacity-0 max-h-[calc(100%-10em)] bg-[var(--bg-800)] border-[var(--bg-800)] w-96 h-96 right-[5%] left-[5%] md:right-[10%] md:left-[10%] sm:w-9/12 sm:h-3/4 sm:max-w-[550px] sm:max-h-[550px] lg:right-[calc(14%-18.5rem)]  m-auto shadow-lg max-w-[90%]  border-solid border-[10px] md:border-[20px] rounded-lg ">          </div>
+        
+          <div class=" mt-4 mx-auto mb-4 pb-2 text-center">
+               <button onclick={()=>buttonSwipe("left")} class={`${colorSwipeMove().left} w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mr-3 md:ml-3 border-red-500 border-solid border-2 `}> 
+                  <X size={40} class={`${colorSwipeMove().left} icon-button inline-block `}/>
                 </button>
-                <button onclick={()=>showProfile()} class={`${colorSwipeMove().up} " w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 border-cyan-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 align-bottom "`}>
-                  <AlignLeft size={30} class={`${colorSwipeMove().up} " icon-button w-6 inline-block"`}/> 
+                <button onclick={()=>showProfile()} class={`${colorSwipeMove().up}  w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 border-cyan-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mr-3 md:ml-3 align-bottom `}>
+                  <AlignLeft size={30} class={`${colorSwipeMove().up} icon-button w-6 inline-block `}/> 
                 </button>
-                <button disabled={undoDisabled()} onclick={()=>SwipeUndo()} class={`${colorSwipeMove().down} " w-14 h-14 md:w-16 md:h-16 disabled:opacity-10 disabled:hover:scale-100 border-orange-300 border-solid border-2 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 align-bottom "`}>
-                  <Undo2 size={30} class={`${colorSwipeMove().down} " icon-button w-6 inline-block"`}/> 
+                <button disabled={undoDisabled()} onclick={()=>SwipeUndo()} class={`${colorSwipeMove().down}  w-14 h-14 md:w-16 md:h-16 disabled:opacity-60 disabled:hover:scale-100 disabled:border-gray-500 disabled:text-gray-500 text-orange-300 border-orange-300 border-solid border-2 p-2 rounded-full font-bold  md:hover:scale-125 duration-200 shadow-lg mr-3 md:ml-3 align-bottom `}>
+                  <Undo2 size={30} class={`${colorSwipeMove().down} w-6 inline-block `}/> 
                 </button>
-                <button onclick={()=>buttonSwipe("right")} class={`${colorSwipeMove().right} " w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mx-3 border-emerald-400 border-solid border-2 "`}> 
-                  <Heart size={40} class={`${colorSwipeMove().right}  " icon-button inline-block fill-emerald-400 "`}/>
+                <button onclick={()=>buttonSwipe("right")} class={`${colorSwipeMove().right}  w-16 h-16 md:w-20 md:h-20 p-2 rounded-full font-bold text-white md:hover:scale-125 duration-200 shadow-lg mr-3 md:ml-3 border-emerald-400 border-solid border-2 `}> 
+                  <Heart size={40} class={`${colorSwipeMove().right} icon-button inline-block fill-emerald-400 `}/>
                 </button>
           </div>
         {charsList().list?.length === 0 ? <NoMatches /> : null}
@@ -214,7 +221,7 @@ const DSwipeCard: Component<{ character: AppSchema.Character;match: Any  }> = (p
   const age = (props.character.persona.attributes.age) ? props.character.persona.attributes.age[0].split(" ")[0] : '';
   return (
     <div class="absolute w-full max-w-5xl"> 
-    <SwipeCard zindex="5" class="  bg-[var(--bg-800)] border-[var(--bg-800)] fixed w-96 h-96 right-[5%] left-[5%] md:right-[10%] md:left-[10%] sm:w-9/12 sm:h-3/4 sm:max-w-[550px] sm:max-h-[550px] lg:right-[calc(14%-18.5rem)]  m-auto shadow-lg max-w-[90%] max-h-[90%]  border-solid border-[10px] md:border-[20px] rounded-lg"
+    <SwipeCard zindex="5" class=" max-h-[calc(100%-14em)] bg-[var(--bg-800)] border-[var(--bg-800)] fixed w-96 h-96 right-[5%] left-[5%] md:right-[10%] md:left-[10%] sm:w-9/12 sm:h-3/4 sm:max-w-[550px] sm:max-h-[550px] lg:right-[calc(14%-18.5rem)]  m-auto shadow-lg max-w-[90%]  border-solid border-[10px] md:border-[20px] rounded-lg"
     threshold="300" rotationmultiplier="7.5" maxrotation="90" snapbackduration="300" bouncepower="0.1" id={props.character._id} apiRef={apiRef} onSwipe={props.swipeAction} onMove={props.swipeMovement}>
       <div class=" h-28 bottom-0 z-10 bg-gradient-to-b from-transparent to-[var(--bg-800)] absolute bg-cover max-w-full max-h-full w-full "   >
        
@@ -223,7 +230,7 @@ const DSwipeCard: Component<{ character: AppSchema.Character;match: Any  }> = (p
         
         <div class="z-20 w-full absolute size bottom-4 sm:bottom-10 sm:text-5xl p-2 text-3xl text-white text-shadow"><span class=" font-black ">{props.character.name}</span> {age}</div>
         <Suspense>
-          <div class="absolute z-20 bottom-1 h-6 overflow-hidden sm:h-10">
+          <div class="absolute z-20 bottom-2 h-6 overflow-hidden sm:h-10">
             <For each={props.character.persona.attributes.likes}>
                 {(attr) => <div class=" border capitalize float-left px-2 py-1 rounded-md bg-[var(--hl-900)] bg-opacity-80 m-1 text-[8px] sm:text-[12px] sm:py-2">{attr}</div>}
             </For>
