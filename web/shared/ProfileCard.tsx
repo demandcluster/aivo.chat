@@ -73,7 +73,7 @@ const ProfileCard: Component<{ character: AppSchema.Character; href: string }> =
               <hr class=" mt-8 opacity-40 w-[calc(100%-5rem)] ml-24"/>
               <div class=" relative -ml-3 -top-4  text-shadow inline-block mr-3"><Globe2 class="inline mr-1 w-10 text-[var(--hl-200)]"/>Country</div>
               <div class=" w-full">
-                <div class="first-letter:capitalize mx-1 border text-xs inline-block mb-3 p-1 px-2 rounded-xl bg-[var(--hl-900)]" >{props.character.persona?.attributes?.country2||""}</div>
+                <div class="first-letter:capitalize mx-1 border text-xs inline-block mb-3 p-1 px-2 rounded-xl bg-[var(--hl-900)]" >{props.character.persona?.attributes?.country||""}</div>
               </div>
             </Show>
           </blockquote>
