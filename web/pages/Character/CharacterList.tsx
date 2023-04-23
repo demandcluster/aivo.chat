@@ -93,26 +93,23 @@ const Character: Component<{
   const iconSize = { size: 'lg', corners: 'circle' };
   return (
     <div class="w-full">
-      <div class="conic h-72 md:h-[18.5rem] xl:h-96 2xl:h-80 hover:before:content-[''] hover:before:absolute hover:before:-z-20 hover:before:-left-1/2 hover:before:-top-1/2 hover:before:w-[200%] hover:before:h-[200%] hover:before:bg-[var(--bg-800)] hover:before:bg-no-repeat 
-      hover:before:bg-left-top hover:before:bg-[conic-gradient(transparent,var(--hl-900),transparent_30%)] hover:before:animate-[rotate_3s_linear_infinite]
-      hover:after:content-[''] hover:after:absolute hover:after:-z-10 hover:after:left-1 hover:after:top-1 hover:after:w-[calc(100%-8px)] hover:after:h-[calc(100%-8px)] bg hover:after:bg-[var(--bg-800)] hover:after:rounded-md
-      relative z-0 overflow-hidden min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[var(--bg-800)] border-[var(--hl-900)] text-900 max-w-[210px] sm:max-w-[250px] xl:max-w-[93%]      ">
-        <a href={`/character/${props.character._id}/chats`}>
-          <img alt="..." src={getAssetUrl(props.character.avatar)} class="w-full align-middle rounded-t-lg min-h-[30px] p-1 object-contain max-h-[13rem] xl:max-h-[19rem] 2xl:max-h-[15rem] "/>
-          <div class=" h-14 -mt-14 z-10 bg-gradient-to-b from-transparent to-[var(--bg-800)] relative bg-cover max-w-full max-h-full w-full "   >
-          </div>
-          <div class="z-10 w-full text-right relative p-2 text-2xl -mt-8 md:text-3xl text-white text-shadow -bottom-6 right-0 md:right-1">
-            <span class=" font-black ">{props.character?.name}</span> {((props.character.persona?.attributes?.age) ? props.character?.persona?.attributes?.age[0].split(" ")[0] : '')}
-          </div>
-            <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="left-0 w-full block h-24 mt-[-96px] top-[-96px] p-1 z-0">
-                <polygon points="-30,95 583,95 583,65" class="text-[var(--bg-800)] fill-current"></polygon>
-            </svg>
-        </a>
-      <blockquote class="relative pt-8 p-1 md:px-4 mb-8">
+    <div class={`${props.user?.admin ? "2xl:h-[21rem] h-80 md:h-[19.5rem]" : "2xl:h-80 h-72 md:h-[18.5rem]" } conic  xl:h-96  hover:before:content-[''] hover:before:absolute hover:before:-z-20 hover:before:-left-1/2 hover:before:-top-1/2 hover:before:w-[200%] hover:before:h-[200%] hover:before:bg-[var(--bg-800)] hover:before:bg-no-repeat 
+    hover:before:bg-left-top hover:before:bg-[conic-gradient(transparent,var(--hl-900),transparent_30%)] hover:before:animate-[rotate_3s_linear_infinite]
+    hover:after:content-[''] hover:after:absolute hover:after:-z-10 hover:after:left-1 hover:after:top-1 hover:after:w-[calc(100%-8px)] hover:after:h-[calc(100%-8px)] bg hover:after:bg-[var(--bg-800)] hover:after:rounded-md
+    relative z-0 overflow-hidden min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-[var(--bg-800)] border-[var(--hl-900)] text-900 max-w-[210px] sm:max-w-[250px] xl:max-w-[93%]      `}>
+      <a href={`/character/${props.character._id}/chats`}>
+        <img alt="..." src={getAssetUrl(props.character.avatar)} class="w-full align-middle rounded-t-lg min-h-[30px] p-1 object-contain max-h-[13rem] xl:max-h-[19rem] 2xl:max-h-[15rem] "/>
+        <div class=" h-14 -mt-14 z-10 bg-gradient-to-b from-transparent to-[var(--bg-800)] relative bg-cover max-w-full max-h-full w-full "   >
+        </div>
+        <div class="z-10 w-full text-right relative p-2 text-2xl -mt-8 md:text-3xl text-white text-shadow -bottom-6 right-0 md:right-1">
+          <span class=" font-black ">{props.character?.name}</span> {((props.character.persona?.attributes?.age) ? props.character?.persona?.attributes?.age[0].split(" ")[0] : '')}
+        </div>
+      </a>
+      <blockquote class="relative pt-6 p-1 md:px-4 mb-8">
         <Show when={props.character.name!=="Aiva"}>
-          <div><Gauge currentXP={props.character.xp} /></div>
+          <div class={props.user?.admin ? "mt-4" : ""} ><Gauge currentXP={props.character.xp} /></div>
         </Show>
-        <div class="flex flex-row items-end justify-end  gap-2 -mt-10 w-full" style="justify-content:right">
+        <div class={`${props.user?.admin ? (props.character.name=="Aiva" ? "mt-5" : "-mt-16") : "mt-10" } flex flex-row items-end justify-end gap-2 w-full `} style="justify-content:right">
           <Show when={props.user?.admin}>
             <a onClick={props.download}>
               <Download class="icon-button" />

@@ -26,6 +26,7 @@ const ImportCharacterModal: Component<{
       importJson(json)
       toastStore.success('Character file accepted')
     } catch (ex) {
+      console.log(ex);
       toastStore.warn(
         'Invalid file format. Supported formats: Agnaistic, CAI, TavernAI, TextGen, Pygmalion'
       )
@@ -38,6 +39,7 @@ const ImportCharacterModal: Component<{
 
       setJson(char)
     } catch (ex) {
+      console.log(ex);
       toastStore.warn(
         'Invalid file format. Supported formats: Agnaistic, CAI, Tavern JSON/Cards, TextGen, Pygmalion'
       )
