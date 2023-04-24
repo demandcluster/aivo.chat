@@ -19,9 +19,9 @@ export async function generateImage(
   if (!guestId) {
     broadcastIds.push(user._id)
     const members = await store.chats.getActiveMembers(chatId)
-    broadcastIds.push(...members)
+    broadcastIds.push(...members, user._id)
   }
-  if(guestId){
+  if(guestId){ 
     const emsg = { type: 'image-failed', guestId, error: "Members only" }
     sendGuest(guestId, emsg)
     return
@@ -68,7 +68,7 @@ export async function generateImage(
    * Otherwise: We will broadcast the image content
    */
   if (image) {
-    if (config.storage.saveImages) {
+    if (!opts.ephemeral && config.storage.saveImages) {
       const name = `${v4()}.${image.ext}`
       output = await saveFile(name, image.content)
 
@@ -84,7 +84,7 @@ export async function generateImage(
         if (msg) return
       }
     } else {
-      output = await saveFile(`temp-${v4()}.${image.ext}`, image.content, 60)
+      output = await saveFile(`temp-${v4()}.${image.ext}`, image.content, 300)
     }
   }
 
@@ -100,6 +100,8 @@ export async function generateImage(
   const credits = await store.credits.updateCredits(user._id!, -20)
 
   sendOne(user._id!, { type: 'credits-updated', credits })
+
+  return { output }
 }
 
 async function createImageMessage(opts: {

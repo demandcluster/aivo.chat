@@ -141,6 +141,8 @@ export namespace AppSchema {
 
     createdAt: string
     updatedAt: string
+
+    favorite?: boolean
   }
 
   export interface ChatInvite {
@@ -215,6 +217,7 @@ export namespace AppSchema {
     adapters: AIAdapter[]
     version: string
     canAuth: boolean
+    imagesSaved: boolean
     assetPrefix: string
     selfhosting: boolean
   }

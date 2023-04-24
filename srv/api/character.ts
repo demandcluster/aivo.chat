@@ -2,11 +2,9 @@ import { Router } from 'express'
 import { assertValid } from 'frisker'
 import { store } from '../db'
 import { loggedIn,isAdmin } from './auth'
-import { handle, StatusError } from './wrap'
+import { errors, handle, StatusError } from './wrap'
 import { entityUpload, handleForm } from './upload'
 import { PERSONA_FORMATS } from '../../common/adapters'
-import {logger} from '../logger'
-import { v4 } from 'uuid'
 
 const router = Router()
 
@@ -25,6 +23,7 @@ const valid = {
     attributes: 'any',
   },
   originalAvatar: 'string?',
+  favorite: 'boolean?',
 } as const
 
 const createCharacter = handle(async (req) => {
@@ -43,6 +42,7 @@ const createCharacter = handle(async (req) => {
     scenario: body.scenario,
     greeting: body.greeting,
     avatar: body.originalAvatar,
+    favorite: false,
   })
 
   const filename = await entityUpload(
@@ -94,6 +94,14 @@ const editCharacter = handle(async (req) => {
   return char
 })
 
+const removeAvatar = handle(async ({ userId, params }) => {
+  const char = await store.characters.getCharacter(userId, params.id)
+  if (!char) throw errors.NotFound
+
+  await store.characters.updateCharacter(params.id, userId, { avatar: '' })
+  return { ...char, avatar: '' }
+})
+
 const getCharacter = handle(async ({ userId, params }) => {
   const char = await store.characters.getCharacter(userId!, params.id)
   if (!char) {
@@ -108,11 +116,24 @@ const deleteCharacter = handle(async ({ userId, params }) => {
   return { success: true }
 })
 
+const editCharacterFavorite = handle(async (req) => {
+  const id = req.params.id
+  const favorite = req.body.favorite == true
+
+  const char = await store.characters.updateCharacter(id, req.userId!, {
+    favorite: favorite,
+  })
+
+  return char
+})
+
 router.use(loggedIn)
 router.post('/', createCharacter)
 router.get('/', getCharacters)
 router.post('/:id', isAdmin,editCharacter)
 router.get('/:id', getCharacter)
 router.delete('/:id', deleteCharacter)
+router.post('/:id/favorite', editCharacterFavorite)
+router.delete('/:id/avatar', removeAvatar)
 
 export default router

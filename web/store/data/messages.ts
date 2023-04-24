@@ -1,6 +1,4 @@
-import { v4 } from 'uuid'
-import { defaultPresets, isDefaultPreset } from '../../../common/presets'
-import { createPrompt, getAdapter } from '../../../common/prompt'
+import { createPrompt, getChatPreset } from '../../../common/prompt'
 import { GenerateRequestV2 } from '../../../srv/adapter/type'
 import { AppSchema } from '../../../srv/db/schema'
 import { api, isLoggedIn } from '../api'
@@ -29,7 +27,7 @@ export async function getMessages(chatId: string, before: string) {
   return res
 }
 
-type GenerateOpts =
+export type GenerateOpts =
   /**
    * A user sending a new message
    */
@@ -44,6 +42,10 @@ type GenerateOpts =
    * The last message in the chat is a bot message and we want to generate more text for this message.
    */
   | { kind: 'continue' }
+  /**
+   * Generate a message on behalf of the user
+   */
+  | { kind: 'self' }
 
 export async function generateResponseV2(opts: GenerateOpts) {
   const entities = await getPromptEntities()
@@ -156,7 +158,16 @@ async function getGuestEntities() {
   const user = loadItem('config')
   const settings = getGuestPreset(user, chat)
 
-  return { chat, char, user, profile, book, messages, settings, members: [] as AppSchema.Profile[] }
+  return {
+    chat,
+    char,
+    user,
+    profile,
+    book,
+    messages,
+    settings,
+    members: [profile] as AppSchema.Profile[],
+  }
 }
 
 function getAuthedPromptEntities() {
@@ -184,53 +195,14 @@ function getAuthGenSettings(
   user: AppSchema.User
 ): Partial<AppSchema.GenSettings> | undefined {
   const presets = getStore('presets').getState().presets
-  if (chat.genPreset) {
-    if (isDefaultPreset(chat.genPreset)) return defaultPresets[chat.genPreset]
-    const preset = presets.find((pre) => pre._id === chat.genPreset)
-    if (preset) return preset
-  }
-
-  if (chat.genSettings) return chat.genSettings
-  const { adapter } = getAdapter(chat, user)
-  if (!user.defaultPresets) return
-
-  const svcPreset = user.defaultPresets[adapter]
-  if (!svcPreset) return
-
-  if (isDefaultPreset(svcPreset)) return defaultPresets[svcPreset]
-  const preset = presets.find((pre) => pre._id === svcPreset)
-  return preset
+  return getChatPreset(chat, user, presets)
 }
 
 function getGuestPreset(user: AppSchema.User, chat: AppSchema.Chat) {
   // The server does not store presets for users
   // Override the `genSettings` property with the locally stored preset data if found
   const presets = loadItem('presets')
-  if (chat.genPreset) {
-    if (isDefaultPreset(chat.genPreset)) return defaultPresets[chat.genPreset]
-    const preset = presets.find((pre) => pre._id === chat.genPreset)
-    return preset
-  }
-
-  if (chat.genSettings) return chat.genSettings
-
-  const { adapter } = getAdapter(chat, user)
-  if (!user.defaultPresets) return
-
-  /**
-   * If an anonymous user has configured default service presets then
-   * we need to send those along with the request in the form of 'overrides'
-   */
-  const svcPreset = user.defaultPresets[adapter]
-  if (!svcPreset) return
-
-  // Default presets are correctly handled by the API
-  if (isDefaultPreset(svcPreset)) {
-    return defaultPresets[svcPreset]
-  }
-
-  const preset = presets.find((pre) => pre._id === svcPreset)
-  return preset
+  return getChatPreset(chat, user, presets)
 }
 
 function emptyMsg(

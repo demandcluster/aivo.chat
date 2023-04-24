@@ -6,6 +6,8 @@ import {
   ShoppingCart,
   Eye,
   Github,
+  Home,
+  Info,
   LogIn,
   LogOut,
   MailPlus,
@@ -28,14 +30,14 @@ const Navigation: Component = () => {
   const state = settingStore()
   const user = userStore()
   const nav = useNavigate()
-  const logout = () => {
+  const logout = () => {logo
     nav('/')
     userStore.logout()
   }
 
   const hide = createMemo(() => (state.showMenu ? '' : 'drawer--hide'))
   const fullscreen = createMemo(() => (state.fullscreen ? 'hidden' : ''))
-console.log(user.ui)
+
   return (
     <div
       data-menu=""
@@ -44,8 +46,10 @@ console.log(user.ui)
       <div class="drawer__content flex flex-col gap-2 px-1 lg:px-4">
         <div class="hidden w-full sm:flex px-4 ph-1 pt-2">
           <A href="/">
+         
           <img width="100px"  src={user.ui?.mode==="light"?logoDark:logo}/>
           <span class="text-xs text-gray-400">by Demandcluster</span>
+         
           </A>
         </div>
         <Show when={user.loggedIn} fallback={<GuestNavigation />}>
@@ -117,11 +121,15 @@ const UserNavigation: Component = () => {
           <Clapperboard /> Scenarios
         </Item> 
       </Show>
-      <Item href="/shop">
+      <Item href="/shop"> 
         <ShoppingCart /> Shop
       </Item>
       <Item href="/help">
         <HelpCircle/> Help
+      </Item>
+      <Item href="/info">
+        <Info />
+        Information
       </Item>
     </>
   )

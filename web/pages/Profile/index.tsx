@@ -6,7 +6,7 @@ import FileInput, { FileInputResult } from '../../shared/FileInput'
 import Modal from '../../shared/Modal'
 import PageHeader from '../../shared/PageHeader'
 import TextInput from '../../shared/TextInput'
-import { getStrictForm } from '../../shared/util'
+import { getStrictForm, setComponentPageTitle } from '../../shared/util'
 import { toastStore, userStore } from '../../store'
 
 
@@ -25,11 +25,12 @@ const seconds = date.getSeconds(); // Get the seconds (0-59)
 
 // Create a human-readable date string in the format "YYYY-MM-DD HH:MM:SS"
 const dateString = `${monthName} ${day}, ${year} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
+if(dateString.includes("NaN"))return ""
 return dateString
 }
 
 const ProfilePage: Component = () => {
+  setComponentPageTitle('My profile')
   const state = userStore()
   const [pass, setPass] = createSignal(false)
   const [avatar, setAvatar] = createSignal<File | undefined>()
@@ -73,6 +74,7 @@ const ProfilePage: Component = () => {
           />
 
         </Show>
+        
           <TextInput
             label="ID"
             helperText="Your user ID. This is used by others to send you chat invitations."

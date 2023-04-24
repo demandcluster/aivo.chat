@@ -7,7 +7,17 @@ import { now } from './util'
 type CharacterUpdate = Partial<
   Pick<
     AppSchema.Character,
-    'name' | 'avatar' | 'match' | 'xp' | 'premium' |  'persona' | 'sampleChat' | 'greeting' | 'scenario' | 'description'
+    | 'name' 
+    | 'avatar' 
+    | 'match' 
+    | 'xp' 
+    | 'premium' 
+    |  'persona' 
+    | 'sampleChat' 
+    | 'greeting' 
+    | 'scenario' 
+    | 'description' 
+    | 'favorite'	
   >
 >
 
@@ -15,7 +25,17 @@ export async function createCharacter(
   userId: string,
   char: Pick<
     AppSchema.Character,
-    'name' | 'avatar' | 'match' | 'xp' | 'premium' | 'persona' |  'greeting' | 'scenario' | 'description' | 'sampleChat'
+    | 'name' 
+    | 'avatar' 
+    | 'match' 
+    | 'xp' 
+    | 'premium' 
+    | 'persona' 
+    | 'greeting' 
+    | 'scenario' 
+    | 'description' 
+    | 'sampleChat' 
+    | 'favorite'
   >
 ) {
   const newChar: AppSchema.Character = {

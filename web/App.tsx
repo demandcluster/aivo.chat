@@ -29,6 +29,8 @@ import MetricsPage from './pages/Admin/Metrics'
 import './dots.css'
 import Loading from './shared/Loading'
 import Button from './shared/Button'
+import ChangeLog from './pages/Home/ChangeLog'
+import CharacterList from './pages/Character/CharacterList'
 
 const App: Component = () => {
   const state = userStore()
@@ -64,9 +66,13 @@ const App: Component = () => {
               <Routes>
                 <CharacterRoutes />
                 <Route path="/chats" component={CharacterChats} />
-                <Route path="/chat" component={() => <ChatDetail />} />
-                <Route path="/chat/:id" component={() => <ChatDetail />} />
-                <Route path="/" component={HomePage} />
+                <Route path="/chat" component={ChatDetail} />
+                <Route path="/chat/:id" component={ChatDetail} />
+                <Route path="/" component={CharacterList} />
+                <Route path="/info" component={HomePage} />
+                <Route path="/changelog" component={ChangeLog} />
+                <Route path="/presets/:id" component={GenerationPresetsPage} />
+                <Route path="/presets" component={PresetList} />
                 <Route path="/profile" component={ProfilePage} />
                 <Route path="/settings" component={Settings} />
                 <Route path="/memory" component={MemoryPage} />

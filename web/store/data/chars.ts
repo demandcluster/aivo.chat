@@ -15,6 +15,46 @@ export async function getCharacters() {
   return local.result({ characters })
 }
 
+export async function removeAvatar(charId: string) {
+  if (isLoggedIn()) {
+    const res = await api.method('delete', `/character/${charId}/avatar`)
+    return res
+  }
+
+  const chars = loadItem('characters').map((ch) => {
+    if (ch._id !== charId) return ch
+    return { ...ch, avatar: '' }
+  })
+
+  local.saveChars(chars)
+  return local.result(chars.filter((ch) => ch._id === charId))
+}
+
+export async function editAvatar(charId: string, file: File) {
+  if (isLoggedIn()) {
+    const form = new FormData()
+    form.append('avatar', file)
+
+    const res = await api.upload(`/character/${charId}`, form)
+    return res
+  }
+
+  const avatar = await getImageData(file)
+  const chars = loadItem('characters')
+
+  const prev = chars.find((ch) => ch._id === charId)
+
+  if (!prev) {
+    return { result: undefined, error: `Character not found` }
+  }
+
+  const nextChar = { ...prev, avatar: avatar || prev.avatar }
+  const next = chars.map((ch) => (ch._id === charId ? nextChar : ch))
+  local.saveChars(next)
+
+  return local.result(nextChar)
+}
+
 export async function deleteCharacter(charId: string) {
   if (isLoggedIn()) {
     const res = api.method('delete', `/character/${charId}`)
@@ -76,6 +116,26 @@ export async function editCharacter(charId: string, { avatar: file, ...char }: N
   return { result: nextChar, error: undefined }
 }
 
+export async function setFavorite(charId: string, favorite: boolean) {
+  if (isLoggedIn()) {
+    const res = await api.post(`/character/${charId}/favorite`, { favorite: favorite })
+    return res
+  }
+
+  const chars = loadItem('characters')
+  const prev = chars.find((ch) => ch._id === charId)
+
+  if (!prev) {
+    return { result: undefined, error: `Character not found` }
+  }
+
+  const nextChar = { ...prev, favorite: favorite }
+  const next = chars.map((ch) => (ch._id === charId ? nextChar : ch))
+  local.saveChars(next)
+
+  return { result: nextChar, error: undefined }
+}
+
 export async function createCharacter(char: ImportCharacter) {
   if (isLoggedIn()) {
     const form = new FormData()
@@ -115,28 +175,8 @@ export async function createCharacter(char: ImportCharacter) {
 
   return { result: newChar, error: undefined }
 }
-export async function createMatch(char: ImportCharacter) {
-  if (isLoggedIn()) {
-    const form = new FormData()
-    form.append('name', char.name)
-    form.append('greeting', char.greeting)
-    form.append('scenario', char.scenario)
-    form.append('summary', char.summary)
-    form.append('match', char.match)
-    form.append('xp', char.xp)
-    form.append('premium', char.premium)
-    form.append('persona', JSON.stringify(char.persona))
-    form.append('sampleChat', char.sampleChat)
-    form.append('avatar', char.avatar)
-    
-
-    const res = await api.upload<AppSchema.Character>(`/character`, form)
-    return res
-   }
-  
-}
-
-export async function getImageData(file?: File) {
+ 
+export async function getImageData(file?: File | Blob) {
   if (!file) return
   const reader = new FileReader()
 

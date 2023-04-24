@@ -1,11 +1,21 @@
-import { GenerateRequestV2 } from '../srv/adapter/type'
+import type { GenerateRequestV2 } from '../srv/adapter/type'
 import type { AppSchema } from '../srv/db/schema'
 import { AIAdapter, OPENAI_MODELS } from './adapters'
-import { getMemoryPrompt, MemoryPrompt, MEMORY_PREFIX } from './memory'
+import { buildMemoryPrompt, MEMORY_PREFIX } from './memory'
 import { defaultPresets, getFallbackPreset, isDefaultPreset } from './presets'
 import { Encoder, getEncoder } from './tokenize'
 
-const DEFAULT_MAX_TOKENS = 2048
+export type PromptParts = {
+  scenario?: string
+  greeting?: string
+  sampleChat?: string[]
+  persona: string
+  gaslight: string
+  ujb?: string
+  post: string[]
+  gaslightHasChat: boolean
+  memory?: string
+}
 
 export type Prompt = {
   prompt: string
@@ -32,8 +42,19 @@ export type PromptOpts = {
   book?: AppSchema.MemoryBook
 }
 
-export const BOT_REPLACE = /\{\{char\}\}/g
-export const SELF_REPLACE = /\{\{user\}\}/g
+type BuildPromptOpts = {
+  kind?: GenerateRequestV2['kind']
+  chat: AppSchema.Chat
+  char: AppSchema.Character
+  user: AppSchema.User
+  continue?: string
+  members: AppSchema.Profile[]
+  settings?: Partial<AppSchema.GenSettings>
+}
+
+/** {{user}}, <user>, {{char}}, <bot>, case insensitive */
+export const BOT_REPLACE = /(\{\{char\}\}|<BOT>)/gi
+export const SELF_REPLACE = /(\{\{user\}\}|<USER>)/gi
 
 /**
  * This is only ever invoked client-side
@@ -71,18 +92,9 @@ export function createPromptWithParts(
   parts: PromptParts,
   lines: string[]
 ) {
-  const { pre, post, history } = buildPrompt(opts, parts, lines, 'asc')
+  const { pre, post, history, parts: newParts } = buildPrompt(opts, parts, lines, 'asc')
   const prompt = [pre, history, post].filter(removeEmpty).join('\n')
-  return { lines, prompt, parts, pre, post }
-}
-
-type BuildPromptOpts = {
-  chat: AppSchema.Chat
-  char: AppSchema.Character
-  user: AppSchema.User
-  continue?: string
-  members: AppSchema.Profile[]
-  settings?: Partial<AppSchema.GenSettings>
+  return { lines, prompt, parts: newParts, pre, post }
 }
 
 /**
@@ -114,8 +126,8 @@ export function buildPrompt(
 
     if (parts.scenario) pre.push(`Scenario: ${parts.scenario}`)
 
-    if (parts.memory?.prompt) {
-      pre.push(`${MEMORY_PREFIX}${parts.memory.prompt}`)
+    if (parts.memory) {
+      pre.push(`${MEMORY_PREFIX}${parts.memory}`)
     }
 
     if (!hasStart) pre.push('<START>')
@@ -128,7 +140,7 @@ export function buildPrompt(
     pre.push(parts.gaslight)
   }
 
-  const post = [`${char.name}:`]
+  const post = [opts.kind === 'self' ? `${sender}:` : `${char.name}:`]
   if (opts.continue) {
     post.unshift(`${char.name}: ${opts.continue}`)
   }
@@ -138,7 +150,14 @@ export function buildPrompt(
 
   const maxContext = getContextLimit(opts.settings, adapter, model)
 
-  const history = fillPromptWithLines(encoder, maxContext, pre + '\n' + post, lines).reverse()
+  const preamble = pre.join('\n').replace(BOT_REPLACE, char.name).replace(SELF_REPLACE, sender)
+  const postamble = parts.post.join('\n')
+  const history = fillPromptWithLines(
+    encoder,
+    maxContext,
+    preamble + '\n' + postamble,
+    lines
+  ).reverse()
 
   /**
    * TODO: This is doubling up on memory a fair bit
@@ -146,8 +165,6 @@ export function buildPrompt(
    * However the prompt re-ordering should probably occur earlier
    */
 
-  const preamble = pre.join('\n').replace(BOT_REPLACE, char.name).replace(SELF_REPLACE, sender)
-  const postamble = parts.post.join('\n')
   const prompt = [preamble, ...history, postamble].filter(removeEmpty).join('\n')
 
   return {
@@ -157,17 +174,6 @@ export function buildPrompt(
     parts,
     prompt,
   }
-}
-
-export type PromptParts = {
-  scenario?: string
-  greeting?: string
-  sampleChat?: string[]
-  persona: string
-  gaslight: string
-  post: string[]
-  gaslightHasChat: boolean
-  memory?: MemoryPrompt
 }
 
 export function getPromptParts(
@@ -203,20 +209,33 @@ export function getPromptParts(
     post.unshift(`${char.name}: ${opts.continue}`)
   }
 
-  parts.memory = getMemoryPrompt({ ...opts, lines: lines.slice().reverse() })
+  const memory = buildMemoryPrompt({ ...opts, lines: lines.slice().reverse() })
+  if (memory) parts.memory = memory.prompt
 
   const gaslight = opts.settings?.gaslight || defaultPresets.openai.gaslight
+  const ujb = opts.settings?.ultimeJailbreak
 
   const sampleChat = parts.sampleChat?.join('\n') || ''
+
+  if (ujb) {
+    parts.ujb = ujb
+      .replace(/\{\{example_dialogue\}\}/gi, sampleChat)
+      .replace(/\{\{scenario\}\}/gi, parts.scenario || '')
+      .replace(/\{\{memory\}\}/gi, parts.memory || '')
+      .replace(/\{\{name\}\}/gi, char.name)
+      .replace(BOT_REPLACE, char.name)
+      .replace(SELF_REPLACE, sender)
+      .replace(/\{\{personality\}\}/gi, formatCharacter(char.name, chat.overrides || char.persona))
+  }
+
   parts.gaslight = gaslight
-    .replace(/\{\{example_dialogue\}\}/g, sampleChat)
-    .replace(/\{\{scenario\}\}/g, parts.scenario || '')
-    .replace(/\{\{memory\}\}/g, parts.memory?.prompt || '')
-    .replace(/\{\{name\}\}/g, char.name)
-    .replace(/\<BOT\>/g, char.name)
-    .replace(/\{\{personality\}\}/g, formatCharacter(char.name, chat.overrides || char.persona))
-    .replace(/\{\{char\}\}/g, char.name)
-    .replace(/\{\{user\}\}/g, sender)
+    .replace(/\{\{example_dialogue\}\}/gi, sampleChat)
+    .replace(/\{\{scenario\}\}/gi, parts.scenario || '')
+    .replace(/\{\{memory\}\}/gi, parts.memory || '')
+    .replace(/\{\{name\}\}/gi, char.name)
+    .replace(BOT_REPLACE, char.name)
+    .replace(SELF_REPLACE, sender)
+    .replace(/\{\{personality\}\}/gi, formatCharacter(char.name, chat.overrides || char.persona))
 
   /**
    * If the gaslight does not have a sample chat placeholder, but we do have sample chat
@@ -244,8 +263,12 @@ function placeholderReplace(value: string, charName: string, senderName: string)
   return value.replace(BOT_REPLACE, charName).replace(SELF_REPLACE, senderName)
 }
 
-export function formatCharacter(name: string, persona: AppSchema.Persona) {
-  switch (persona.kind) {
+export function formatCharacter(
+  name: string,
+  persona: AppSchema.Persona,
+  kind?: AppSchema.Persona['kind']
+) {
+  switch (kind || persona.kind) {
     case 'wpp': {
       const attrs = Object.entries(persona.attributes)
         .map(([key, values]) => `${key}(${values.map(quote).join(' + ')})`)
@@ -275,12 +298,7 @@ export function formatCharacter(name: string, persona: AppSchema.Persona) {
 
     case 'text': {
       const text = persona.attributes.text?.[0]
-      if (text === undefined) {
-        throw new Error(
-          `Could not format character: Format is 'text', but the attribute is not defined. This may be due to missing data when importing a character.`
-        )
-      }
-      return text
+      return text || ''
     }
   }
 }
@@ -292,6 +310,7 @@ export function exportCharacter(char: AppSchema.Character, target: 'tavern' | 'o
         name: char.name,
         first_mes: char.greeting,
         scenario: char.scenario,
+        personality: formatCharacter(char.name, char.persona),
         description: formatCharacter(char.name, char.persona),
         mes_example: char.sampleChat,
       }
@@ -342,8 +361,10 @@ function getLinesForPrompt({
     profiles.set(member.userId, member)
   }
 
-  const formatMsg = (chat: AppSchema.ChatMessage) =>
-    fillPlaceholders(chat, char.name, profiles.get(chat.userId!)?.handle || 'You').trim()
+  const formatMsg = (chat: AppSchema.ChatMessage) => {
+    const senderId = chat.userId || opts.chat.userId
+    return fillPlaceholders(chat, char.name, profiles.get(senderId)?.handle || 'You').trim()
+  }
 
   const history = messages.slice().sort(sortMessagesDesc).map(formatMsg)
 
@@ -383,6 +404,46 @@ const THIRD_PARTY_ADAPTERS: { [key in AIAdapter]?: boolean } = {
   claude: true,
 }
 
+export function getChatPreset(
+  chat: AppSchema.Chat,
+  user: AppSchema.User,
+  userPresets: AppSchema.UserGenPreset[]
+) {
+  /**
+   * Order of precedence:
+   * 1. chat.genPreset
+   * 2. chat.genSettings
+   * 3. user.servicePreset
+   * 4. service fallback preset
+   */
+
+  // #1
+  if (chat.genPreset) {
+    if (isDefaultPreset(chat.genPreset)) return defaultPresets[chat.genPreset]
+
+    const preset = userPresets.find((preset) => preset._id === chat.genPreset)
+    if (preset) return preset
+  }
+
+  // #2
+  if (chat.genSettings) {
+    return chat.genSettings
+  }
+
+  // #3
+  const { adapter, isThirdParty } = getAdapter(chat, user)
+  const fallbackId = user.defaultPresets?.[isThirdParty ? 'kobold' : adapter]
+
+  if (fallbackId) {
+    if (isDefaultPreset(fallbackId)) return defaultPresets[fallbackId]
+    const preset = userPresets.find((preset) => preset._id === fallbackId)
+    if (preset) return preset
+  }
+
+  // #4
+  return getFallbackPreset(adapter)
+}
+
 export function getAdapter(
   chat: AppSchema.Chat,
   config: AppSchema.User,
@@ -391,12 +452,9 @@ export function getAdapter(
   const chatAdapter =
     !chat.adapter || chat.adapter === 'default' ? config.defaultAdapter : chat.adapter
 
-  const isThirdParty = THIRD_PARTY_ADAPTERS[config.thirdPartyFormat]
+  const isThirdParty = THIRD_PARTY_ADAPTERS[config.thirdPartyFormat] && chatAdapter === 'kobold'
 
-  const adapter =
-    chatAdapter === 'kobold' && isThirdParty
-      ? config.thirdPartyFormat
-      : chatAdapter
+  const adapter = chatAdapter === 'kobold' && isThirdParty ? config.thirdPartyFormat : chatAdapter
 
   let model = ''
   let presetName = 'Fallback Preset'
@@ -456,7 +514,8 @@ function getContextLimit(
       return Math.min(2048, configuredMax) - genAmount
 
     case 'openai': {
-      if (!model || model === OPENAI_MODELS.Turbo || model === OPENAI_MODELS.DaVinci) return 4096
+      if (!model || model === OPENAI_MODELS.Turbo || model === OPENAI_MODELS.DaVinci)
+        return 4096 - genAmount
       return configuredMax - genAmount
     }
 
@@ -469,4 +528,40 @@ function getContextLimit(
     default:
       throw new Error(`Unknown adapter: ${adapter}`)
   }
+}
+
+export type TrimOpts = {
+  input: string | string[]
+
+  /**
+   * Which direction to start counting from.
+   *
+   * I.e.,
+   * - If 'top', the bottom of the text will be trimmed
+   * - If 'bottom', the top of the text will be trimed
+   */
+  start: 'top' | 'bottom'
+  encoder: Encoder
+  tokenLimit: number
+}
+
+/**
+ * Remove lines from a body of text that contains line breaks
+ */
+export function trimTokens(opts: TrimOpts) {
+  const text = Array.isArray(opts.input) ? opts.input.slice() : opts.input.split('\n')
+  if (opts.start === 'bottom') text.reverse()
+
+  let tokens = 0
+  let output: string[] = []
+
+  for (const line of text) {
+    tokens += opts.encoder(line)
+    if (tokens > opts.tokenLimit) break
+
+    if (opts.start === 'top') output.push(line)
+    else output.unshift(line)
+  }
+
+  return output
 }

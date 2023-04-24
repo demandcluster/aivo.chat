@@ -1,7 +1,7 @@
 import { UnwrapBody, assertValid } from 'frisker'
 import { ADAPTER_LABELS, AIAdapter } from '../../common/adapters'
-import { isLoggedIn } from '../store/api'
-import { Option } from './Select'
+import type { Option } from './Select'
+import { createEffect, onCleanup } from 'solid-js'
 
 type FormRef = {
   [key: string]:
@@ -17,6 +17,10 @@ type FormRef = {
 const PREFIX_CACHE_KEY = 'aivo-asset-prefix'
 
 let assetPrefix: string = "https://cdn.aivo.chat" // localStorage.getItem(PREFIX_CACHE_KEY) || ''
+
+export function getAssetPrefix() {
+  return assetPrefix
+}
 
 export function getAssetUrl(filename: string) {
   const isFile =
@@ -129,15 +133,15 @@ export function toDuration(valueSecs: number | Date, full?: boolean) {
   }
 
   if (days) {
-    return `${days} days`
+    return `${days} day${days > 1 ? 's' : ''}`
   }
 
   if (hours) {
-    return `${hours} hours`
+    return `${hours} hour${hours > 1 ? 's' : ''}`
   }
 
   if (minutes) {
-    return `${minutes} mins`
+    return `${minutes} min${minutes > 1 ? 's' : ''}`
   }
 
   return `${seconds} seconds`
@@ -248,4 +252,60 @@ export function hexToRgb(hex: string) {
 export function getRootRgb(name: string) {
   const value = getRootVariable(name)
   return hexToRgb(value)!
+}
+
+export function toMap<T extends { _id: string }>(list: T[]): Record<string, T> {
+  const map = list.reduce((prev, curr) => Object.assign(prev, { [curr._id]: curr }), {})
+  return map
+}
+
+export const alphaCaseInsensitiveSort = (
+  a: string,
+  b: string,
+  direction: 'asc' | 'desc' = 'asc'
+) => {
+  const modifier = direction === 'asc' ? 1 : -1
+  if (a.toLowerCase() < b.toLowerCase()) {
+    return -1 * modifier
+  } else if (a.toLowerCase() > b.toLowerCase()) {
+    return 1 * modifier
+  } else {
+    return 0
+  }
+}
+
+/**
+ * Ascending by default
+ * @param prop
+ * @param dir
+ */
+export function sort<T>(prop: keyof T, dir?: 'asc' | 'desc') {
+  const mod = dir === 'asc' ? 1 : -1
+  return (l: T, r: T) => (l[prop] > r[prop] ? mod : l[prop] === r[prop] ? 0 : -mod)
+}
+
+export const setComponentPageTitle = (newTitle: string) => {
+  createEffect(() => {
+    document.title = `${newTitle} - Agnaistic`
+
+    onCleanup(() => {
+      document.title = 'Agnaistic'
+    })
+  })
+
+  const updateTitle = (newTitle: string) => {
+    document.title = `${newTitle} - Agnaistic`
+  }
+
+  // setComponentPageTitle must be called in order for consumers to
+  // obtain updateComponentPageTitle, to prevent consumers from calling
+  // updateComponentPageTitle on its own which would change the title without
+  // the onCleanup hook.
+  return { updateTitle }
+}
+
+export function find<T, K extends keyof T>(values: T[], key: K, val: T[K]): T | undefined {
+  for (const value of values) {
+    if (value[key] === val) return value
+  }
 }
