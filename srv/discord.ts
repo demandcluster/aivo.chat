@@ -99,8 +99,8 @@ for (const file of commandFiles) {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, async c => {
-	await redisClient.set('discordBot','1')
-	await redisClient.expire("discordBot",600)
+	
+	await redisClient.setex("discordBot",300,'1')
 	await redisClient.disconnect()
 	console.log(`Ready! Logged in as ${c.user?.tag}`);
     logger.info( false,'Discord bot ready')
