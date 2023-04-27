@@ -14,7 +14,7 @@ import PageHeader from '../../shared/PageHeader'
 import Select, { Option } from '../../shared/Select'
 import TextInput from '../../shared/TextInput'
 import { AppSchema } from '../../../srv/db/schema'
-import {isLoggedIn,isAdmin } from '../../store/api'
+import {isLoggedIn} from '../../store/api'
 import {
   Copy,
   Download,
@@ -332,7 +332,7 @@ const Character: Component<{
             <Show when={!props.char.favorite}>
               <Star class="icon-button" onClick={() => props.toggleFavorite(true)} />
             </Show>
-            <Show when={isAdmin}>
+            <Show when={user}>
             <a onClick={props.download}>
               <Download class="icon-button" />
             </a>
@@ -368,7 +368,7 @@ const Character: Component<{
                   <Star /> Favorite
                 </Show>
               </Button>
-            <Show when={isAdmin}>
+            <Show when={user}>
               <Button alignLeft onClick={props.download}>
                 <Download /> Download
               </Button>
@@ -445,7 +445,7 @@ const Character: Component<{
                   <Star /> Favorite
                 </Show>
               </Button>
-              <Show when={isAdmin}>
+              <Show when={user}>
               <Button alignLeft onClick={props.download}>
                 <Download /> Download
               </Button>
