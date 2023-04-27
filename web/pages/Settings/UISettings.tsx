@@ -8,7 +8,8 @@ import Select from '../../shared/Select'
 import { toDropdownItems } from '../../shared/util'
 import { AVATAR_CORNERS, AVATAR_SIZES, UI_THEME, userStore } from '../../store'
 import Message from '../Chat/components/Message'
-import {AlertTriangle} from 'lucide-solid'
+import { Toggle } from '../../shared/Toggle'
+
 const themeOptions = UI_THEME.map((color) => ({ label: color, value: color }))
 
 const UISettings: Component = () => {
@@ -101,6 +102,13 @@ const UISettings: Component = () => {
         onChange={(value) => userStore.updateUI({ msgOpacity: value })}
       />
       <Divider />
+      <Toggle
+        fieldName="logPromptsToBrowserConsole"
+        label="Log prompts to browser console"
+        value={state.ui?.logPromptsToBrowserConsole ?? false}
+        onChange={(enabled) => userStore.updateUI({ logPromptsToBrowserConsole: enabled })}
+      />
+      <Divider />
       <div class="text-lg font-bold">Preview</div>
       <div class="flex w-full flex-col gap-2 rounded-md bg-[var(--bg-100)] p-2">
         <Message
@@ -123,14 +131,14 @@ const UISettings: Component = () => {
           />
         </Show>
       </div>
-        <Show when={!state.loggedIn}>
-              <div class="mt-8 mb-4 flex w-full flex-col items-center justify-center">
-                <div>This cannot be undone!</div>
-                <Button class="bg-red-600" onClick={userStore.clearGuestState}>
-                  <AlertTriangle /> Delete Guest State <AlertTriangle />
-                </Button>
-              </div>
-            </Show>
+      <Show when={!state.loggedIn}>
+        <div class="mb-4 mt-8 flex w-full flex-col items-center justify-center">
+          <div>This cannot be undone!</div>
+          <Button class="bg-red-600" onClick={userStore.clearGuestState}>
+            <AlertTriangle /> Delete Guest State <AlertTriangle />
+          </Button>
+        </div>
+      </Show>
     </>
   )
 }
